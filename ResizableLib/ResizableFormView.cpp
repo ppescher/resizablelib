@@ -28,7 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 
-inline void CResizableFormView::Construct()
+inline void CResizableFormView::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
 }
@@ -36,13 +36,13 @@ inline void CResizableFormView::Construct()
 CResizableFormView::CResizableFormView(UINT nIDTemplate)
 	: CFormView(nIDTemplate)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableFormView::CResizableFormView(LPCTSTR lpszTemplateName)
 	: CFormView(lpszTemplateName)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableFormView::~CResizableFormView()

@@ -41,7 +41,7 @@ protected:      // must derive your own class
 	virtual ~CResizableFormView();
 
 private:
-	void Construct();
+	void PrivateConstruct();
 	// internal status
 
 	BOOL m_bInitDone;			// if all internal vars initialized

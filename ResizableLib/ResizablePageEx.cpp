@@ -28,26 +28,26 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNCREATE(CResizablePageEx, CPropertyPageEx)
 
-inline void CResizablePageEx::Construct()
+inline void CResizablePageEx::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
 }
 
 CResizablePageEx::CResizablePageEx()
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizablePageEx::CResizablePageEx(UINT nIDTemplate, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle)
 	: CPropertyPageEx(nIDTemplate, nIDCaption, nIDHeaderTitle, nIDHeaderSubTitle)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizablePageEx::CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle)
 	: CPropertyPageEx(lpszTemplateName, nIDCaption, nIDHeaderTitle, nIDHeaderSubTitle)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizablePageEx::~CResizablePageEx()

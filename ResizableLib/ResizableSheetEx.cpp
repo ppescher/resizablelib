@@ -28,7 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNAMIC(CResizableSheetEx, CPropertySheetEx)
 
-inline void CResizableSheetEx::Construct()
+inline void CResizableSheetEx::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
 
@@ -39,7 +39,7 @@ inline void CResizableSheetEx::Construct()
 
 CResizableSheetEx::CResizableSheetEx()
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableSheetEx::CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd,
@@ -48,7 +48,7 @@ CResizableSheetEx::CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd,
 : CPropertySheetEx(nIDCaption, pParentWnd, iSelectPage,
 				  hbmWatermark, hpalWatermark, hbmHeader)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableSheetEx::CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd,
@@ -57,7 +57,7 @@ CResizableSheetEx::CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd,
 : CPropertySheetEx(pszCaption, pParentWnd, iSelectPage,
 					  hbmWatermark, hpalWatermark, hbmHeader)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 

@@ -74,7 +74,7 @@ public:
 // used internally
 private:
 	void PresetLayout();
-	void Construct();
+	void PrivateConstruct();
 	void SavePage();
 	void LoadPage();
 

@@ -28,7 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNAMIC(CResizableSheet, CPropertySheet)
 
-inline void CResizableSheet::Construct()
+inline void CResizableSheet::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
 
@@ -39,19 +39,19 @@ inline void CResizableSheet::Construct()
 
 CResizableSheet::CResizableSheet()
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableSheet::CResizableSheet(UINT nIDCaption, CWnd *pParentWnd, UINT iSelectPage)
 	 : CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableSheet::CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd, UINT iSelectPage)
 	 : CPropertySheet(pszCaption, pParentWnd, iSelectPage)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableSheet::~CResizableSheet()

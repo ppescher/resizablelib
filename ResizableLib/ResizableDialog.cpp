@@ -26,7 +26,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog
 
-inline void CResizableDialog::Construct()
+inline void CResizableDialog::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
 
@@ -35,19 +35,19 @@ inline void CResizableDialog::Construct()
 
 CResizableDialog::CResizableDialog()
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableDialog::CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd)
 	: CDialog(nIDTemplate, pParentWnd)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableDialog::CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd)
 	: CDialog(lpszTemplateName, pParentWnd)
 {
-	Construct();
+	PrivateConstruct();
 }
 
 CResizableDialog::~CResizableDialog()

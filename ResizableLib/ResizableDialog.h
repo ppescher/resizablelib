@@ -65,7 +65,7 @@ public:
 
 // used internally
 private:
-	void Construct();
+	void PrivateConstruct();
 
 // callable from derived classes
 protected:
