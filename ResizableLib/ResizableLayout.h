@@ -24,9 +24,19 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// useful compatibility constants (the only one required is NOANCHOR)
+// special type for layout anchors
+struct ANCHOR : public SIZE
+{
+	ANCHOR() { }
 
-const CSize
+	ANCHOR(int x, int y)
+	{
+		cx = x;
+		cy = y;
+	}
+};
+
+const ANCHOR
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
@@ -44,11 +54,11 @@ protected:
 		TCHAR sWndClass[MAX_PATH];
 
 		// upper-left corner
-		SIZE sizeTypeTL;
+		ANCHOR sizeTypeTL;
 		SIZE sizeMarginTL;
 		
 		// bottom-right corner
-		SIZE sizeTypeBR;
+		ANCHOR sizeTypeBR;
 		SIZE sizeMarginBR;
 
 		// custom window support
@@ -59,8 +69,8 @@ protected:
 		LayoutInfo() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
 		{ }
 
-		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
-			SIZE br_t, SIZE br_m)
+		LayoutInfo(HWND hwnd, ANCHOR tl_t, SIZE tl_m, 
+			ANCHOR br_t, SIZE br_m)
 			: hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
 			sizeTypeTL(tl_t), sizeMarginTL(tl_m),
 			sizeTypeBR(br_t), sizeMarginBR(br_m)
@@ -79,21 +89,21 @@ private:
 	HRGN m_hOldClipRgn;
 	int m_nOldClipRgn;
 
-	void ClipChildWindow(const CResizableLayout::LayoutInfo &layout, CRgn* pRegion);
+	void ClipChildWindow(const CResizableLayout::LayoutInfo &layout, CRgn* pRegion) const;
 
 	void CalcNewChildPosition(const CResizableLayout::LayoutInfo &layout,
-		const CRect &rectParent, CRect &rectChild, UINT& uFlags);
+		const CRect &rectParent, CRect &rectChild, UINT& uFlags) const;
 
 protected:
 	// override to initialize resize properties (clipping, refresh)
-	virtual void InitResizeProperties(CResizableLayout::LayoutInfo& layout);
+	virtual void InitResizeProperties(CResizableLayout::LayoutInfo& layout) const;
 
 	// override to specify clipping for unsupported windows
-	virtual BOOL LikesClipping(const CResizableLayout::LayoutInfo &layout);
+	virtual BOOL LikesClipping(const CResizableLayout::LayoutInfo &layout) const;
 
 	// override to specify refresh for unsupported windows
 	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
-		const CRect &rectOld, const CRect &rectNew);
+		const CRect &rectOld, const CRect &rectNew) const;
 
 	// paint the background on the given DC (for XP theme's compatibility)
 
@@ -101,29 +111,29 @@ protected:
 	void ClipChildren(CDC* pDC, BOOL bUndo);
 
 	// get the clipping region (without clipped child windows)
-	void GetClippingRegion(CRgn* pRegion);
+	void GetClippingRegion(CRgn* pRegion) const;
 	
 	// override for scrollable or expanding parent windows
-	virtual void GetTotalClientRect(LPRECT lpRect);
+	virtual void GetTotalClientRect(LPRECT lpRect) const;
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR);
+	void AddAnchor(HWND hWnd, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR);
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, CSize sizeTypeTL)
+	void AddAnchor(HWND hWnd, ANCHOR sizeTypeTL)
 	{
 		AddAnchor(hWnd, sizeTypeTL, sizeTypeTL);
 	}
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT nID, CSize sizeTypeTL, CSize sizeTypeBR)
+	void AddAnchor(UINT nID, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR)
 	{
 		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
 			sizeTypeTL, sizeTypeBR);
 	}
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT nID, CSize sizeTypeTL)
+	void AddAnchor(UINT nID, ANCHOR sizeTypeTL)
 	{
 		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
 			sizeTypeTL, sizeTypeTL);
@@ -134,7 +144,7 @@ protected:
 
 	// get rect of an anchored window, given the parent's client area
 	BOOL GetAnchorPosition(HWND hWnd, const CRect &rectParent,
-		CRect &rectChild, UINT* lpFlags = NULL)
+		CRect &rectChild, UINT* lpFlags = NULL) const
 	{
 		POSITION pos;
 		if (!m_mapLayout.Lookup(hWnd, pos))
@@ -148,10 +158,20 @@ protected:
 
 	// get rect of an anchored window, given the parent's client area
 	BOOL GetAnchorPosition(UINT nID, const CRect &rectParent,
-		CRect &rectChild, UINT* lpFlags = NULL)
+		CRect &rectChild, UINT* lpFlags = NULL) const
 	{
 		return GetAnchorPosition(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
 			rectParent, rectChild, lpFlags);
+	}
+
+	// get margins surrounding a child window at the given size
+	BOOL GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect &rectMargins) const;
+
+	// get margins surrounding a child window at the given size
+	BOOL GetAnchorMargins(UINT nID, const CSize &sizeChild, CRect &rectMargins) const
+	{
+		return GetAnchorMargins(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+			sizeChild, rectMargins);
 	}
 
 	// remove an anchored control from the layout, given its HWND
@@ -180,13 +200,13 @@ protected:
 	}
 
 	// adjust children's layout, when parent's size changes
-	void ArrangeLayout();
+	void ArrangeLayout() const;
 
 	// override to provide dynamic control's layout info
-	virtual BOOL ArrangeLayoutCallback(CResizableLayout::LayoutInfo& layout);
+	virtual BOOL ArrangeLayoutCallback(CResizableLayout::LayoutInfo& layout) const;
 
 	// override to provide the parent window
-	virtual CWnd* GetResizableWnd() = 0;
+	virtual CWnd* GetResizableWnd() const = 0;
 
 public:
 	CResizableLayout()

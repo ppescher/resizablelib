@@ -35,7 +35,7 @@ static char THIS_FILE[]=__FILE__;
 // symbol's name suggests. So now we're forced to use another symbol!
 #define _BS_TYPEMASK 0x0000000FL
 
-void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
+void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR)
 {
 	CWnd* pParent = GetResizableWnd();
 
@@ -43,8 +43,6 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	ASSERT(::IsWindow(hWnd));
 	// must be child of parent window
 	ASSERT(::IsChild(pParent->GetSafeHwnd(), hWnd));
-	// top-left anchor must be valid
-	ASSERT(sizeTypeTL != NOANCHOR);
 
 	// get parent window's rect
 	CRect rectParent;
@@ -102,7 +100,7 @@ void CResizableLayout::AddAnchorCallback(UINT nCallbackID)
 	m_listLayoutCB.AddTail(layout);
 }
 
-BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*layout*/)
+BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*layout*/) const
 {
 	ASSERT(FALSE);
 	// must be overridden, if callback is used
@@ -110,7 +108,7 @@ BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*lay
 	return FALSE;	// no output data
 }
 
-void CResizableLayout::ArrangeLayout()
+void CResizableLayout::ArrangeLayout() const
 {
 	// common vars
 	UINT uFlags;
@@ -173,7 +171,7 @@ void CResizableLayout::ArrangeLayout()
 }
 
 void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layout,
-									   CRgn* pRegion)
+									   CRgn* pRegion) const
 {
 	// obtain window position
 	CRect rect;
@@ -205,7 +203,7 @@ void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layou
 		pRegion->CombineRgn(pRegion, &rgn, RGN_OR);
 }
 
-void CResizableLayout::GetClippingRegion(CRgn* pRegion)
+void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 {
 	CWnd* pWnd = GetResizableWnd();
 
@@ -288,13 +286,13 @@ void CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 	}
 }
 
-void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
+void CResizableLayout::GetTotalClientRect(LPRECT lpRect) const
 {
 	GetResizableWnd()->GetClientRect(lpRect);
 }
 
 BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
-									const CRect& rectOld, const CRect& rectNew)
+								const CRect& rectOld, const CRect& rectNew) const
 {
 	if (layout.bMsgSupport)
 	{
@@ -386,7 +384,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	return bRefresh;
 }
 
-BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
+BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout) const
 {
 	if (layout.bMsgSupport)
 	{
@@ -457,7 +455,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 }
 
 void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& layout,
-								const CRect &rectParent, CRect &rectChild, UINT& uFlags)
+						const CRect &rectParent, CRect &rectChild, UINT& uFlags) const
 {
 	CWnd* pParent = GetResizableWnd();
 
@@ -494,7 +492,31 @@ void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& 
 	rectChild = rectNew;
 }
 
-void CResizableLayout::InitResizeProperties(CResizableLayout::LayoutInfo &layout)
+BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect &rectMargins) const
+{
+	POSITION pos;
+	if (!m_mapLayout.Lookup(hWnd, pos))
+		return FALSE;
+
+	const CResizableLayout::LayoutInfo& layout = m_listLayout.GetAt(pos);
+
+	// augmented size, relative to anchor points
+	CSize size = sizeChild + layout.sizeMarginTL - layout.sizeMarginBR;
+
+	// percent of parent size occupied by this control
+	CSize percent(layout.sizeTypeBR.cx - layout.sizeTypeTL.cx,
+		layout.sizeTypeBR.cy - layout.sizeTypeTL.cy);
+
+	// calculate total margins
+	rectMargins.left = size.cx * layout.sizeTypeTL.cx / percent.cx + layout.sizeMarginTL.cx;
+	rectMargins.top = size.cy * layout.sizeTypeTL.cy / percent.cy + layout.sizeMarginTL.cy;
+	rectMargins.right = size.cx * (100 - layout.sizeTypeBR.cx) / percent.cx - layout.sizeMarginBR.cx;
+	rectMargins.bottom = size.cy * (100 - layout.sizeTypeBR.cy) / percent.cy - layout.sizeMarginBR.cy;
+
+	return TRUE;
+}
+
+void CResizableLayout::InitResizeProperties(CResizableLayout::LayoutInfo &layout) const
 {
 	// check if custom window supports this library
 	// (properties must be correctly set by the window)
