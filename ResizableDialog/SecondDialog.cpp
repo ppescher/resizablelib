@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(CSecondDialog, CResizableDialog)
 	ON_COMMAND(ID_BUTTON3, OnButton3)
 	ON_COMMAND(ID_BUTTON4, OnButton4)
 	//}}AFX_MSG_MAP
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -111,7 +112,8 @@ int CSecondDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CSecondDialog::OnButton1() 
 {
 	// set background color
-	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(250,200,200));
+	m_brushBack.DeleteObject();
+	m_brushBack.CreateSolidBrush(RGB(250,200,200));
 	Invalidate();
 
 	// NOTE: for details on how you could put a toolbar in a dialog
@@ -123,21 +125,38 @@ void CSecondDialog::OnButton1()
 void CSecondDialog::OnButton2() 
 {
 	// set background color
-	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(200,200,250));
+	m_brushBack.DeleteObject();
+	m_brushBack.CreateSolidBrush(RGB(200,200,250));
 	Invalidate();
 }
 
 void CSecondDialog::OnButton3() 
 {
 	// set background color
-	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(190,250,190));
+	m_brushBack.DeleteObject();
+	m_brushBack.CreateSolidBrush(RGB(190,250,190));
 	Invalidate();
 }
 
 void CSecondDialog::OnButton4() 
 {
 	// set background color
-	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(250,250,180));
+	m_brushBack.DeleteObject();
+	m_brushBack.CreateSolidBrush(RGB(250,250,180));
 	Invalidate();
 }
 
+HBRUSH CSecondDialog::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CResizableDialog::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	LOGBRUSH logbr;
+	if (m_brushBack.m_hObject != NULL &&
+		m_brushBack.GetLogBrush(&logbr) == sizeof(LOGBRUSH))
+	{
+		pDC->SetBkColor(logbr.lbColor);
+		return m_brushBack;
+	}
+
+	return hbr;
+}

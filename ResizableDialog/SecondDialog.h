@@ -34,6 +34,7 @@ public:
 // Implementation
 protected:
 	CToolBar m_wndToolBar;
+	CBrush m_brushBack;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSecondDialog)
@@ -45,6 +46,8 @@ protected:
 	afx_msg void OnButton4();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -24,14 +24,6 @@ class CDemoApp : public CWinApp
 public:
 	CDemoApp();
 
-	void SetDialogBkColor( COLORREF clrCtlBk = RGB(192, 192, 192),
-		COLORREF clrCtlText = RGB(0, 0, 0) )
-	{
-		CWinApp::SetDialogBkColor(clrCtlBk, clrCtlText);
-	}
-
-
-
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDemoApp)
