@@ -22,6 +22,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "ResizableLayout.h"
+#include "ResizableGrip.h"
+#include "ResizableMinMax.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFormView form view
@@ -30,7 +32,8 @@
 #include <afxext.h>
 #endif
 
-class CResizableFormView : public CFormView, public CResizableLayout
+class CResizableFormView : public CFormView, public CResizableLayout,
+						 public CResizableGrip, public CResizableMinMax
 {
 	DECLARE_DYNAMIC(CResizableFormView)
 
@@ -44,8 +47,8 @@ private:
 	void PrivateConstruct();
 	// internal status
 
-	BOOL m_bInitDone;			// if all internal vars initialized
-
+	BOOL m_bInitDone;		// if all internal vars initialized
+	BOOL m_bGripStatus;		// support for hiding the grip
 
 // called from base class
 protected:
@@ -84,6 +87,7 @@ protected:
 	//{{AFX_MSG(CResizableFormView)
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

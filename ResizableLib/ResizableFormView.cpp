@@ -31,6 +31,7 @@ IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 inline void CResizableFormView::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
+	m_bGripStatus = TRUE;
 }
 
 CResizableFormView::CResizableFormView(UINT nIDTemplate)
@@ -54,6 +55,7 @@ BEGIN_MESSAGE_MAP(CResizableFormView, CFormView)
 	//{{AFX_MSG_MAP(CResizableFormView)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_WM_CREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -78,9 +80,17 @@ void CResizableFormView::Dump(CDumpContext& dc) const
 void CResizableFormView::OnSize(UINT nType, int cx, int cy) 
 {
 	CFormView::OnSize(nType, cx, cy);
-	
-	if (m_bInitDone)
-		ArrangeLayout();
+
+	// hide size grip when there are scrollbars
+	CSize size = GetTotalSize();
+	if (cx < size.cx || cy < size.cy)
+		HideSizeGrip(&m_bGripStatus);
+	else
+		ShowSizeGrip(&m_bGripStatus);
+
+	// update grip and layout
+	UpdateSizeGrip();
+	ArrangeLayout();
 }
 
 void CResizableFormView::OnInitialUpdate() 
@@ -97,10 +107,11 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 {
 	GetClientRect(lpRect);
 
-	// get scrollable size
+	// get dialog template's size
+	// (this is set in CFormView::Create)
 	CSize size = GetTotalSize();
 
-	// before initialization, "size" is dialog template size
+	// before initialization use dialog's size
 	if (!m_bInitDone)
 	{
 		lpRect->right = lpRect->left + size.cx;
@@ -108,7 +119,7 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 		return;
 	}
 
-	// otherwise, give correct size if scrollbars active
+	// otherwise, give the correct size if scrollbars active
 
 	if (m_nMapMode < 0)	// scrollbars disabled
 		return;
@@ -133,4 +144,22 @@ BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC)
 //	ClipChildren(pDC);	// old-method (for safety)
 
 	return CFormView::OnEraseBkgnd(pDC);
+}
+
+int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (CFormView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	
+	// create and reposition the size-grip
+	if (!CreateSizeGrip())
+		return -1;
+
+	// show the grip by default only in MDI windows
+	// (grip doesn't work in SDI)
+	CWnd* pParentWnd = CWnd::FromHandle(lpCreateStruct->hwndParent);
+	if (pParentWnd->IsKindOf(RUNTIME_CLASS(CMDIChildWnd)))
+		ShowSizeGrip();
+
+	return 0;
 }
