@@ -69,6 +69,7 @@ const UINT WMU_RESIZESUPPORT = ::RegisterWindowMessage(TEXT("WMU_RESIZESUPPORT")
 #define RSZSUP_QUERYPROPERTIES	101	// lParam = LPRESIZEPROPERTIES
 #define RSZSUP_LIKESCLIPPING	102	// lParam = LPCLIPPINGPROPERTY
 #define RSZSUP_NEEDSREFRESH		103	// lParam = LPREFRESHPROPERTY
+#define RSZSUP_SHEETPAGEEXHACK	104	// lParam = HWND (source prop.page)
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,6 +91,12 @@ inline BOOL Send_NeedsRefresh(HWND hWnd, LPREFRESHPROPERTY pRefreshProperty)
 {
 	return (0 != SendMessage(hWnd, WMU_RESIZESUPPORT,
 		RSZSUP_NEEDSREFRESH, (LPARAM)pRefreshProperty));
+}
+
+inline void Post_SheetPageExHack(HWND hWndSheet, HWND hWndPage)
+{
+	PostMessage(hWndSheet, WMU_RESIZESUPPORT,
+		RSZSUP_SHEETPAGEEXHACK, (LPARAM)hWndPage);
 }
 
 #endif // !defined(AFX_RESIZABLEMSGSUPPORT_H__INCLUDED_)
