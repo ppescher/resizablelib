@@ -101,6 +101,12 @@ BOOL CResizableGrip::InitGrip()
 	return bRet;
 }
 
+BOOL CResizableGrip::IsRTL(HWND hwnd)
+{
+	DWORD dwExStyle = ::GetWindowLong(hwnd, GWL_EXSTYLE);
+	return (dwExStyle & WS_EX_LAYOUTRTL);
+}
+
 LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	WNDPROC oldWndProc = (WNDPROC)::GetProp(hwnd, RSZ_GRIP_OBJ);

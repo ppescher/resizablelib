@@ -57,7 +57,7 @@ protected:
 	void EndSizing();
 	void InitHorizontalExtent();
 
-	BOOL IsRTL() { return (GetExStyle() & WS_EX_LAYOUTRTL); }
+	BOOL IsRTL();
 
 	// Generated message map functions
 protected:

@@ -49,6 +49,11 @@ void CResizableComboLBox::PreSubclassWindow()
 	InitializeControl();
 }
 
+BOOL CResizableComboLBox::IsRTL()
+{
+	return (GetExStyle() & WS_EX_LAYOUTRTL);
+}
+
 void CResizableComboLBox::InitializeControl()
 {
 	CRect rect;

@@ -252,7 +252,7 @@ void CResizableLayout::EraseBackground(CDC* pDC)
 	
 	CRgn rgn;
 	GetClippingRegion(&rgn);
-	if (pWnd->GetStyle() & WS_EX_LAYOUTRTL)
+	if (pWnd->GetExStyle() & WS_EX_LAYOUTRTL)
 		rgn.OffsetRgn(-1,0);	// fix for RTL layouts
 
 	HBRUSH hbr = (HBRUSH)pWnd->SendMessage(WM_CTLCOLORDLG,
