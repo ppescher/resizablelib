@@ -42,6 +42,8 @@ BEGIN_MESSAGE_MAP(CResizableMDIFrame, CMDIFrameWnd)
 	//{{AFX_MSG_MAP(CResizableMDIFrame)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_DESTROY()
+	ON_WM_NCCREATE()
+	ON_WM_WINDOWPOSCHANGING()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -50,17 +52,15 @@ END_MESSAGE_MAP()
 
 void CResizableMDIFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
+	// MDI should call default implementation
+	CMDIFrameWnd::OnGetMinMaxInfo(lpMMI);
+
 	MinMaxInfo(lpMMI);
 
 	BOOL bMaximized = FALSE;
 	CMDIChildWnd* pChild = MDIGetActive(&bMaximized);
-	if (pChild == NULL || !bMaximized)
-		return;
-
-	ChainMinMaxInfo(lpMMI, this, pChild);
-
-	// MDI should call default implementation
-	CMDIFrameWnd::OnGetMinMaxInfo(lpMMI);
+	if (pChild != NULL && bMaximized)
+		ChainMinMaxInfo(lpMMI, this, pChild);
 }
 
 // NOTE: this must be called after setting the layout
@@ -82,4 +82,37 @@ void CResizableMDIFrame::OnDestroy()
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
 	CMDIFrameWnd::OnDestroy();
+}
+
+BOOL CResizableMDIFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (!CMDIFrameWnd::OnNcCreate(lpCreateStruct))
+		return FALSE;
+
+	MakeResizable(lpCreateStruct);
+	
+	return TRUE;
+}
+
+LRESULT CResizableMDIFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CMDIFrameWnd::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CMDIFrameWnd::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
+}
+
+void CResizableMDIFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+{
+	CMDIFrameWnd::OnWindowPosChanging(lpwndpos);
+
+	// since this window class doesn't have the style CS_HREDRAW|CS_VREDRAW
+	// the client area is not invalidated during a resize operation and
+	// this prevents the system from using WM_NCCALCSIZE to validate rects
+	Invalidate();
 }
