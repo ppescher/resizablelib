@@ -106,6 +106,10 @@ SOURCE=.\ResizableDialog.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableLayout.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SecondDialog.cpp
 # End Source File
 # Begin Source File
@@ -128,6 +132,10 @@ SOURCE=.\DemoDlg.h
 # Begin Source File
 
 SOURCE=.\ResizableDialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableLayout.h
 # End Source File
 # Begin Source File
 
@@ -162,9 +170,5 @@ SOURCE=.\res\Demo.rc2
 SOURCE=.\res\toolbar1.bmp
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\ReadMe.txt
-# End Source File
 # End Target
 # End Project
