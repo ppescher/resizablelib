@@ -84,3 +84,15 @@ void CMainFrame::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
 
+
+void CMainFrame::ActivateFrame(int nCmdShow) 
+{
+	if ( EnableSaveRestore(_T("Demo MDI MainFrame")) )
+	{
+		// if correctly restored, activate window and return
+		SetActiveWindow();
+		return;
+	}
+
+	CResizableMDIFrame::ActivateFrame(nCmdShow);
+}

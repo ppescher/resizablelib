@@ -7,10 +7,12 @@
 // ChildSplitFrame.h : header file
 //
 
+#include "ResizableMDIChild.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CChildSplitFrame frame
 
-class CChildSplitFrame : public CMDIChildWnd
+class CChildSplitFrame : public CResizableMDIChild
 {
 	DECLARE_DYNCREATE(CChildSplitFrame)
 protected:
@@ -25,6 +27,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CChildSplitFrame)
+	public:
+	virtual void ActivateFrame(int nCmdShow = -1);
 	//}}AFX_VIRTUAL
 
 // Implementation

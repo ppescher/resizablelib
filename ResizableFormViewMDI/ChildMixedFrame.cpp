@@ -16,7 +16,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CChildMixedFrame
 
-IMPLEMENT_DYNCREATE(CChildMixedFrame, CMDIChildWnd)
+IMPLEMENT_DYNCREATE(CChildMixedFrame, CResizableMDIChild)
 
 CChildMixedFrame::CChildMixedFrame()
 {
@@ -27,7 +27,7 @@ CChildMixedFrame::~CChildMixedFrame()
 }
 
 
-BEGIN_MESSAGE_MAP(CChildMixedFrame, CMDIChildWnd)
+BEGIN_MESSAGE_MAP(CChildMixedFrame, CResizableMDIChild)
 	//{{AFX_MSG_MAP(CChildMixedFrame)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
 	//}}AFX_MSG_MAP
@@ -36,7 +36,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CChildMixedFrame message handlers
 
-BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
+BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pContext)
 {
 	// CG: The following block was added by the Splitter Bar component.
 	{
@@ -60,4 +60,16 @@ BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pCont
 
 		return TRUE;
 	}
+}
+
+void CChildMixedFrame::ActivateFrame(int nCmdShow) 
+{
+	if ( EnableSaveRestore(_T("Demo MDI MixedFrame")) )
+	{
+		// if correctly restored, activate window and return
+		MDIActivate();
+		return;
+	}
+
+	CResizableMDIChild::ActivateFrame(nCmdShow);
 }

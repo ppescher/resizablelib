@@ -237,6 +237,18 @@ SOURCE=.\res\DemoDoc.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\DemoDoc0.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\DemoDoc1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\DemoDoc2.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\ico00001.ico
 # End Source File
 # Begin Source File

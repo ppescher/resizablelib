@@ -14,7 +14,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CChildSplitFrame
 
-IMPLEMENT_DYNCREATE(CChildSplitFrame, CMDIChildWnd)
+IMPLEMENT_DYNCREATE(CChildSplitFrame, CResizableMDIChild)
 
 CChildSplitFrame::CChildSplitFrame()
 {
@@ -25,7 +25,7 @@ CChildSplitFrame::~CChildSplitFrame()
 }
 
 
-BEGIN_MESSAGE_MAP(CChildSplitFrame, CMDIChildWnd)
+BEGIN_MESSAGE_MAP(CChildSplitFrame, CResizableMDIChild)
 	//{{AFX_MSG_MAP(CChildSplitFrame)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
 	//}}AFX_MSG_MAP
@@ -34,7 +34,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CChildSplitFrame message handlers
 
-BOOL CChildSplitFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
+BOOL CChildSplitFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* pContext)
 {
 	// CG: The following block was added by the Splitter Bar component.
 	{
@@ -49,4 +49,16 @@ BOOL CChildSplitFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pCont
 
 		return TRUE;
 	}
+}
+
+void CChildSplitFrame::ActivateFrame(int nCmdShow) 
+{
+	if ( EnableSaveRestore(_T("Demo MDI SplitFrame")) )
+	{
+		// if correctly restored, activate window and return
+		MDIActivate();
+		return;
+	}
+
+	CResizableMDIChild::ActivateFrame(nCmdShow);
 }

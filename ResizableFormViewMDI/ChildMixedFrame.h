@@ -7,10 +7,12 @@
 // ChildMixedFrame.h : header file
 //
 
+#include "ResizableMDIChild.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CChildMixedFrame frame
 
-class CChildMixedFrame : public CMDIChildWnd
+class CChildMixedFrame : public CResizableMDIChild
 {
 	DECLARE_DYNCREATE(CChildMixedFrame)
 protected:
@@ -25,6 +27,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CChildMixedFrame)
+	public:
+	virtual void ActivateFrame(int nCmdShow = -1);
 	//}}AFX_VIRTUAL
 
 // Implementation

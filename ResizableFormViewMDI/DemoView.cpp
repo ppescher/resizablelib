@@ -22,6 +22,8 @@ BEGIN_MESSAGE_MAP(CDemoView, CResizableFormView)
 	//{{AFX_MSG_MAP(CDemoView)
 	ON_BN_CLICKED(IDC_BUTTON2, OnButton2)
 	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
+	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
+	ON_BN_CLICKED(IDC_RADIO1, OnRadio1)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -65,6 +67,8 @@ void CDemoView::OnInitialUpdate()
 	CRect rect(CPoint(0, 0), GetTotalSize());
 	CalcWindowRect(rect, CWnd::adjustOutside);
 	SetMinTrackSize(rect.Size());
+
+	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO1);
 
 	// complete initialization
 	CResizableFormView::OnInitialUpdate();
@@ -151,4 +155,18 @@ void CDemoView::DialogToFormView()
 	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
 	ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+}
+
+void CDemoView::OnRadio2() 
+{
+	// allow any size
+	ResetMinTrackSize();
+}
+
+void CDemoView::OnRadio1() 
+{
+	// use template size as min track size
+	CRect rect(CPoint(0, 0), GetTotalSize());
+	CalcWindowRect(rect, CWnd::adjustOutside);
+	SetMinTrackSize(rect.Size());
 }

@@ -55,6 +55,8 @@ protected:
 	//{{AFX_MSG(CDemoView)
 	afx_msg void OnButton2();
 	afx_msg void OnButton1();
+	afx_msg void OnRadio2();
+	afx_msg void OnRadio1();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

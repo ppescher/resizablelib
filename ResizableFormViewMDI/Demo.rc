@@ -248,25 +248,25 @@ END
 
 IDD_DEMO_FORM DIALOGEX 0, 0, 200, 130
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    WS_VSCROLL
     CONTROL         "Static",IDC_STATIC,"Static",SS_SIMPLE | WS_GROUP,7,7,63,
                     8
-    PUSHBUTTON      "&UnFreeze!",IDC_BUTTON1,7,109,73,14
+    EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    WS_VSCROLL
     PUSHBUTTON      "&Freeze to Dialog!",IDC_BUTTON2,7,94,73,14
+    PUSHBUTTON      "&UnFreeze!",IDC_BUTTON1,7,109,73,14
+    GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
     COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
-    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,118,39,
-                    38,10
-    CONTROL         "Radio2",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,52,
-                    38,10
-    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT,95,71,89,44,
-                    WS_EX_CLIENTEDGE
     ICON            IDR_DEMOTYPE,IDC_ICON1,95,40,20,20,SS_CENTERIMAGE | 
                     SS_SUNKEN
+    CONTROL         "SetMinTrackSize",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,117,39,67,10
+    CONTROL         "Free Size",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,
+                    52,45,10
+    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT | WS_GROUP,95,71,89,
+                    44,WS_EX_CLIENTEDGE
 END
 
 
