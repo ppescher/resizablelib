@@ -31,8 +31,7 @@ IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 inline void CResizableFormView::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
-	m_bGripScroll = TRUE;
-	m_bGripStatusBar = TRUE;
+	m_dwGripTempState = GHR_SCROLLBAR | GHR_ALIGNMENT | GHR_MAXIMIZED;
 }
 
 CResizableFormView::CResizableFormView(UINT nIDTemplate)
@@ -57,6 +56,7 @@ BEGIN_MESSAGE_MAP(CResizableFormView, CFormView)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_CREATE()
+	ON_WM_GETMINMAXINFO()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -82,22 +82,33 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
+	CWnd* pParent = GetParent();
+
+	// hide zise grip when parent is maximized
+	if (pParent->IsZoomed())
+		HideSizeGrip(&m_dwGripTempState, GHR_MAXIMIZED);
+	else
+		ShowSizeGrip(&m_dwGripTempState, GHR_MAXIMIZED);
+
 	// hide size grip when there are scrollbars
 	CSize size = GetTotalSize();
 	if (cx < size.cx || cy < size.cy)
-		HideSizeGrip(&m_bGripScroll);
+		HideSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
 	else
-		ShowSizeGrip(&m_bGripScroll);
+		ShowSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
 
-	// hide size grip when there is a statusbar or parent is not a Frame
-	CFrameWnd* pParentWnd = DYNAMIC_DOWNCAST(CFrameWnd, GetParent());
-	CWnd* pStatusBar = (pParentWnd != NULL) ? pParentWnd->GetMessageBar() : NULL;
-	if ( (pParentWnd == NULL) || ((pStatusBar != NULL)
-		&& (pStatusBar->GetParent() == pParentWnd)
-		&& (pStatusBar->GetStyle() & WS_VISIBLE)) )
-		HideSizeGrip(&m_bGripStatusBar);
+	// hide size grip when the parent window is not resizable
+	// or the form is not bottom-right aligned (e.g. there's a statusbar)
+	DWORD dwStyle = pParent->GetStyle();
+	CRect rectParent, rectChild;
+	GetWindowRect(rectChild);
+	::MapWindowPoints(NULL, pParent->GetSafeHwnd(), (LPPOINT)&rectChild, 2);
+	pParent->GetClientRect(rectParent);
+	if (!(dwStyle & WS_THICKFRAME)
+		|| (rectChild.BottomRight() != rectParent.BottomRight()))
+		HideSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
 	else
-		ShowSizeGrip(&m_bGripStatusBar);
+		ShowSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
 
 	// update grip and layout
 	UpdateSizeGrip();
@@ -165,7 +176,12 @@ int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// create and init the size-grip
 	if (!CreateSizeGrip())
 		return -1;
-	ShowSizeGrip();	// show by default
+	SetSizeGripVisibility(TRUE);	// show by default
 
 	return 0;
+}
+
+void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+{
+	MinMaxInfo(lpMMI);
 }

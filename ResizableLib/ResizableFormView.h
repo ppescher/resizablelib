@@ -47,8 +47,15 @@ private:
 	void PrivateConstruct();
 	
 	BOOL m_bInitDone;		// if all internal vars initialized
-	BOOL m_bGripScroll;		// support for hiding the grip with scrollbars
-	BOOL m_bGripStatusBar;	// support for hiding the grip with statusbar
+
+	// support for temporarily hiding the grip
+	DWORD m_dwGripTempState;
+	enum GripHideReason		// bitmask
+	{
+		GHR_MAXIMIZED = 0x01,
+		GHR_SCROLLBAR = 0x02,
+		GHR_ALIGNMENT = 0x04,
+	};
 
 // called from base class
 protected:
@@ -88,6 +95,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
