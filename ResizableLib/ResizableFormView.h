@@ -28,9 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFormView form view
 
-#ifndef __AFXEXT_H__
 #include <afxext.h>
-#endif
 
 class CResizableFormView : public CFormView, public CResizableLayout,
 						 public CResizableGrip, public CResizableMinMax
@@ -93,10 +91,10 @@ protected:
 	//{{AFX_MSG(CResizableFormView)
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnDestroy();
 	virtual BOOL OnInitDialog();
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

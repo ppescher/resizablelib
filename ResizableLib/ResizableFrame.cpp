@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CResizableFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CResizableFrame)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_DESTROY()
+	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -78,4 +79,27 @@ void CResizableFrame::OnDestroy()
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
 	CFrameWnd::OnDestroy();
+}
+
+BOOL CResizableFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (!CFrameWnd::OnNcCreate(lpCreateStruct))
+		return FALSE;
+
+	MakeResizable(lpCreateStruct);
+
+	return TRUE;
+}
+
+LRESULT CResizableFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CFrameWnd::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CFrameWnd::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }

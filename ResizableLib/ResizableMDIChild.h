@@ -22,12 +22,13 @@
 
 #include "ResizableMinMax.h"
 #include "ResizableState.h"
+#include "ResizableLayout.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableMDIChild frame
 
 class CResizableMDIChild : public CMDIChildWnd, public CResizableMinMax,
-						public CResizableState
+						public CResizableState, public CResizableLayout
 {
 	DECLARE_DYNCREATE(CResizableMDIChild)
 protected:
@@ -43,6 +44,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableMDIChild)
 	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation

@@ -54,9 +54,9 @@ BEGIN_MESSAGE_MAP(CResizableFormView, CFormView)
 	//{{AFX_MSG_MAP(CResizableFormView)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
-	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_DESTROY()
+	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -162,18 +162,6 @@ BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
-int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
-{
-	if (CFormView::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	// create and init the size-grip
-	if (!CreateSizeGrip())
-		return -1;
-
-	return 0;
-}
-
 void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	MinMaxInfo(lpMMI);
@@ -191,7 +179,15 @@ LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	if (message == WM_INITDIALOG)
 		return (LRESULT)OnInitDialog();
 
-	return CFormView::WindowProc(message, wParam, lParam);
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CFormView::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CFormView::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }
 
 BOOL CResizableFormView::OnInitDialog() 
@@ -209,4 +205,16 @@ BOOL CResizableFormView::OnInitDialog()
 	SetScrollSizes(MM_TEXT, rectTemplate.Size());
 
 	return bRet;
+}
+
+BOOL CResizableFormView::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (!CFormView::OnNcCreate(lpCreateStruct))
+		return FALSE;
+	
+	// create and init the size-grip
+	if (!CreateSizeGrip())
+		return FALSE;
+
+	return TRUE;
 }

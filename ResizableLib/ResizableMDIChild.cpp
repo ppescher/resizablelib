@@ -51,20 +51,20 @@ END_MESSAGE_MAP()
 
 void CResizableMDIChild::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
+	// MDI should call default implementation
+	CMDIChildWnd::OnGetMinMaxInfo(lpMMI);
+
 	MinMaxInfo(lpMMI);
 
 	CWnd* pView = GetDlgItem(AFX_IDW_PANE_FIRST);//GetActiveView();
 	if (pView != NULL)
 		ChainMinMaxInfo(lpMMI, this, pView);
-
-	// MDI should call default implementation
-	CMDIChildWnd::OnGetMinMaxInfo(lpMMI);
 }
 
 void CResizableMDIChild::OnSize(UINT nType, int cx, int cy) 
 {
 	CMDIChildWnd::OnSize(nType, cx, cy);
-
+/*
 	// make sure the MDI parent frame doesn't clip
 	// this child window when it is maximized
 	if (nType == SIZE_MAXIMIZED)
@@ -74,7 +74,7 @@ void CResizableMDIChild::OnSize(UINT nType, int cx, int cy)
 		CRect rect;
 		pFrame->GetWindowRect(rect);
 		pFrame->MoveWindow(rect);
-	}
+	}*/
 }
 
 // NOTE: this must be called after setting the layout
@@ -96,4 +96,17 @@ void CResizableMDIChild::OnDestroy()
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
 	CMDIChildWnd::OnDestroy();
+}
+
+LRESULT CResizableMDIChild::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CMDIChildWnd::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CMDIChildWnd::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }

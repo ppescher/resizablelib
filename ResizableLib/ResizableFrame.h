@@ -22,12 +22,13 @@
 
 #include "ResizableMinMax.h"
 #include "ResizableState.h"
+#include "ResizableLayout.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFrame frame
 
 class CResizableFrame : public CFrameWnd, public CResizableMinMax,
-						public CResizableState
+						public CResizableState, public CResizableLayout
 {
 	DECLARE_DYNCREATE(CResizableFrame)
 protected:
@@ -42,6 +43,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableFrame)
+	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -69,6 +72,7 @@ protected:
 	//{{AFX_MSG(CResizableFrame)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnDestroy();
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
