@@ -102,12 +102,12 @@ BOOL CMyPropertyPage2::OnInitDialog()
 	CResizablePage::OnInitDialog();
 	
 	// preset layout
-	AddAnchor(IDC_LIST1, TOP_LEFT, CSize(50,70));
-	AddAnchor(IDC_PICTURE1, CSize(50,0), CSize(100,70));
-	AddAnchor(IDC_GROUP1, CSize(0,70), BOTTOM_RIGHT);
-	AddAnchor(IDC_CHECK1, CSize(0,85));
-	AddAnchor(IDC_RADIO1, CSize(100,85));
-	AddAnchor(IDC_COMBO1, CSize(100,70));
+	AddAnchor(IDC_LIST1, TOP_LEFT, ANCHOR(50,70));
+	AddAnchor(IDC_PICTURE1, ANCHOR(50,0), ANCHOR(100,70));
+	AddAnchor(IDC_GROUP1, ANCHOR(0,70), BOTTOM_RIGHT);
+	AddAnchor(IDC_CHECK1, ANCHOR(0,85));
+	AddAnchor(IDC_RADIO1, ANCHOR(100,85));
+	AddAnchor(IDC_COMBO1, ANCHOR(100,70));
 	AddAnchor(IDC_BUTTON1, BOTTOM_RIGHT);
 
 	m_ctlEdit1.AddString(_T("Just a single item to test the "

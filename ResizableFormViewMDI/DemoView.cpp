@@ -174,16 +174,16 @@ BOOL CDemoView::OnInitDialog()
 	CResizableFormView::OnInitDialog();
 	
 	// preset layout
-	AddAnchor(IDC_EDIT1, TOP_LEFT, CSize(40,100));
-	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, CSize(40,100));
-	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, CSize(40,100));
-	AddAnchor(IDC_GROUP1, CSize(40,0), BOTTOM_RIGHT);
-	AddAnchor(IDC_COMBO1, CSize(40,0), TOP_RIGHT);
-	AddAnchor(IDC_RADIO1, CSize(70,0), CSize(70,0));
-	AddAnchor(IDC_RADIO2, CSize(70,0), CSize(70,0));
-	AddAnchor(IDC_RADIO3, CSize(70,0), CSize(70,0));
-	AddAnchor(IDC_STATIC1, CSize(40,0), BOTTOM_RIGHT);
-	AddAnchor(IDC_ICON1, CSize(40,0), CSize(70,0));
+	AddAnchor(IDC_EDIT1, TOP_LEFT, ANCHOR(40,100));
+	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, ANCHOR(40,100));
+	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, ANCHOR(40,100));
+	AddAnchor(IDC_GROUP1, ANCHOR(40,0), BOTTOM_RIGHT);
+	AddAnchor(IDC_COMBO1, ANCHOR(40,0), TOP_RIGHT);
+	AddAnchor(IDC_RADIO1, ANCHOR(70,0), ANCHOR(70,0));
+	AddAnchor(IDC_RADIO2, ANCHOR(70,0), ANCHOR(70,0));
+	AddAnchor(IDC_RADIO3, ANCHOR(70,0), ANCHOR(70,0));
+	AddAnchor(IDC_STATIC1, ANCHOR(40,0), BOTTOM_RIGHT);
+	AddAnchor(IDC_ICON1, ANCHOR(40,0), ANCHOR(70,0));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
