@@ -183,8 +183,10 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
 	::GetWindowRect(layout.hWnd, &rect);
 #if (_WIN32_WINNT >= 0x0501)
 	// TODO: decide when to clip client only or non-client too (themes?)
-	if (real_WIN32_WINNT >= 0x501)
-		::SendMessage(layout.hWnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
+	// (leave disabled meanwhile, until I find a good solution)
+	// Note: wizard97 with watermark bitmap and themes won't look good!
+	// if (real_WIN32_WINNT >= 0x501)
+	//	::SendMessage(layout.hWnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
 #endif
 	::MapWindowPoints(NULL, GetResizableWnd()->m_hWnd, (LPPOINT)&rect, 2);
 
@@ -254,20 +256,44 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 		if (::IsWindowVisible(layout.hWnd))
 			ClipChildWindow(layout, pRegion);
 	}
-/*
+/* TODO: Has XP changed this??? It doesn't seem correct anymore!
+
 	// fix for RTL layouts (1 pixel of horz offset)
 	if (pWnd->GetExStyle() & WS_EX_LAYOUTRTL)
 		pRegion->OffsetRgn(-1,0);
 */
 }
 
+inline CWnd* GetRootParentWnd(CWnd* pWnd)
+{
+	// Do not call from other static initializers!!!
+	typedef HWND (WINAPI *pfGetAncestor)(HWND hwnd, UINT gaFlags);
+	static pfGetAncestor _dyn_GetAncestor = (pfGetAncestor)
+		::GetProcAddress(::GetModuleHandle(TEXT("USER32.DLL")), "GetAncestor");
+	if (_dyn_GetAncestor != NULL)
+		return CWnd::FromHandle(_dyn_GetAncestor(pWnd->GetSafeHwnd(), GA_ROOT));
+
+	// Api not present, emulate
+	if (!(pWnd->GetStyle() & WS_CHILD))
+		return NULL;
+	while (pWnd->GetStyle() & WS_CHILD)
+		pWnd = pWnd->GetParent();
+	return pWnd;
+}
+
 // enable/restore clipping on the specified DC when appropriate
 BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 {
-#if (_WIN32_WINNT >= 0x0501)
+#if (_WIN32_WINNT >= 0x0501 && !defined(RSZLIB_NO_XP_DOUBLE_BUFFER))
 	// clipping not necessary when double-buffering enabled
-	if (real_WIN32_WINNT >= 0x501)
-		return FALSE;
+	if (real_WIN32_WINNT >= 0x0501)
+	{
+		CWnd *pWnd = GetRootParentWnd(GetResizableWnd());
+		if (pWnd == NULL)
+			pWnd = GetResizableWnd();
+		if (pWnd->GetExStyle() & WS_EX_COMPOSITED)
+			return FALSE;
+	}
 #endif
 
 	HDC hDC = pDC->GetSafeHdc();
@@ -563,7 +589,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 
 	CWnd* pWnd = GetResizableWnd();
 
-#if(_WIN32_WINNT >= 0x0501)
+#if (_WIN32_WINNT >= 0x0501 && !defined(RSZLIB_NO_XP_DOUBLE_BUFFER))
 	// enable double-buffering on supported platforms
 	pWnd->ModifyStyleEx(0, WS_EX_COMPOSITED);
 #endif
@@ -590,9 +616,9 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT &lResult)
 {
 	// prevent useless complication when size is not changing
-	// prevent recursion when resetting the window region
+	// prevent recursion when resetting the window region (see below)
 	if ((lpncsp->lppos->flags & SWP_NOSIZE)
-#if(_WIN32_WINNT >= 0x0501)
+#if (_WIN32_WINNT >= 0x0501)
 		|| m_bNoRecursion
 #endif
 		)
@@ -607,7 +633,7 @@ void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS 
 	{
 		if (lResult != 0)
 		{
-			// default processing already uses an advanced validation policy
+			// default handler already uses an advanced validation policy, give up
 			return;
 		}
 		// default calculated client rect
@@ -621,15 +647,25 @@ void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS 
 
 		lResult = WVR_VALIDRECTS;
 
-// TODO: only if themed frame. what about custom wnd region?
-#if(_WIN32_WINNT >= 0x0501)
-		CWnd* pWnd = GetResizableWnd();
-		DWORD dwStyle = pWnd->GetStyle();
-		if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
+		// FIX: window region must be updated before the result of the
+		//		WM_NCCALCSIZE message gets processed by the system,
+		//		otherwise the old window region will clip the client
+		//		area during the preservation process.
+		//		This is especially evident on WinXP when the non-client
+		//		area is rendered with Visual Styles enabled and the
+		//		windows have a non rectangular region.
+#if (_WIN32_WINNT >= 0x0501)
+		// TODO: change rt check to only if themed frame. what about custom wnd region?
+		if (real_WIN32_WINNT >= 0x0501)
 		{
-			m_bNoRecursion = TRUE;
-			pWnd->SetWindowRgn(NULL, FALSE);
-			m_bNoRecursion = FALSE;
+			CWnd* pWnd = GetResizableWnd();
+			DWORD dwStyle = pWnd->GetStyle();
+			if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
+			{
+				m_bNoRecursion = TRUE;
+				pWnd->SetWindowRgn(NULL, FALSE);
+				m_bNoRecursion = FALSE;
+			}
 		}
 #endif
 	}
