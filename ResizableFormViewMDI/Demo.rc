@@ -67,7 +67,9 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
-IDR_DEMOTYPE            ICON    DISCARDABLE     "res\\DemoDoc.ico"
+IDR_DEMOTYPE            ICON    DISCARDABLE     "res\\DemoDoc0.ico"
+IDR_DEMOTYPE1           ICON    DISCARDABLE     "res\\DemoDoc1.ico"
+IDR_DEMOTYPE2           ICON    DISCARDABLE     "res\\DemoDoc2.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -94,6 +96,80 @@ BEGIN
 END
 
 IDR_DEMOTYPE MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
+        MENUITEM "&Chiudi",                     ID_FILE_CLOSE
+        MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Esci",                       ID_APP_EXIT
+    END
+    POPUP "&Modifica"
+    BEGIN
+        MENUITEM "&Annulla\tCtrl+Z",            ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Tag&lia\tCtrl+X",             ID_EDIT_CUT
+        MENUITEM "&Copia\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "&Incolla\tCtrl+V",            ID_EDIT_PASTE
+    END
+    POPUP "&Visualizza"
+    BEGIN
+        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
+    END
+    POPUP "Fi&nestra"
+    BEGIN
+        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
+        MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
+        MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
+        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
+    END
+END
+
+IDR_DEMOTYPE1 MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
+        MENUITEM "&Chiudi",                     ID_FILE_CLOSE
+        MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Esci",                       ID_APP_EXIT
+    END
+    POPUP "&Modifica"
+    BEGIN
+        MENUITEM "&Annulla\tCtrl+Z",            ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Tag&lia\tCtrl+X",             ID_EDIT_CUT
+        MENUITEM "&Copia\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "&Incolla\tCtrl+V",            ID_EDIT_PASTE
+    END
+    POPUP "&Visualizza"
+    BEGIN
+        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
+    END
+    POPUP "Fi&nestra"
+    BEGIN
+        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
+        MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
+        MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
+        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
+    END
+END
+
+IDR_DEMOTYPE2 MENU PRELOAD DISCARDABLE 
 BEGIN
     POPUP "&File"
     BEGIN
@@ -172,7 +248,7 @@ END
 
 IDD_DEMO_FORM DIALOGEX 0, 0, 200, 130
 STYLE WS_CHILD
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
                     WS_VSCROLL
@@ -291,7 +367,9 @@ END
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
     IDR_MAINFRAME           "Demo"
-    IDR_DEMOTYPE            "\nDemo\nDemo\n\n\nDemo.Document\nDemo Document"
+    IDR_DEMOTYPE            "\nDemo\nDemo\n\n\nDemo.Document0\nDemo Document 0"
+    IDR_DEMOTYPE1           "\nDynaSplit\nDynaSplit\n\n\nDemo.Document1\nDemo Document 1"
+    IDR_DEMOTYPE2           "\nStatSplit\nStatSplit\n\n\nDemo.Document2\nDemo Document 2"
 END
 
 STRINGTABLE PRELOAD DISCARDABLE 

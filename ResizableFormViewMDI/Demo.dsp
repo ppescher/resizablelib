@@ -148,6 +148,14 @@ SOURCE=.\ChildFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ChildMixedFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChildSplitFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Demo.cpp
 # End Source File
 # Begin Source File
@@ -178,6 +186,14 @@ SOURCE=.\StdAfx.cpp
 # Begin Source File
 
 SOURCE=.\ChildFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChildMixedFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChildSplitFrame.h
 # End Source File
 # Begin Source File
 
@@ -218,6 +234,14 @@ SOURCE=.\res\Demo.rc2
 # Begin Source File
 
 SOURCE=.\res\DemoDoc.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\ico00001.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\idr_demo.ico
 # End Source File
 # End Group
 # End Target

@@ -6,6 +6,8 @@
 #define IDD_DEMO_FORM                   101
 #define IDR_MAINFRAME                   128
 #define IDR_DEMOTYPE                    129
+#define IDR_DEMOTYPE1                   130
+#define IDR_DEMOTYPE2                   131
 #define IDC_EDIT1                       1000
 #define IDC_BUTTON1                     1002
 #define IDC_BUTTON2                     1003

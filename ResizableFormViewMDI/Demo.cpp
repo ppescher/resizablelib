@@ -6,6 +6,8 @@
 
 #include "MainFrm.h"
 #include "ChildFrm.h"
+#include "ChildSplitFrame.h"
+#include "ChildMixedFrame.h"
 #include "DemoDoc.h"
 #include "DemoView.h"
 
@@ -58,6 +60,18 @@ BOOL CDemoApp::InitInstance()
 		IDR_DEMOTYPE,
 		RUNTIME_CLASS(CDemoDoc),
 		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
+		RUNTIME_CLASS(CDemoView));
+	AddDocTemplate(pDocTemplate);
+	pDocTemplate = new CMultiDocTemplate(
+		IDR_DEMOTYPE1,
+		RUNTIME_CLASS(CDemoDoc),
+		RUNTIME_CLASS(CChildSplitFrame), // custom MDI child frame
+		RUNTIME_CLASS(CDemoView));
+	AddDocTemplate(pDocTemplate);
+	pDocTemplate = new CMultiDocTemplate(
+		IDR_DEMOTYPE2,
+		RUNTIME_CLASS(CDemoDoc),
+		RUNTIME_CLASS(CChildMixedFrame), // custom MDI child frame
 		RUNTIME_CLASS(CDemoView));
 	AddDocTemplate(pDocTemplate);
 

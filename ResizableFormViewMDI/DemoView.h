@@ -19,8 +19,8 @@ protected: // create from serialization only
 
 public:
 	//{{AFX_DATA(CDemoView)
-	enum{ IDD = IDD_DEMO_FORM };
-		// NOTE: the ClassWizard will add data members here
+	enum { IDD = IDD_DEMO_FORM };
+	CStatic	m_icon1;
 	//}}AFX_DATA
 
 // Attributes

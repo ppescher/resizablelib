@@ -44,12 +44,13 @@ void CDemoView::DoDataExchange(CDataExchange* pDX)
 {
 	CResizableFormView::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDemoView)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	DDX_Control(pDX, IDC_ICON1, m_icon1);
 	//}}AFX_DATA_MAP
 }
 
 void CDemoView::OnInitialUpdate()
 {
+	// preset layout
 	AddAnchor(IDC_EDIT1, TOP_LEFT, CSize(40,100));
 	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, CSize(40,100));
 	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, CSize(40,100));
@@ -68,9 +69,19 @@ void CDemoView::OnInitialUpdate()
 	// complete initialization
 	CResizableFormView::OnInitialUpdate();
 
-	// these two lines are optional
-	GetParentFrame()->RecalcLayout();
-	ResizeParentToFit();
+	// change icon and disable buttons
+	m_icon1.SetIcon((HICON)::GetClassLong(GetParentFrame()->GetSafeHwnd(), GCL_HICON));
+	if (GetParentFrame() != GetParent())
+	{
+		GetDlgItem(IDC_BUTTON1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON2)->EnableWindow(FALSE);
+	}
+	else // only if parent is a frame (not for splitters)!
+	{
+		// these two lines are optional
+		GetParentFrame()->RecalcLayout();
+		ResizeParentToFit();
+	}
 
 //	SetScaleToFitSize(GetTotalSize()); // scrollbars won't appear
 }
