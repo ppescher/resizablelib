@@ -46,8 +46,8 @@ BOOL CMyPropertySheet::OnInitDialog()
 	// set minimal size
 	CRect rc;
 	GetWindowRect(&rc);
-
 	SetMinTrackSize(CSize(GetMinWidth(), rc.Height()));
+	//ResetMinTrackSize();
 
 	// enable save/restore, with active page
 	EnableSaveRestore(_T("MyPropertySheet"), TRUE, TRUE);

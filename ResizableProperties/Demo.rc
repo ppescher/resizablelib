@@ -135,10 +135,10 @@ BEGIN
     CONTROL         "",IDC_PICTURE1,"Static",SS_GRAYRECT,95,4,85,49,
                     WS_EX_CLIENTEDGE
     CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,11,70,34,10
-    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,87,70,34,
+                    WS_TABSTOP,11,70,39,10
+    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,87,70,36,
                     10
-    COMBOBOX        IDC_COMBO1,138,59,42,31,CBS_DROPDOWN | CBS_SORT | 
+    COMBOBOX        IDC_COMBO1,138,59,42,40,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Button1",IDC_BUTTON1,138,76,42,14
     GROUPBOX        "Group",IDC_GROUP1,4,55,129,35
