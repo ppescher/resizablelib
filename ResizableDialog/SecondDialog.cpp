@@ -65,6 +65,7 @@ BOOL CSecondDialog::OnInitDialog()
 	m_wndToolBar.SetBarStyle(CBRS_ALIGN_TOP | CBRS_TOOLTIPS | CBRS_FLYBY);
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, 
 		CWnd::reposDefault, NULL, rect);
+	m_wndToolBar.SetWindowPos(&wndBottom,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
 	// set layout
 	AddAnchor(IDC_PICTURE1, TOP_LEFT, CSize(30,100));
