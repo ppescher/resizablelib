@@ -225,7 +225,7 @@ void CResizableSheet::ArrangeLayout()
 		objrc.top = objrc.bottom - oldHeight;
 
 		// add the control
-		DeferWindowPos(hdwp, *pWnd, NULL, objrc.left, objrc.top,
+		hdwp = DeferWindowPos(hdwp, *pWnd, NULL, objrc.left, objrc.top,
 			objrc.Width(), objrc.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 	else	// tabbed mode
@@ -240,11 +240,9 @@ void CResizableSheet::ArrangeLayout()
 		objrc.bottom = m_szLayoutTabLine.cy + wndrc.bottom;
 
 		// add the control, only resize
-		DeferWindowPos(hdwp, *pWnd, NULL, 0, 0, objrc.Width(),
-			objrc.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-
-		EndDeferWindowPos(hdwp);
-		hdwp = BeginDeferWindowPos(5);
+		hdwp = DeferWindowPos(hdwp, *pWnd, NULL, 0, 0, objrc.Width(),
+			objrc.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE |
+			SWP_NOCOPYBITS | SWP_DRAWFRAME);
 
 		// correct page position (for stacked tabs)
 		pWnd->GetWindowRect(&objrc);
@@ -270,7 +268,7 @@ void CResizableSheet::ArrangeLayout()
 	}
 
 	// add the page, with proper attributes
-	DeferWindowPos(hdwp, *pWnd, NULL, ptPagePos.x, ptPagePos.y, objrc.Width(),
+	hdwp = DeferWindowPos(hdwp, *pWnd, NULL, ptPagePos.x, ptPagePos.y, objrc.Width(),
 		objrc.Height(), dwPageFlags | SWP_NOZORDER | SWP_NOACTIVATE);
 
 	// arrange buttons position
@@ -292,7 +290,7 @@ void CResizableSheet::ArrangeLayout()
 		objrc.top = m_szLayoutButton[i].cy + wndrc.bottom;
 
 		// add the control, only move
-		DeferWindowPos(hdwp, *pWnd, NULL, objrc.left, objrc.top,
+		hdwp = DeferWindowPos(hdwp, *pWnd, NULL, objrc.left, objrc.top,
 			0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 

@@ -169,7 +169,7 @@ void CResizableLayout::ArrangeLayout()
 			if (newrc.Size() == objrc.Size())
 				flags |= SWP_NOSIZE;
 			
-			DeferWindowPos(hdwp, obj.hwnd, NULL, newrc.left, newrc.top,
+			hdwp = DeferWindowPos(hdwp, obj.hwnd, NULL, newrc.left, newrc.top,
 				newrc.Width(), newrc.Height(), flags);
 		}
 	}
