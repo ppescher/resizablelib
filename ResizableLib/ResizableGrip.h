@@ -31,16 +31,21 @@ private:
 
 		BOOL IsRTL();
 
+		CWnd* m_pResizableWnd;
+
 		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	};
 
 	CSizeGrip m_wndGrip;	// grip control
 	SIZE m_sizeGrip;		// holds grip size
+	int m_nShowCount;		// support for hiding the grip
 
 protected:
-	BOOL InitGrip();
-	void UpdateGripPos();
-	void ShowSizeGrip(BOOL bShow = TRUE);	// show or hide the size grip
+	BOOL CreateSizeGrip();	// create a size grip, initially visible
+	void UpdateSizeGrip();	// update the grip's visibility and position
+	void ShowSizeGrip(BOOL* pbStatus = NULL);	// show the size grip
+	void HideSizeGrip(BOOL* pbStatus = NULL);	// hide the size grip
+	BOOL IsSizeGripVisible();	// TRUE if grip is set to be visible
 
 	virtual CWnd* GetResizableWnd() = 0;
 
