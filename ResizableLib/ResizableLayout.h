@@ -75,14 +75,17 @@ class CResizableLayout
 	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;
 	int m_iFirstCallback;		// index of first callback
 
-	void EnumAndClipChildWindow(HWND hWnd, CDC* pDC);
+	void EnumAndClipChildWindow(HWND hWnd, CRgn* pRegion);
 
 protected:
 	virtual BOOL LikesClipping(HWND hWnd);
 	virtual BOOL NeedsRefresh(HWND hWnd);
 
-	// exclude child windows from the clipping region
-	void ClipChildren(CDC *pDC);
+	// support legacy code
+	void ClipChildren(CDC* pDC);
+
+	// clip child windows in the specified region
+	void GetClippingRegion(CRgn* pRegion);
 	
 	// override for scrollable or expanding parent windows
 	virtual void GetTotalClientRect(LPRECT lpRect);

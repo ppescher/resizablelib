@@ -193,13 +193,12 @@ void CResizableLayout::ArrangeLayout()
 	EndDeferWindowPos(hdwp);
 }
 
-void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CDC* pDC)
+void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CRgn* pRegion)
 {
 	// obtain window position
 	CRect rect;
 	::GetWindowRect(hWnd, &rect);
 	::MapWindowPoints(NULL, GetResizableWnd()->m_hWnd, (LPPOINT)&rect, 2);
-	pDC->DPtoLP(&rect);
 
 	// use window region if any
 	CRgn rgn;
@@ -217,12 +216,12 @@ void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CDC* pDC)
 
 	// go clipping?
 	if (LikesClipping(hWnd))
-		pDC->SelectClipRgn(&rgn, RGN_DIFF);
+		pRegion->CombineRgn(pRegion, &rgn, RGN_DIFF);
 	else
-		pDC->SelectClipRgn(&rgn, RGN_OR);
+		pRegion->CombineRgn(pRegion, &rgn, RGN_OR);
 }
 
-void CResizableLayout::ClipChildren(CDC *pDC)
+void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 {
 	// System's default clipping area is screen's size,
 	// not enough for max track size:
@@ -236,17 +235,24 @@ void CResizableLayout::ClipChildren(CDC *pDC)
 	// reset clipping region to the whole client area
 	CRect rect;
 	GetResizableWnd()->GetClientRect(&rect);
-	CRgn rgn;
-	rgn.CreateRectRgnIndirect(&rect);
-	pDC->SelectClipRgn(&rgn);
+	pRegion->CreateRectRgnIndirect(&rect);
 
 	// only clips anchored controls
 	for (int i=0; i<m_arrLayout.GetSize(); ++i)
 	{
 		HWND hWnd = m_arrLayout[i].hWnd;
 		if (hWnd != NULL && ::IsWindowVisible(hWnd))
-			EnumAndClipChildWindow(m_arrLayout[i].hWnd, pDC);
+			EnumAndClipChildWindow(m_arrLayout[i].hWnd, pRegion);
 	}
+}
+
+// support legacy code
+void CResizableLayout::ClipChildren(CDC* pDC)
+{
+	CRgn rgn;
+	GetClippingRegion(&rgn);
+	rgn.OffsetRgn(-pDC->GetWindowOrg());
+	pDC->SelectClipRgn(&rgn);
 }
 
 void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
