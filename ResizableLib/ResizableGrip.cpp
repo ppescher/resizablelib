@@ -99,7 +99,28 @@ void CResizableGrip::SetSizeGripVisibility(BOOL bVisible)
 		m_nShowCount = 0;
 }
 
-BOOL CResizableGrip::CreateSizeGrip()
+BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
+{
+	if (::IsWindow(m_wndGrip.m_hWnd))
+	{
+		if (nBkMode == OPAQUE)
+			m_wndGrip.SetTransparency(FALSE);
+		else if (nBkMode == TRANSPARENT)
+			m_wndGrip.SetTransparency(TRUE);
+		else
+			return FALSE;
+		return TRUE;
+	}
+	return FALSE;
+}
+
+void CResizableGrip::SetSizeGripShape(BOOL bTriangular)
+{
+	m_wndGrip.SetTriangularShape(bTriangular);
+}
+
+BOOL CResizableGrip::CreateSizeGrip(BOOL bVisible /*= TRUE*/,
+		BOOL bTriangular /*= TRUE*/, BOOL bTransparent /*= FALSE*/)
 {
 	// create grip
 	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
@@ -108,18 +129,11 @@ BOOL CResizableGrip::CreateSizeGrip()
 
 	if (bRet)
 	{
-		// set a triangular window region
-		rect.OffsetRect(-rect.TopLeft());
-		POINT aPoints[] =
-		{
-			{ rect.left, rect.bottom },
-			{ rect.right, rect.bottom },
-			{ rect.right, rect.top }
-		};
-		CRgn rgnGrip;
-		rgnGrip.CreatePolygonRgn(aPoints, 3, WINDING);
-		m_wndGrip.SetWindowRgn((HRGN)rgnGrip.Detach(), FALSE);
-
+		// set options
+		m_wndGrip.SetTriangularShape(bTriangular);
+		m_wndGrip.SetTransparency(bTransparent);
+		SetSizeGripVisibility(bVisible);
+	
 		// update position
 		UpdateSizeGrip();
 	}
@@ -127,12 +141,28 @@ BOOL CResizableGrip::CreateSizeGrip()
 	return bRet;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// CSizeGrip implementation
+
 BOOL CResizableGrip::CSizeGrip::IsRTL()
 {
 	return GetExStyle() & WS_EX_LAYOUTRTL;
 }
 
-LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs) 
+{
+	// set window size
+	m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
+	m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+
+	cs.cx = m_size.cx;
+	cs.cy = m_size.cy;
+	
+	return CScrollBar::PreCreateWindow(cs);
+}
+
+LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
+											  WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -147,6 +177,40 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARA
 			return HTBOTTOMLEFT;
 		else
 			return HTBOTTOMRIGHT;
+		break;
+
+	case WM_SETTINGCHANGE:
+		{
+			// update grip's size
+			CSize sizeOld = m_size;
+			m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
+			m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+
+			// resize transparency bitmaps
+			if (m_bTransparent)
+			{
+				CClientDC dc(this);
+
+				// destroy bitmaps
+				m_bmGrip.DeleteObject();
+				m_bmMask.DeleteObject();
+
+				// re-create bitmaps
+				m_bmGrip.CreateCompatibleBitmap(&dc, m_size.cx, m_size.cy);
+				m_bmMask.CreateBitmap(m_size.cx, m_size.cy, 1, 1, NULL);
+			}
+
+			// re-calc shape
+			if (m_bTriangular)
+				SetTriangularShape(m_bTriangular);
+
+			// reposition the grip
+			CRect rect;
+			GetWindowRect(rect);
+			rect.InflateRect(m_size.cx - sizeOld.cx, m_size.cy - sizeOld.cy, 0, 0);
+			::MapWindowPoints(NULL, GetParent()->GetSafeHwnd(), (LPPOINT)&rect, 2);
+			MoveWindow(rect, TRUE);
+		}
 		break;
 
 	case WM_DESTROY:
@@ -219,17 +283,28 @@ void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 	}
 }
 
-BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
+void CResizableGrip::CSizeGrip::SetTriangularShape(BOOL bEnable)
 {
-	if (::IsWindow(m_wndGrip.m_hWnd))
+	m_bTriangular = bEnable;
+
+	if (bEnable)
 	{
-		if (nBkMode == OPAQUE)
-			m_wndGrip.SetTransparency(FALSE);
-		else if (nBkMode == TRANSPARENT)
-			m_wndGrip.SetTransparency(TRUE);
-		else
-			return FALSE;
-		return TRUE;
+		// set a triangular window region
+		CRect rect;
+		GetWindowRect(rect);
+		rect.OffsetRect(-rect.TopLeft());
+		POINT arrPoints[] =
+		{
+			{ rect.left, rect.bottom },
+			{ rect.right, rect.bottom },
+			{ rect.right, rect.top }
+		};
+		CRgn rgnGrip;
+		rgnGrip.CreatePolygonRgn(arrPoints, 3, WINDING);
+		SetWindowRgn((HRGN)rgnGrip.Detach(), IsWindowVisible());
 	}
-	return FALSE;
+	else
+	{
+		SetWindowRgn((HRGN)NULL, IsWindowVisible());
+	}
 }
