@@ -135,6 +135,14 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\ResizableComboBox.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableComboLBox.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableDialog.cpp
 # End Source File
 # Begin Source File
@@ -182,6 +190,14 @@ SOURCE=.\StdAfx.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\ResizableComboBox.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableComboLBox.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\ResizableDialog.h
