@@ -57,6 +57,9 @@ void CDemoView::OnInitialUpdate()
 	// before OnInitialUpdate base implementation
 	AddAnchor(IDC_LIST1, TOP_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_GROUP1, TOP_LEFT, BOTTOM_LEFT);
+	AddAnchor(IDC_RADIO1, TOP_LEFT);
+	AddAnchor(IDC_RADIO2, MIDDLE_LEFT);
+	AddAnchor(IDC_RADIO3, BOTTOM_LEFT);
 
 	// complete initialization
 	CResizableFormView::OnInitialUpdate();
@@ -64,6 +67,7 @@ void CDemoView::OnInitialUpdate()
 	// these two lines are optional
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
+//	SetScaleToFitSize(GetTotalSize());
 }
 
 /////////////////////////////////////////////////////////////////////////////
