@@ -163,15 +163,7 @@ SOURCE=.\WizSheet.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=.\Baner16.bmp
-# End Source File
-# Begin Source File
-
 SOURCE=.\res\Baner16.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Baner256.bmp
 # End Source File
 # Begin Source File
 
@@ -183,15 +175,7 @@ SOURCE=.\res\Water16.bmp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Water16.bmp
-# End Source File
-# Begin Source File
-
 SOURCE=.\res\Water256.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Water256.bmp
 # End Source File
 # Begin Source File
 
