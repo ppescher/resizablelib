@@ -253,43 +253,40 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 		pRegion->OffsetRgn(-1,0);
 }
 
-void CResizableLayout::EraseBackground(CDC* pDC)
+// enable/restore clipping on the specified DC when appropriate
+void CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 {
+	HDC hDC = pDC->GetSafeHdc();
 	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
-	// retrieve the background brush
-	HBRUSH hBrush = NULL;
+	m_nOldClipRgn = -1; // invalid region by default
 
-	// is this a dialog box?
-	// (using class atom is quickier than using the class name)
-	ATOM atomWndClass = (ATOM)::GetClassLong(hWnd, GCW_ATOM);
-	if (atomWndClass == (ATOM)0x8002)
+	// Some controls (such as transparent toolbars and standard controls
+	// with XP theme enabled) send a WM_ERASEBKGND msg to the parent
+	// to draw themselves, in which case we must not enable clipping.
+
+	// We check that the window associated with the DC is the
+	// resizable window and not a child control.
+
+	if (!bUndo && (hWnd == ::WindowFromDC(hDC)))
 	{
-		// send a message to the dialog box
-		hBrush = (HBRUSH)::SendMessage(hWnd, WM_CTLCOLORDLG,
-			(WPARAM)pDC->GetSafeHdc(), (LPARAM)hWnd);
+		// save old DC clipping region
+		m_nOldClipRgn = ::GetClipRgn(hDC, m_hOldClipRgn);
+
+		// clip out supported child windows
+		CRgn rgnClip;
+		GetClippingRegion(&rgnClip);
+		::ExtSelectClipRgn(hDC, rgnClip, RGN_AND);
 	}
-	else
+
+	// restore old clipping region, only if modified and valid
+	if (bUndo && m_nOldClipRgn >= 0)
 	{
-		// take the background brush from the window's class
-		hBrush = (HBRUSH)::GetClassLong(hWnd, GCL_HBRBACKGROUND);
+		if (m_nOldClipRgn == 1)
+			::SelectClipRgn(hDC, m_hOldClipRgn);
+		else
+			::SelectClipRgn(hDC, NULL);
 	}
-
-	// fill the clipped background
-	CRgn rgn;
-	GetClippingRegion(&rgn);
-
-	::FillRgn(pDC->GetSafeHdc(), rgn, hBrush);
-}
-
-// support legacy code (will disappear in future versions)
-void CResizableLayout::ClipChildren(CDC* pDC)
-{
-	CRgn rgn;
-	GetClippingRegion(&rgn);
-	// the clipping region is in device units
-	rgn.OffsetRgn(-pDC->GetWindowOrg());
-	pDC->SelectClipRgn(&rgn);
 }
 
 void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
@@ -402,9 +399,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 	DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
-	if (layout.sWndClass == TOOLBARCLASSNAME && (style & TBSTYLE_TRANSPARENT))
-		return FALSE;
-	else if (layout.sWndClass == WC_BUTTON)
+	if (layout.sWndClass == WC_BUTTON)
 	{
 		CRect rect;
 		switch (style & _BS_TYPEMASK)
@@ -416,6 +411,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 			// ownerdraw buttons must return correct hittest code
 			// to notify their transparency to the system and this library
 			::GetWindowRect(layout.hWnd, &rect);
+			::SendMessage(layout.hWnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
 			if ( HTTRANSPARENT == ::SendMessage(layout.hWnd,
 				WM_NCHITTEST, 0, MAKELPARAM(rect.left, rect.top)) )
 				return FALSE;
