@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CResizableFormView, CFormView)
 	ON_WM_ERASEBKGND()
 	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -176,7 +177,6 @@ int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// create and init the size-grip
 	if (!CreateSizeGrip())
 		return -1;
-	SetSizeGripVisibility(TRUE);	// show by default
 
 	return 0;
 }
@@ -184,4 +184,11 @@ int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	MinMaxInfo(lpMMI);
+}
+
+void CResizableFormView::OnDestroy() 
+{
+	RemoveAllAnchors();
+
+	CFormView::OnDestroy();
 }
