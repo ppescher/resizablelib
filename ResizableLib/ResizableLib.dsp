@@ -440,6 +440,10 @@ SOURCE=.\Docs\header.html
 # End Source File
 # Begin Source File
 
+SOURCE=.\Docs\refman.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Docs\struct.txt
 # End Source File
 # Begin Source File
