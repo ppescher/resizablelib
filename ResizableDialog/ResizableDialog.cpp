@@ -183,7 +183,7 @@ void CResizableDialog::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 	if (st == "BUTTON")
 	{
 		DWORD style = GetWindowLong(wnd, GWL_STYLE);
-		if (style & BS_GROUPBOX)
+		if ((style & 0x0FL) == BS_GROUPBOX)
 			SetWindowLong(wnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
 	}
 
