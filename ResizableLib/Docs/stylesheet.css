@@ -32,10 +32,14 @@ CAPTION
 }
 TABLE
 {
-	margin: 0px 0px 0px 0px;
+	margin: 6px 0px 0px 0px;
 	font-size: 8pt;
 }
-A
+TABLE TABLE
+{
+	margin: 0px 0px 0px 0px;
+}
+A:link
 {
 	color: #0000FF;
 	text-decoration: underline;
@@ -43,6 +47,11 @@ A
 A:visited
 {
 	color: #0000FF;
+	text-decoration: underline;
+}
+A:hover
+{
+	color: #3165FF;
 	text-decoration: underline;
 }
 DIV.banner
@@ -101,11 +110,6 @@ A.codeRef
 	font-weight: normal;
 	color: #4444ee;
 }
-A:hover
-{
-	color: #3165FF;
-	text-decoration: underline;
-}
 DL.el
 {
 	margin-left: -1cm;
@@ -144,11 +148,11 @@ TD.md TD.md
 	border: none;
 	padding: 0px 0px 0px 0px;
 }
-TD.md CODE
+TD CODE
 {
 	border: none;
 	padding: 0px;
-	background-color: #eeeeff;
+	background-color: transparent;
 	color: #602020;
 }
 TD.mdname1
