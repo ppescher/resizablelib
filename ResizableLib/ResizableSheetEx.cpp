@@ -83,20 +83,27 @@ int CResizableSheetEx::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CPropertySheetEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// keep client area
-	CRect rect;
-	GetClientRect(&rect);
-	// set resizable style
-	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
-	// adjust size to reflect new style
-	::AdjustWindowRectEx(&rect, GetStyle(),
-		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-	SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
-		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
+	BOOL bIsChild = GetStyle() & WS_CHILD;
+	if (!bIsChild)
+	{
+		// keep client area
+		CRect rect;
+		GetClientRect(&rect);
+
+		// set resizable style
+		ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
+
+		// adjust size to reflect new style
+		::AdjustWindowRectEx(&rect, GetStyle(),
+			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+		SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
+			SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
+	}
 
 	// create and init the size-grip
-	if (!CreateSizeGrip())
+	if (!CreateSizeGrip(!bIsChild))
 		return -1;
+
 
 	return 0;
 }
