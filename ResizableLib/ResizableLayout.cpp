@@ -28,7 +28,13 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-#define BS_TYPEMASK SS_TYPEMASK
+// In August 2002 Platform SDK, some guy at MS thought it was time to
+// add the missing symbol BS_TYPEMASK, but forgot its original meaning
+// and so now he's telling us not to use that symbol because its
+// value is likely to change in the future SDK releases, including all
+// the BS_* style bits in the mask, not just the button's type as the
+// symbol's name suggests. So now we're forced to use another symbol!
+#define _BS_TYPEMASK 0x0000000FL
 
 void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 {
@@ -401,7 +407,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 	else if (layout.sWndClass == WC_BUTTON)
 	{
 		CRect rect;
-		switch (style & BS_TYPEMASK)
+		switch (style & _BS_TYPEMASK)
 		{
 		case BS_GROUPBOX:
 			return FALSE;
