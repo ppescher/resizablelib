@@ -259,14 +259,16 @@ BEGIN
     GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
     COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    ICON            IDR_DEMOTYPE,IDC_ICON1,95,40,20,20,SS_CENTERIMAGE | 
+    ICON            IDR_DEMOTYPE,IDC_ICON1,95,38,20,20,SS_CENTERIMAGE | 
                     SS_SUNKEN
     CONTROL         "SetMinTrackSize",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,117,39,67,10
+                    WS_GROUP,118,37,66,10
     CONTROL         "Free Size",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,
-                    52,45,10
-    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT | WS_GROUP,95,71,89,
-                    44,WS_EX_CLIENTEDGE
+                    49,66,10
+    CONTROL         "No Scrollbars",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,
+                    118,61,66,10
+    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT | WS_GROUP,95,78,89,
+                    37,WS_EX_CLIENTEDGE
 END
 
 

@@ -57,6 +57,8 @@ protected:
 	afx_msg void OnButton1();
 	afx_msg void OnRadio2();
 	afx_msg void OnRadio1();
+	virtual BOOL OnInitDialog();
+	afx_msg void OnRadio3();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

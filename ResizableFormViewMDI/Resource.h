@@ -17,6 +17,7 @@
 #define IDC_STATIC1                     1010
 #define IDC_GROUP1                      1011
 #define IDC_ICON1                       1012
+#define IDC_RADIO3                      1013
 
 // Next default values for new objects
 // 

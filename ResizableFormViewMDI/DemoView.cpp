@@ -24,6 +24,7 @@ BEGIN_MESSAGE_MAP(CDemoView, CResizableFormView)
 	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
 	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
 	ON_BN_CLICKED(IDC_RADIO1, OnRadio1)
+	ON_BN_CLICKED(IDC_RADIO3, OnRadio3)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -52,16 +53,8 @@ void CDemoView::DoDataExchange(CDataExchange* pDX)
 
 void CDemoView::OnInitialUpdate()
 {
-	// preset layout
-	AddAnchor(IDC_EDIT1, TOP_LEFT, CSize(40,100));
-	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, CSize(40,100));
-	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, CSize(40,100));
-	AddAnchor(IDC_GROUP1, CSize(40,0), BOTTOM_RIGHT);
-	AddAnchor(IDC_COMBO1, CSize(40,0), TOP_RIGHT);
-	AddAnchor(IDC_RADIO1, CSize(70,0), CSize(70,0));
-	AddAnchor(IDC_RADIO2, CSize(70,0), CSize(70,0));
-	AddAnchor(IDC_STATIC1, CSize(40,0), BOTTOM_RIGHT);
-	AddAnchor(IDC_ICON1, CSize(40,0), CSize(70,0));
+	// complete initialization
+	CResizableFormView::OnInitialUpdate();
 
 	// use template size as min track size
 	CRect rect(CPoint(0, 0), GetTotalSize());
@@ -69,9 +62,6 @@ void CDemoView::OnInitialUpdate()
 	SetMinTrackSize(rect.Size());
 
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO1);
-
-	// complete initialization
-	CResizableFormView::OnInitialUpdate();
 
 	// change icon and disable buttons
 	m_icon1.SetIcon((HICON)::GetClassLong(GetParentFrame()->GetSafeHwnd(), GCL_HICON));
@@ -86,8 +76,6 @@ void CDemoView::OnInitialUpdate()
 		GetParentFrame()->RecalcLayout();
 		ResizeParentToFit();
 	}
-
-//	SetScaleToFitSize(GetTotalSize()); // scrollbars won't appear
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -157,10 +145,18 @@ void CDemoView::DialogToFormView()
 	ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
 }
 
+void CDemoView::OnRadio3() 
+{
+	// scrollbars won't appear
+	SetScaleToFitSize(GetTotalSize());
+}
+
 void CDemoView::OnRadio2() 
 {
 	// allow any size
 	ResetMinTrackSize();
+	// reactivate scrollbars
+	SetScrollSizes(MM_TEXT, GetTotalSize());
 }
 
 void CDemoView::OnRadio1() 
@@ -169,4 +165,26 @@ void CDemoView::OnRadio1()
 	CRect rect(CPoint(0, 0), GetTotalSize());
 	CalcWindowRect(rect, CWnd::adjustOutside);
 	SetMinTrackSize(rect.Size());
+	// reactivate scrollbars
+	SetScrollSizes(MM_TEXT, GetTotalSize());
+}
+
+BOOL CDemoView::OnInitDialog() 
+{
+	CResizableFormView::OnInitDialog();
+	
+	// preset layout
+	AddAnchor(IDC_EDIT1, TOP_LEFT, CSize(40,100));
+	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, CSize(40,100));
+	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, CSize(40,100));
+	AddAnchor(IDC_GROUP1, CSize(40,0), BOTTOM_RIGHT);
+	AddAnchor(IDC_COMBO1, CSize(40,0), TOP_RIGHT);
+	AddAnchor(IDC_RADIO1, CSize(70,0), CSize(70,0));
+	AddAnchor(IDC_RADIO2, CSize(70,0), CSize(70,0));
+	AddAnchor(IDC_RADIO3, CSize(70,0), CSize(70,0));
+	AddAnchor(IDC_STATIC1, CSize(40,0), BOTTOM_RIGHT);
+	AddAnchor(IDC_ICON1, CSize(40,0), CSize(70,0));
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
 }
