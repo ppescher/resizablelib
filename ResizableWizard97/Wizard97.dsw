@@ -3,18 +3,6 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "ResizableLib"=..\ResizableLib\ResizableLib.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "Wizard97"=.\Wizard97.dsp - Package Owner=<4>
 
 Package=<5>
@@ -26,6 +14,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name ResizableLib
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ResizableLib"=..\ResizableLib\ResizableLib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
