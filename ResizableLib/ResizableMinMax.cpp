@@ -74,20 +74,31 @@ void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize
 	// ask the child window for track size
 	MINMAXINFO mmiChild = *lpMMI;
 	::SendMessage(hWndChild, WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
+	BOOL bRetMax = (lpMMI->ptMaxTrackSize.x != mmiChild.ptMaxTrackSize.x
+		|| lpMMI->ptMaxTrackSize.y != mmiChild.ptMaxTrackSize.y);
+	BOOL bRetMin = (lpMMI->ptMinTrackSize.x != mmiChild.ptMinTrackSize.x
+		|| lpMMI->ptMinTrackSize.y != mmiChild.ptMinTrackSize.y);
+
+	// add static extra size
 	mmiChild.ptMaxTrackSize = sizeExtra + mmiChild.ptMaxTrackSize;
 	mmiChild.ptMinTrackSize = sizeExtra + mmiChild.ptMinTrackSize;
 
 	// min size is the largest
-	lpMMI->ptMinTrackSize.x = __max(lpMMI->ptMinTrackSize.x,
-		mmiChild.ptMinTrackSize.x);
-	lpMMI->ptMinTrackSize.y = __max(lpMMI->ptMinTrackSize.y,
-		mmiChild.ptMinTrackSize.y);
-
+	if (bRetMin)
+	{
+		lpMMI->ptMinTrackSize.x = __max(lpMMI->ptMinTrackSize.x,
+			mmiChild.ptMinTrackSize.x);
+		lpMMI->ptMinTrackSize.y = __max(lpMMI->ptMinTrackSize.y,
+			mmiChild.ptMinTrackSize.y);
+	}
 	// max size is the shortest
-	lpMMI->ptMaxTrackSize.x = __min(lpMMI->ptMaxTrackSize.x,
-		mmiChild.ptMaxTrackSize.x);
-	lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
-		mmiChild.ptMaxTrackSize.y);
+	if (bRetMax)
+	{
+		lpMMI->ptMaxTrackSize.x = __min(lpMMI->ptMaxTrackSize.x,
+			mmiChild.ptMaxTrackSize.x);
+		lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
+			mmiChild.ptMaxTrackSize.y);
+	}
 }
 
 BOOL CResizableMinMax::CalcSizeExtra(HWND /*hWndChild*/, CSize /*sizeChild*/, CSize& /*sizeExtra*/)
@@ -102,16 +113,20 @@ void CResizableMinMax::ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild)
 	// ask the child window for track size
 	MINMAXINFO mmiChild = *lpMMI;
 	::SendMessage(hWndChild, WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
+	BOOL bRetMax = (lpMMI->ptMaxTrackSize.x != mmiChild.ptMaxTrackSize.x
+		|| lpMMI->ptMaxTrackSize.y != mmiChild.ptMaxTrackSize.y);
+	BOOL bRetMin = (lpMMI->ptMinTrackSize.x != mmiChild.ptMinTrackSize.x
+		|| lpMMI->ptMinTrackSize.y != mmiChild.ptMinTrackSize.y);
 
 	// use a callback to determine extra size
-	CSize sizeExtra;
-	BOOL bRetMax = CalcSizeExtra(hWndChild, mmiChild.ptMaxTrackSize, sizeExtra);
+	CSize sizeExtra(0, 0);
+	bRetMax = bRetMax && CalcSizeExtra(hWndChild, mmiChild.ptMaxTrackSize, sizeExtra);
 	mmiChild.ptMaxTrackSize = sizeExtra + mmiChild.ptMaxTrackSize;
-	BOOL bRetMin = CalcSizeExtra(hWndChild, mmiChild.ptMinTrackSize, sizeExtra);
+	bRetMin = bRetMin && CalcSizeExtra(hWndChild, mmiChild.ptMinTrackSize, sizeExtra);
 	mmiChild.ptMinTrackSize = sizeExtra + mmiChild.ptMinTrackSize;
 
 	// min size is the largest
-	if (bRetMax)
+	if (bRetMin)
 	{
 		lpMMI->ptMinTrackSize.x = __max(lpMMI->ptMinTrackSize.x,
 			mmiChild.ptMinTrackSize.x);
@@ -119,7 +134,7 @@ void CResizableMinMax::ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild)
 			mmiChild.ptMinTrackSize.y);
 	}
 	// max size is the shortest
-	if (bRetMin)
+	if (bRetMax)
 	{
 		lpMMI->ptMaxTrackSize.x = __min(lpMMI->ptMaxTrackSize.x,
 			mmiChild.ptMaxTrackSize.x);
