@@ -1,0 +1,428 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Italian (Italy) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
+#ifdef _WIN32
+LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 16, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.ita\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
+IDR_DEMOTYPE            ICON    DISCARDABLE     "res\\DemoDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Esci",                       ID_APP_EXIT
+    END
+    POPUP "&Visualizza"
+    BEGIN
+        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
+    END
+END
+
+IDR_DEMOTYPE MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
+        MENUITEM "&Chiudi",                     ID_FILE_CLOSE
+        MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Esci",                       ID_APP_EXIT
+    END
+    POPUP "&Modifica"
+    BEGIN
+        MENUITEM "&Annulla\tCtrl+Z",            ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Tag&lia\tCtrl+X",             ID_EDIT_CUT
+        MENUITEM "&Copia\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "&Incolla\tCtrl+V",            ID_EDIT_PASTE
+    END
+    POPUP "&Visualizza"
+    BEGIN
+        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
+    END
+    POPUP "Fi&nestra"
+    BEGIN
+        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
+        MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
+        MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
+        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Informazioni su Demo"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "Demo Versione 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2001",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_DEMO_FORM DIALOGEX 0, 0, 200, 130
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    WS_VSCROLL
+    CONTROL         "Static",IDC_STATIC,"Static",SS_SIMPLE | WS_GROUP,7,7,63,
+                    8
+    PUSHBUTTON      "Button1",IDC_BUTTON1,7,109,73,14
+    PUSHBUTTON      "Button2",IDC_BUTTON2,7,94,73,14
+    COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
+    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,118,39,
+                    38,10
+    CONTROL         "Radio2",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,52,
+                    38,10
+    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT,95,71,89,44,
+                    WS_EX_CLIENTEDGE
+    ICON            IDR_DEMOTYPE,IDC_ICON1,95,40,20,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041004B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Demo Applicazione MFC\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Demo\0"
+            VALUE "LegalCopyright", "Copyright (C) 2001\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Demo.EXE\0"
+            VALUE "ProductName", "Demo Applicazione\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x410, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_DEMO_FORM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 193
+        VERTGUIDE, 95
+        VERTGUIDE, 184
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 123
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DEMO_FORM DLGINIT
+BEGIN
+    IDC_COMBO1, 0x403, 7, 0
+0x7449, 0x6d65, 0x3120, "\000" 
+    IDC_COMBO1, 0x403, 7, 0
+0x7449, 0x6d65, 0x3220, "\000" 
+    IDC_COMBO1, 0x403, 7, 0
+0x7449, 0x6d65, 0x3320, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "Demo"
+    IDR_DEMOTYPE            "\nDemo\nDemo\n\n\nDemo.Document\nDemo Document"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "Demo"
+    AFX_IDS_IDLEMESSAGE     "Pronto"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EST"
+    ID_INDICATOR_CAPS       "MA"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "BS"
+    ID_INDICATOR_OVR        "SSC"
+    ID_INDICATOR_REC        "REG"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "Crea un nuovo documento\nNuovo"
+    ID_FILE_OPEN            "Apre un documento esistente\nApri"
+    ID_FILE_CLOSE           "Chiude il documento attivo\nChiudi"
+    ID_FILE_SAVE            "Salva il documento attivo\nSalva"
+    ID_FILE_SAVE_AS         "Salva il documento attivo con un nuovo nome\nSalva con nome"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_ABOUT            "Visualizza le informazioni sul programma, il numero di versione e le informazioni di copyright\nInformazioni su"
+    ID_APP_EXIT             "Esce dall'applicazione e chiede di salvare i documenti\nEsci"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Apre questo documento"
+    ID_FILE_MRU_FILE2       "Apre questo documento"
+    ID_FILE_MRU_FILE3       "Apre questo documento"
+    ID_FILE_MRU_FILE4       "Apre questo documento"
+    ID_FILE_MRU_FILE5       "Apre questo documento"
+    ID_FILE_MRU_FILE6       "Apre questo documento"
+    ID_FILE_MRU_FILE7       "Apre questo documento"
+    ID_FILE_MRU_FILE8       "Apre questo documento"
+    ID_FILE_MRU_FILE9       "Apre questo documento"
+    ID_FILE_MRU_FILE10      "Apre questo documento"
+    ID_FILE_MRU_FILE11      "Apre questo documento"
+    ID_FILE_MRU_FILE12      "Apre questo documento"
+    ID_FILE_MRU_FILE13      "Apre questo documento"
+    ID_FILE_MRU_FILE14      "Apre questo documento"
+    ID_FILE_MRU_FILE15      "Apre questo documento"
+    ID_FILE_MRU_FILE16      "Apre questo documento"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEXT_PANE            "Passa al riquadro della finestra successivo\nRiquadro successivo"
+    ID_PREV_PANE            "Ritorna al riquadro della finestra precedente\nRiquadro precedente"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WINDOW_NEW           "Apre un'altra finestra per il documento attivo\nNuova finestra"
+    ID_WINDOW_ARRANGE       "Dispone le icone nella parte inferiore della finestra\nDisponi icone"
+    ID_WINDOW_CASCADE       "Dispone le finestre sovrapponendole\nSovrapponi finestre"
+    ID_WINDOW_TILE_HORZ     "Dispone le finestre senza sovrapporle\nAffianca finestre"
+    ID_WINDOW_TILE_VERT     "Dispone le finestre senza sovrapporle\nAffianca finestre"
+    ID_WINDOW_SPLIT         "Divide la finestra attiva in riquadri\nDividi"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Cancella la selezione\nCancella"
+    ID_EDIT_CLEAR_ALL       "Cancella tutto\nCancella tutto"
+    ID_EDIT_COPY            "Copia la selezione e la pone negli Appunti\nCopia"
+    ID_EDIT_CUT             "Taglia la selezione e la pone negli Appunti\nTaglia"
+    ID_EDIT_FIND            "Trova il testo specificato\nTrova"
+    ID_EDIT_PASTE           "Inserisce il contenuto degli Appunti\nIncolla"
+    ID_EDIT_REPEAT          "Ripete l'ultima azione\nRipeti"
+    ID_EDIT_REPLACE         "Sostituisce il testo specifico con un testo differente\nSostituisci"
+    ID_EDIT_SELECT_ALL      "Seleziona l'intero documento\nSeleziona tutto"
+    ID_EDIT_UNDO            "Annulla l'ultima azione\nAnnulla"
+    ID_EDIT_REDO            "Ripristina l'azione precedentemente annullata\nRipristina"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_STATUS_BAR      "Mostra o nasconde la barra di stato\nMostra/nascondi barra di stato"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Modifica le dimensioni della finestra"
+    AFX_IDS_SCMOVE          "Modifica la posizione della finestra"
+    AFX_IDS_SCMINIMIZE      "Riduce la finestra ad icona"
+    AFX_IDS_SCMAXIMIZE      "Allarga la finestra a tutto schermo"
+    AFX_IDS_SCNEXTWINDOW    "Passa alla finestra successiva del documento "
+    AFX_IDS_SCPREVWINDOW    "Passa alla precedente finestra del documento"
+    AFX_IDS_SCCLOSE         "Chiude la finestra attiva e chiede di salvare i documenti"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Ripristina la finestra alle dimensioni normali"
+    AFX_IDS_SCTASKLIST      "Attiva l'Elenco dei task"
+    AFX_IDS_MDICHILD        "Attiva questa finestra"
+END
+
+#endif    // Italian (Italy) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
+#ifdef _WIN32
+LANGUAGE 16, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\Demo.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.ita\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

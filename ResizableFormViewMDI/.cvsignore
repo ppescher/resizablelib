@@ -1,0 +1,10 @@
+Debug
+Release
+*.clw
+*.aps
+*.ncb
+*.opt
+*.plg
+*.scc
+*.WW
+*.positions
