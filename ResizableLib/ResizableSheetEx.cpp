@@ -222,15 +222,17 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 	}
 	else	// tab mode
 	{
+		CTabCtrl* pTab = GetTabControl();
+		ASSERT(pTab != NULL);
+
+		// get tab position after resizing and calc page rect
 		CRect rectPage, rectSheet;
 		GetTotalClientRect(&rectSheet);
 
-		CTabCtrl* pTab = GetTabControl();
-		pTab->GetWindowRect(&rectPage);
+		VERIFY(GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage));
 		pTab->AdjustRect(FALSE, &rectPage);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
 
-		// use tab control
+		// set margins
 		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
 		layout.sizeMarginBR = rectPage.BottomRight() - rectSheet.BottomRight();
 	}

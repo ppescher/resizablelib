@@ -131,6 +131,7 @@ static UINT _propButtons[] =
 	IDOK, IDCANCEL, ID_APPLY_NOW, IDHELP,
 	ID_WIZBACK, ID_WIZNEXT, ID_WIZFINISH
 };
+const int _propButtonsCount = sizeof(_propButtons)/sizeof(UINT);
 
 // horizontal line in wizard mode
 #define ID_WIZLINE	ID_WIZFINISH+1
@@ -164,7 +165,7 @@ void CResizableSheet::PresetLayout()
 	m_sizePageBR = rectPage.BottomRight() - rectSheet.BottomRight();
 
 	// add all possible buttons, if they exist
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < _propButtonsCount; i++)
 	{
 		if (NULL != GetDlgItem(_propButtons[i]))
 			AddAnchor(_propButtons[i], BOTTOM_RIGHT);
@@ -177,7 +178,7 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 		return CResizableLayout::ArrangeLayoutCallback(layout);
 
 	// set layout info for active page
-	layout.hWnd = (HWND)::SendMessage(GetSafeHwnd(), PSM_GETCURRENTPAGEHWND, 0, 0);
+	layout.hWnd = (HWND)::SendMessage(m_hWnd, PSM_GETCURRENTPAGEHWND, 0, 0);
 	if (!::IsWindow(layout.hWnd))
 		return FALSE;
 
@@ -190,15 +191,17 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 	}
 	else	// tab mode
 	{
+		CTabCtrl* pTab = GetTabControl();
+		ASSERT(pTab != NULL);
+
+		// get tab position after resizing and calc page rect
 		CRect rectPage, rectSheet;
 		GetTotalClientRect(&rectSheet);
 
-		CTabCtrl* pTab = GetTabControl();
-		pTab->GetWindowRect(&rectPage);
+		VERIFY(GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage));
 		pTab->AdjustRect(FALSE, &rectPage);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
 
-		// use tab control
+		// set margins
 		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
 		layout.sizeMarginBR = rectPage.BottomRight() - rectSheet.BottomRight();
 	}
