@@ -122,9 +122,14 @@ void CResizableLayout::ArrangeLayout()
 	UINT uFlags;
 	LayoutInfo layout;
 	CRect rectParent, rectChild;
-	GetTotalClientRect(&rectParent); // get parent window's rect
 	int count = m_listLayout.GetCount();
 	int countCB = m_listLayoutCB.GetCount();
+
+	if (count + countCB == 0)
+		return;
+
+	// get parent window's rect
+	GetTotalClientRect(&rectParent);
 
 	// reposition child windows
 	HDWP hdwp = ::BeginDeferWindowPos(count + countCB);
