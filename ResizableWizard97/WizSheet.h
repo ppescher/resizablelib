@@ -20,9 +20,11 @@
 #endif // _MSC_VER > 1000
 
 #include "IntroPg.h"
+#include "IntroPgNew.h"
 #include "Int1.h"
 #include "Int2.h"
 #include "Complete.h"
+#include "CompleteNew.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CWizard97Sheet
@@ -33,19 +35,19 @@ class CWizard97Sheet : public CResizableSheetEx
 
 // Construction
 public:
-	CWizard97Sheet(UINT nIDCaption, CWnd* pParentWnd = NULL,
-			UINT iSelectPage = 0, HBITMAP hbmWatermark = NULL,
-			HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
-	CWizard97Sheet(LPCTSTR pszCaption, CWnd* pParentWnd = NULL,
-			UINT iSelectPage = 0, HBITMAP hbmWatermark = NULL,
-			HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
+	CWizard97Sheet(BOOL bOldStyle);
 
 // Attributes
 public:
 	CIntroPage m_Intro;
+	CIntroPageNew m_IntroNew;
 	CInterior1 m_Interior1;
 	CInterior2 m_Interior2;
 	CCompletion m_Completion;
+	CCompletionNew m_CompletionNew;
+
+	CBitmap m_bmpWatermark;
+	CBitmap m_bmpHeader;
 
 // Operations
 public:

@@ -21,41 +21,39 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CSampWizP
+// CWizard97Sheet
 
 IMPLEMENT_DYNAMIC(CWizard97Sheet, CResizableSheetEx)
 
-CWizard97Sheet::CWizard97Sheet(UINT nIDCaption, CWnd* pParentWnd,
-	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
-	HBITMAP hbmHeader)
-: CResizableSheetEx(nIDCaption, pParentWnd, iSelectPage,
-				  hbmWatermark, hpalWatermark, hbmHeader)
+CWizard97Sheet::CWizard97Sheet(BOOL bOldStyle)
 {
+	if (bOldStyle)
+	{
+		VERIFY(m_bmpWatermark.LoadBitmap(IDB_WATERMARK_OLD));
+		VERIFY(m_bmpHeader.LoadBitmap(IDB_BANNER_OLD));
+	}
+	else
+	{
+		VERIFY(m_bmpWatermark.LoadBitmap(IDB_WATERMARK_NEW));
+		VERIFY(m_bmpHeader.LoadBitmap(IDB_BANNER_NEW));
+	}
+
+	Construct(IDS_SAMPLEWIZARD, NULL, 0, m_bmpWatermark, NULL, m_bmpHeader);
+
 	// add all the pages of the wizard
-	AddPage(&m_Intro);
+	if (bOldStyle)
+		AddPage(&m_Intro);
+	else
+		AddPage(&m_IntroNew);
 	AddPage(&m_Interior1);
 	AddPage(&m_Interior2);
-	AddPage(&m_Completion);
+	if (bOldStyle)
+		AddPage(&m_Completion);
+	else
+		AddPage(&m_CompletionNew);
 
-	// set the WIZARD97 flag so we'll get the new look
-	m_psh.dwFlags |= PSH_WIZARD97;
-}
-
-CWizard97Sheet::CWizard97Sheet(LPCTSTR pszCaption, CWnd* pParentWnd,
-	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
-	HBITMAP hbmHeader)
-: CResizableSheetEx(pszCaption, pParentWnd, iSelectPage,
-					  hbmWatermark, hpalWatermark, hbmHeader)
-
-{
-	// add all the pages of the wizard
-	AddPage(&m_Intro);
-	AddPage(&m_Interior1);
-	AddPage(&m_Interior2);
-	AddPage(&m_Completion);
-
-	// set the WIZARD97 flag so we'll get the new look
-	m_psh.dwFlags |= PSH_WIZARD97;
+	// use the right flag for Wizard97 style
+	m_psh.dwFlags |= bOldStyle ? PSH_IE4WIZARD97|PSH_STRETCHWATERMARK : PSH_IE5WIZARD97;
 }
 
 CWizard97Sheet::~CWizard97Sheet()

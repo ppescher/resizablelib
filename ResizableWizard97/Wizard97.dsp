@@ -148,6 +148,10 @@ SOURCE=.\Complete.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\CompleteNew.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Int1.cpp
 # End Source File
 # Begin Source File
@@ -157,6 +161,10 @@ SOURCE=.\Int2.cpp
 # Begin Source File
 
 SOURCE=.\IntroPg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\IntroPgNew.cpp
 # End Source File
 # Begin Source File
 
@@ -185,6 +193,10 @@ SOURCE=.\Complete.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CompleteNew.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Int1.h
 # End Source File
 # Begin Source File
@@ -194,6 +206,10 @@ SOURCE=.\Int2.h
 # Begin Source File
 
 SOURCE=.\IntroPg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\IntroPgNew.h
 # End Source File
 # Begin Source File
 

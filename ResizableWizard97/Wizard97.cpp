@@ -45,62 +45,21 @@ CWizard97App::CWizard97App()
 
 CWizard97App theApp;
 
-static BOOL Is256ColorSupported()
-{
-	BOOL bRetval = FALSE;
-
-	// return TRUE if screen deivce supports 256 colors or better
-
-	HDC hdc = GetDC(NULL);
-	if (hdc != NULL)
-	{
-		if(GetDeviceCaps(hdc, BITSPIXEL) >= 8)
-			bRetval = TRUE;
-		ReleaseDC(NULL, hdc);
-	}
-
-	return bRetval;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CWizard97App initialization
 
 BOOL CWizard97App::InitInstance()
 {
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
-
-	CBitmap bmpWatermark;
-	CBitmap bmpHeader;
-
-	if (Is256ColorSupported())
+	// use old style wizard (ala Wizard97 with IE4)
 	{
-		VERIFY(bmpWatermark.LoadBitmap(IDB_WATERMARK256));
-		VERIFY(bmpHeader.LoadBitmap(IDB_BANNER256));
-	}
-	else
-	{
-		VERIFY(bmpWatermark.LoadBitmap(IDB_WATERMARK16));
-		VERIFY(bmpHeader.LoadBitmap(IDB_BANNER16));
+		CWizard97Sheet dlg(TRUE);
+		dlg.DoModal();
 	}
 
-	CWizard97Sheet dlg(IDS_SAMPLEWIZARD, NULL, 0, bmpWatermark, NULL, bmpHeader);
-	dlg.m_psh.hInstance = ::GetModuleHandle(NULL);
-	m_pMainWnd = &dlg;
-	
-	int nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
+	// display a new style wizard (ala Windows 2000)
 	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
+		CWizard97Sheet dlg(FALSE);
+		dlg.DoModal();
 	}
 
 	// Since the dialog has been closed, return FALSE so that we exit the
