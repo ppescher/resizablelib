@@ -16,6 +16,7 @@
 
 #include "stdafx.h"
 #include "ResizableLayout.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -255,8 +256,10 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 {
 #if (_WIN32_WINNT >= 0x0501)
 	// clipping not necessary when double-buffering enabled
-	pDC; bUndo;
-#else
+	if (real_WIN32_WINNT >= 0x501)
+		return FALSE;
+#endif
+
 	HDC hDC = pDC->GetSafeHdc();
 	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
@@ -292,7 +295,7 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 		
 		return TRUE;
 	}
-#endif
+
 	return FALSE;
 }
 
