@@ -19,8 +19,12 @@ CFG=Demo - Win32 Debug Static
 !MESSAGE 
 !MESSAGE "Demo - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "Demo - Win32 Debug" (based on "Win32 (x86) Application")
-!MESSAGE "Demo - Win32 Debug Static" (based on "Win32 (x86) Application")
 !MESSAGE "Demo - Win32 Release Static" (based on "Win32 (x86) Application")
+!MESSAGE "Demo - Win32 Debug Static" (based on "Win32 (x86) Application")
+!MESSAGE "Demo - Win32 Release Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "Demo - Win32 Debug Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "Demo - Win32 Release Static Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "Demo - Win32 Debug Static Unicode" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -42,7 +46,6 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
-# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /MD /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
@@ -54,9 +57,8 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
+# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386 /opt:ref
 # ADD LINK32 /nologo /subsystem:windows /machine:I386 /opt:ref
-# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Demo - Win32 Debug"
 
@@ -71,7 +73,8 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
@@ -83,44 +86,17 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
-!ELSEIF  "$(CFG)" == "Demo - Win32 Debug Static"
-
-# PROP BASE Use_MFC 6
-# PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Demo___Win32_Debug_Static"
-# PROP BASE Intermediate_Dir "Demo___Win32_Debug_Static"
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 5
-# PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Debug_Static"
-# PROP Intermediate_Dir "Debug_Static"
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x410 /d "_DEBUG"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-
 !ELSEIF  "$(CFG)" == "Demo - Win32 Release Static"
 
 # PROP BASE Use_MFC 5
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "Demo___Win32_Release_Static"
-# PROP BASE Intermediate_Dir "Demo___Win32_Release_Static"
-# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Output_Dir "Release_Static"
+# PROP BASE Intermediate_Dir "Release_Static"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 5
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release_Static"
 # PROP Intermediate_Dir "Release_Static"
-# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /MT /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
@@ -133,9 +109,137 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386 /opt:ref
-# SUBTRACT BASE LINK32 /pdb:none
 # ADD LINK32 /nologo /subsystem:windows /machine:I386 /opt:ref
-# SUBTRACT LINK32 /pdb:none
+
+!ELSEIF  "$(CFG)" == "Demo - Win32 Debug Static"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug_Static"
+# PROP BASE Intermediate_Dir "Debug_Static"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug_Static"
+# PROP Intermediate_Dir "Debug_Static"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_AFXDLL" /FR /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT CPP /Fr
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x410 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+
+!ELSEIF  "$(CFG)" == "Demo - Win32 Release Unicode"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release_Unicode"
+# PROP BASE Intermediate_Dir "Release_Unicode"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release_Unicode"
+# PROP Intermediate_Dir "Release_Unicode"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x410 /d "NDEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x410 /d "NDEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /opt:ref
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /opt:ref
+
+!ELSEIF  "$(CFG)" == "Demo - Win32 Debug Unicode"
+
+# PROP BASE Use_MFC 6
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug_Unicode"
+# PROP BASE Intermediate_Dir "Debug_Unicode"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 6
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug_Unicode"
+# PROP Intermediate_Dir "Debug_Unicode"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT BASE CPP /Fr
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT CPP /Fr
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
+# ADD RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
+
+!ELSEIF  "$(CFG)" == "Demo - Win32 Release Static Unicode"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "Release_Static_Unicode"
+# PROP BASE Intermediate_Dir "Release_Static_Unicode"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release_Static_Unicode"
+# PROP Intermediate_Dir "Release_Static_Unicode"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MT /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MT /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x410 /d "NDEBUG"
+# ADD RSC /l 0x410 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /opt:ref
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /opt:ref
+
+!ELSEIF  "$(CFG)" == "Demo - Win32 Debug Static Unicode"
+
+# PROP BASE Use_MFC 5
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "Debug_Static_Unicode"
+# PROP BASE Intermediate_Dir "Debug_Static_Unicode"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 5
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug_Static_Unicode"
+# PROP Intermediate_Dir "Debug_Static_Unicode"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MTd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT BASE CPP /Fr
+# ADD CPP /nologo /MTd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_UNICODE" /Yu"stdafx.h" /FD /GZ /c
+# SUBTRACT CPP /Fr
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x410 /d "_DEBUG"
+# ADD RSC /l 0x410 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -143,8 +247,12 @@ LINK32=link.exe
 
 # Name "Demo - Win32 Release"
 # Name "Demo - Win32 Debug"
-# Name "Demo - Win32 Debug Static"
 # Name "Demo - Win32 Release Static"
+# Name "Demo - Win32 Debug Static"
+# Name "Demo - Win32 Release Unicode"
+# Name "Demo - Win32 Debug Unicode"
+# Name "Demo - Win32 Release Static Unicode"
+# Name "Demo - Win32 Debug Static Unicode"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
