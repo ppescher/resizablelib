@@ -205,6 +205,10 @@ void CResizableSheet::ArrangeLayout()
 	// 1 active page
 	HDWP hdwp = BeginDeferWindowPos(6);
 
+	// assume wizard mode
+	CPoint ptPagePos(0,0);	// holds a page's top-left corner
+	DWORD dwPageFlags = SWP_NOMOVE;
+
 	if (m_psh.dwFlags & PSH_WIZARD)	// wizard mode
 	{
 		// get wizard line's bottom-right corner
@@ -236,6 +240,16 @@ void CResizableSheet::ArrangeLayout()
 		// add the control, only resize
 		DeferWindowPos(hdwp, *pWnd, NULL, 0, 0, objrc.Width(),
 			objrc.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+		EndDeferWindowPos(hdwp);
+		hdwp = BeginDeferWindowPos(5);
+
+		// correct page position (for stacked tabs)
+		pWnd->GetWindowRect(&objrc);
+		((CTabCtrl*)pWnd)->AdjustRect(FALSE, &objrc);
+		ScreenToClient(&objrc);
+		ptPagePos = objrc.TopLeft();
+		dwPageFlags = 0;
 	}
 
 	// get child dialog's bottom-right corner
@@ -247,9 +261,15 @@ void CResizableSheet::ArrangeLayout()
 	objrc.right = m_szLayoutPage.cx + wndrc.right;
 	objrc.bottom = m_szLayoutPage.cy + wndrc.bottom;
 
-	// add the control, only resize
-	DeferWindowPos(hdwp, *pWnd, NULL, 0, 0, objrc.Width(),
-		objrc.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+	if (dwPageFlags == 0)	// correct pos
+	{
+		objrc.left = ptPagePos.x;
+		objrc.top = ptPagePos.y;
+	}
+
+	// add the page, with proper attributes
+	DeferWindowPos(hdwp, *pWnd, NULL, ptPagePos.x, ptPagePos.y, objrc.Width(),
+		objrc.Height(), dwPageFlags | SWP_NOZORDER | SWP_NOACTIVATE);
 
 	// arrange buttons position
 	for (int i = 0; i < 7; i++)

@@ -19,6 +19,8 @@
 //  
 /////////////////////////////////////////////////////////////////////////////
 
+#include <afxtempl.h>
+
 // useful compatibility constants (the only one required is NOANCHOR)
 
 #if !defined(__SIZE_ANCHORS_)
@@ -55,8 +57,6 @@ private:
 
 	BOOL m_bInitDone;			// if all internal vars initialized
 
-	CPtrList m_plLayoutList;	// list of repositionable controls
-
 	class Layout
 	{
 	public:
@@ -66,14 +66,21 @@ private:
 		BOOL need_refresh;
 
 		// upper-left corner
-		SIZE tl_type;
-		SIZE tl_margin;
+		CSize tl_type;
+		CSize tl_margin;
 		
 		// bottom-right corner
-		SIZE br_type;
-		SIZE br_margin;
+		CSize br_type;
+		CSize br_margin;
 	
 	public:
+		Layout()
+			: hwnd(NULL), adj_hscroll(FALSE), need_refresh(FALSE),
+			tl_type(0,0), tl_margin(0,0),
+			br_type(0,0), br_margin(0,0)
+		{
+		};
+
 		Layout(HWND hw, SIZE tl_t, SIZE tl_m, 
 			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
 		{
@@ -89,6 +96,8 @@ private:
 			br_margin = br_m;
 		};
 	};
+
+	CArray<Layout, Layout&> m_arrLayout;	// list of repositionable controls
 
 // Operations
 public:

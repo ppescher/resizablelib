@@ -58,5 +58,6 @@ void CDemoDlg::OnButton2()
 {
 	// property sheet (without help)
 	CMyPropertySheet propSheet;
+//	propSheet.EnableStackedTabs(FALSE);
 	propSheet.DoModal();
 }
