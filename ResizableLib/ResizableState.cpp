@@ -55,19 +55,16 @@ BOOL CResizableState::SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 	
-	RECT& rc = wp.rcNormalPosition;	// alias
+	// use workspace coordinates
+	RECT& rc = wp.rcNormalPosition;
 
 	if (bRectOnly)	// save size/pos only (normal state)
 	{
-		// use screen coordinates
-		GetResizableWnd()->GetWindowRect(&rc);
-
 		data.Format(PLACEMENT_FMT, rc.left, rc.top,
-			rc.right, rc.bottom, SW_NORMAL, 0);
+			rc.right, rc.bottom, SW_SHOWNORMAL, 0);
 	}
 	else	// save also min/max state
 	{
-		// use workspace coordinates
 		data.Format(PLACEMENT_FMT, rc.left, rc.top,
 			rc.right, rc.bottom, wp.showCmd, wp.flags);
 	}
@@ -90,17 +87,17 @@ BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 
-	RECT& rc = wp.rcNormalPosition;	// alias
+	// use workspace coordinates
+	RECT& rc = wp.rcNormalPosition;
 
 	if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
 		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags) == 6)
 	{
 		if (bRectOnly)	// restore size/pos only
 		{
-			CRect rect(rc);
-			return GetResizableWnd()->SetWindowPos(NULL, rect.left, rect.top,
-				rect.Width(), rect.Height(), SWP_NOACTIVATE | SWP_NOZORDER |
-				SWP_NOREPOSITION);
+			wp.showCmd = SW_SHOWNORMAL;
+			wp.flags = 0;
+			return GetResizableWnd()->SetWindowPlacement(&wp);
 		}
 		else	// restore also min/max state
 		{
