@@ -32,6 +32,8 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+#define BS_TYPEMASK SS_TYPEMASK
+
 void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 {
 	CWnd* pParent = GetResizableWnd();
@@ -47,21 +49,20 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	CString st;
 	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
-	st.MakeUpper();
 
 	// add the style 'clipsiblings' to a GroupBox
 	// to avoid unnecessary repainting of controls inside
-	if (st == "BUTTON")
+	if (st == "Button")
 	{
 		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
-		if ((style & 0x0FL) == BS_GROUPBOX)
+		if ((style & BS_TYPEMASK) == BS_GROUPBOX)
 			SetWindowLong(hWnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
 	}
 
 	// window classes that don't redraw client area correctly
 	// when the hor scroll pos changes due to a resizing
 	BOOL bHScroll = FALSE;
-	if (st == "LISTBOX")
+	if (st == "ListBox")
 		bHScroll = TRUE;
 
 	// window classes that need refresh when resized
@@ -219,7 +220,6 @@ void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CDC* pDC)
 
 	// go clipping?
 	if (LikesClipping(hWnd))
-//		pDC->ExcludeClipRect(&rect);
 		pDC->SelectClipRgn(&rgn, RGN_DIFF);
 	else
 		pDC->SelectClipRgn(&rgn, RGN_OR);
@@ -247,11 +247,12 @@ BOOL CResizableLayout::NeedsRefresh(HWND hWnd)
 	CString st;
 	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
-	st.MakeUpper();
+
+	// optimistic, no need to refresh
+	BOOL bRefresh = FALSE;
 
 	// window classes that need refresh when resized
-	BOOL bRefresh = FALSE;
-	if (st == "STATIC")
+	if (st == "Static")
 	{
 		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
 
@@ -288,14 +289,15 @@ BOOL CResizableLayout::LikesClipping(HWND hWnd)
 	CString st;
 	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
-	st.MakeUpper();
 
 	DWORD style = GetWindowLong(hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
-	if (st == "BUTTON" && (style & 0x0FL) == BS_GROUPBOX)
+	if (st == TOOLBARCLASSNAME && (style & TBSTYLE_TRANSPARENT))
 		return FALSE;
-	if (st == "STATIC")
+	if (st == "Button" && (style & BS_TYPEMASK) == BS_GROUPBOX)
+		return FALSE;
+	if (st == "Static")
 	{
 		switch (style & SS_TYPEMASK)
 		{
@@ -315,5 +317,7 @@ BOOL CResizableLayout::LikesClipping(HWND hWnd)
 			return FALSE;
 		}
 	}
+
+	// assume the others like clipping
 	return TRUE;
 }
