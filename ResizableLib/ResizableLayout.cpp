@@ -62,6 +62,9 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	::GetWindowRect(hWnd, &rectChild);
 	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
 
+	// adjust position, if client area has been scrolled
+	rectChild.OffsetRect(-rectParent.TopLeft());
+
 	// go calculate margins
 	CSize sizeMarginTL, sizeMarginBR;
 
