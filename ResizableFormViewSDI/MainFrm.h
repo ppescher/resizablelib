@@ -29,7 +29,7 @@ public:
 	//{{AFX_VIRTUAL(CMainFrame)
 	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-	virtual void RecalcLayout(BOOL bNotify = TRUE);
+	virtual void ActivateFrame(int nCmdShow = -1);
 	//}}AFX_VIRTUAL
 
 // Implementation

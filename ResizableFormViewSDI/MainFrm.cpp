@@ -96,10 +96,10 @@ void CMainFrame::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
 
-
-void CMainFrame::RecalcLayout(BOOL bNotify) 
+void CMainFrame::ActivateFrame(int nCmdShow) 
 {
-//	afxDump << m_rectBorder << "\n";
+	if ( EnableSaveRestore(_T("Demo SDI Wnd")) )
+		return; // successful read, don't call base class
 
-	CResizableFrame::RecalcLayout(bNotify);
+	CResizableFrame::ActivateFrame(nCmdShow);
 }
