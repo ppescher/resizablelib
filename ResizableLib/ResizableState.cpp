@@ -27,9 +27,11 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+CString CResizableState::m_sDefaultStorePath(_T("ResizableState"));
+
 CResizableState::CResizableState()
 {
-
+	m_sStorePath = m_sDefaultStorePath;
 }
 
 CResizableState::~CResizableState()
@@ -37,74 +39,33 @@ CResizableState::~CResizableState()
 
 }
 
-
-// used to save/restore window's size and position
-// either in the registry or a private .INI file
-// depending on your application settings
-
-#define PLACEMENT_ENT	_T("WindowPlacement")
-#define PLACEMENT_FMT 	_T("%d,%d,%d,%d,%d,%d,%d,%d")
-
-BOOL CResizableState::SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
+void CResizableState::SetDefaultStateStore(LPCTSTR szPath)
 {
-	CString data;
-	WINDOWPLACEMENT wp;
-
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-	if (!GetResizableWnd()->GetWindowPlacement(&wp))
-		return FALSE;
-	
-	// use workspace coordinates
-	RECT& rc = wp.rcNormalPosition;
-
-	if (bRectOnly)	// save size/pos only (normal state)
-	{
-		data.Format(PLACEMENT_FMT, rc.left, rc.top,
-			rc.right, rc.bottom, SW_SHOWNORMAL, 0, 0, 0);
-	}
-	else	// save also min/max state
-	{
-		data.Format(PLACEMENT_FMT, rc.left, rc.top,
-			rc.right, rc.bottom, wp.showCmd, wp.flags,
-			wp.ptMinPosition.x, wp.ptMinPosition.y);
-	}
-
-	return AfxGetApp()->WriteProfileString(pszSection, PLACEMENT_ENT, data);
+	m_sDefaultStorePath = szPath;
 }
 
-BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
+LPCTSTR CResizableState::GetDefaultStateStore()
 {
-	CString data;
-	WINDOWPLACEMENT wp;
+	return m_sDefaultStorePath;
+}
 
-	data = AfxGetApp()->GetProfileString(pszSection, PLACEMENT_ENT);
-	
-	if (data.IsEmpty())	// never saved before
-		return FALSE;
-	
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-	if (!GetResizableWnd()->GetWindowPlacement(&wp))
-		return FALSE;
+void CResizableState::SetStateStore(LPCTSTR szPath)
+{
+	m_sStorePath = szPath;
+}
 
-	// use workspace coordinates
-	RECT& rc = wp.rcNormalPosition;
+LPCTSTR CResizableState::GetStateStore()
+{
+	return m_sStorePath;
+}
 
-	if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
-		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags,
-		&wp.ptMinPosition.x, &wp.ptMinPosition.y) == 8)
-	{
-		if (bRectOnly)	// restore size/pos only
-		{
-			wp.showCmd = SW_SHOWNORMAL;
-			wp.flags = 0;
-			return GetResizableWnd()->SetWindowPlacement(&wp);
-		}
-		else	// restore also min/max state
-		{
-			return GetResizableWnd()->SetWindowPlacement(&wp);
-		}
-	}
-	return FALSE;
+BOOL CResizableState::WriteState(LPCTSTR szId, LPCTSTR szState)
+{
+	return AfxGetApp()->WriteProfileString(GetStateStore(), szId, szState);
+}
+
+BOOL CResizableState::ReadState(LPCTSTR szId, CString &rsState)
+{
+	rsState = AfxGetApp()->GetProfileString(GetStateStore(), szId);
+	return !rsState.IsEmpty();
 }

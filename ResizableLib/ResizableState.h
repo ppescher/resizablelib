@@ -23,12 +23,19 @@
 
 class CResizableState  
 {
-protected:
-	// non-zero if successful
-	BOOL LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
-	BOOL SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
+	static CString m_sDefaultStorePath;
+	CString m_sStorePath;
 
-	virtual CWnd* GetResizableWnd() const = 0;
+protected:
+	static LPCTSTR GetDefaultStateStore();
+	static void SetDefaultStateStore(LPCTSTR szPath);
+
+	LPCTSTR GetStateStore();
+	void SetStateStore(LPCTSTR szPath);
+
+	// overridable to customize state persistance method
+	virtual BOOL ReadState(LPCTSTR szId, CString& rsState);
+	virtual BOOL WriteState(LPCTSTR szId, LPCTSTR szState);
 
 public:
 	CResizableState();
