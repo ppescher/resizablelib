@@ -434,7 +434,6 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 		case SS_LEFT:
 		case SS_CENTER:
 		case SS_RIGHT:
-		case SS_SIMPLE:
 		case SS_LEFTNOWORDWRAP:
 			// text
 		case SS_BLACKRECT:
@@ -577,13 +576,10 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 
 void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT &lResult)
 {
-#if (_WIN32_WINNT >= 0x0501)
-	if (m_bNoRecursion)
-	{
-		// prevent recursion when resetting the window region
+	// prevent useless complication when size is not changing
+	// prevent recursion when resetting the window region
+	if (m_bNoRecursion || (lpncsp->lppos->flags & SWP_NOSIZE))
 		return;
-	}
-#endif
 
 	if (!bAfterDefault)
 	{
@@ -608,14 +604,14 @@ void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS 
 
 		lResult = WVR_VALIDRECTS;
 
-#if (_WIN32_WINNT >= 0x0501)
+// TODO: only if themed frame. what about custom wnd region?
 		CWnd* pWnd = GetResizableWnd();
-		if (!(pWnd->GetStyle() & WS_CHILD))
+		DWORD dwStyle = pWnd->GetStyle();
+		if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
 		{
 			m_bNoRecursion = TRUE;
 			pWnd->SetWindowRgn(NULL, FALSE);
 			m_bNoRecursion = FALSE;
 		}
-#endif
 	}
 }
