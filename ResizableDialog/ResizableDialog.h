@@ -1,5 +1,5 @@
-#if !defined(AFX_RESIZABLEDIALOG_H__21FE3CD1_979B_11D3_A80F_525400E146A5__INCLUDED_)
-#define AFX_RESIZABLEDIALOG_H__21FE3CD1_979B_11D3_A80F_525400E146A5__INCLUDED_
+#if !defined(AFX_RESIZABLEDIALOG_H__INCLUDED_)
+#define AFX_RESIZABLEDIALOG_H__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -8,25 +8,25 @@
 // ResizableDialog.h : header file
 //
 /////////////////////////////////////////////////////////////////////////////
+//
 // Copyright (C) 2000 by Paolo Messina
 // (ppescher@yahoo.com)
-// 
-// This file may be redistributed unmodified by any means PROVIDING it
-// is not sold for profit without the author written consent, and 
-// providing that this notice and the author name is included.
-// If the code in this file is used in any commercial application 
-// a simple credit would be nice.
 //
-// This file is provided "as is" with no expressed or implied warranty.
-// The author accepts no liability if it causes any damage to your
-// computer, causes your pet cat to fall ill, increases baldness or
-// makes you car start emitting strange noises when you start it up.
-//
-// Expect bugs.
-// 
-// Please use and enjoy. Please let me know of any bugs/mods/improvements 
-// that you have found/implemented and I will fix/incorporate them into this
-// file. 
+// Free for non-commercial use.
+// You may change the code to your needs,
+// provided that credits to the original 
+// author is given in the modified files.
+//  
+/////////////////////////////////////////////////////////////////////////////
+
+// useful compatibility constants (the only one required is NOANCHOR)
+
+const CSize
+	NOANCHOR(-1,-1),
+	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
+	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
+	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
+
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
 
@@ -40,13 +40,6 @@ public:
 
 // Attributes
 public:
-	enum AnchorType
-	{
-		NOANCHOR,
-		TOP_LEFT,		TOP_CENTER,		TOP_RIGHT,
-		MIDDLE_LEFT,	MIDDLE_CENTER,	MIDDLE_RIGHT,
-		BOTTOM_LEFT,	BOTTOM_CENTER,	BOTTOM_RIGHT
-	};
 
 private:
 	// flags
@@ -79,25 +72,27 @@ private:
 		HWND hwnd;
 
 		BOOL adj_hscroll;
+		BOOL need_refresh;
 
 		// upper-left corner
-		AnchorType ul_type;
-		SIZE ul_margin;
+		SIZE tl_type;
+		SIZE tl_margin;
 		
 		// bottom-right corner
-		AnchorType br_type;
+		SIZE br_type;
 		SIZE br_margin;
 	
 	public:
-		Layout(HWND hw, AnchorType ul_t, SIZE ul_m, 
-			AnchorType br_t, SIZE br_m, BOOL hscroll)
+		Layout(HWND hw, SIZE tl_t, SIZE tl_m, 
+			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
 		{
 			hwnd = hw;
 
 			adj_hscroll = hscroll;
+			need_refresh = refresh;
 
-			ul_type = ul_t;
-			ul_margin = ul_m;
+			tl_type = tl_t;
+			tl_margin = tl_m;
 			
 			br_type = br_t;
 			br_margin = br_m;
@@ -125,12 +120,12 @@ private:
 
 // callable from derived classes
 protected:
-	BOOL AddAnchor(CWnd* pWnd, AnchorType ul_type,
-		AnchorType br_type = NOANCHOR);	// add anchors to a control
-	BOOL AddAnchor(UINT ctrl_ID, AnchorType ul_type,
-		AnchorType br_type = NOANCHOR)	// add anchors to a control
+	void AddAnchor(HWND wnd, CSize tl_type,
+		CSize br_type = NOANCHOR);	// add anchors to a control
+	void AddAnchor(UINT ctrl_ID, CSize tl_type,
+		CSize br_type = NOANCHOR)	// add anchors to a control
 	{
-		return AddAnchor(GetDlgItem(ctrl_ID), ul_type, br_type);
+		AddAnchor(::GetDlgItem(*this, ctrl_ID), tl_type, br_type);
 	};
 	void ShowSizeGrip(BOOL bShow);				// show or hide the size grip
 	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
@@ -159,4 +154,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_RESIZABLEDIALOG_H__21FE3CD1_979B_11D3_A80F_525400E146A5__INCLUDED_)
+#endif // !defined(AFX_RESIZABLEDIALOG_H__INCLUDED_)

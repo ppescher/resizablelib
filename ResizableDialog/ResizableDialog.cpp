@@ -1,25 +1,15 @@
 // ResizableDialog.cpp : implementation file
 //
 /////////////////////////////////////////////////////////////////////////////
+//
 // Copyright (C) 2000 by Paolo Messina
 // (ppescher@yahoo.com)
-// 
-// This file may be redistributed unmodified by any means PROVIDING it
-// is not sold for profit without the author written consent, and 
-// providing that this notice and the author name is included.
-// If the code in this file is used in any commercial application 
-// a simple credit would be nice.
 //
-// This file is provided "as is" with no expressed or implied warranty.
-// The author accepts no liability if it causes any damage to your
-// computer, causes your pet cat to fall ill, increases baldness or
-// makes you car start emitting strange noises when you start it up.
-//
-// Expect bugs.
-// 
-// Please use and enjoy. Please let me know of any bugs/mods/improvements 
-// that you have found/implemented and I will fix/incorporate them into this
-// file. 
+// Free for non-commercial use.
+// You may change the code to your needs,
+// provided that credits to the original 
+// author is given in the modified files.
+//  
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -69,6 +59,15 @@ CResizableDialog::CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd)
 
 CResizableDialog::~CResizableDialog()
 {
+	Layout *pl;
+
+	POSITION pos = m_plLayoutList.GetHeadPosition();
+
+	while (pos != NULL)
+	{
+		pl = (Layout*)m_plLayoutList.GetNext(pos);
+		delete pl;
+	}
 }
 
 
@@ -113,16 +112,16 @@ void CResizableDialog::OnDestroy()
 		SaveWindowRect();
 }
 
-BOOL CResizableDialog::AddAnchor(CWnd *pWnd, AnchorType ul_type, AnchorType br_type)
+void CResizableDialog::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 {
-	// pWnd is a temporary pointer, should not be stored
-	// store the window handle instead (HWND)
-	
-	if (pWnd == NULL)
-		return FALSE;
+	ASSERT(wnd != NULL && ::IsWindow(wnd));
+	ASSERT(::IsChild(*this, wnd));
+	ASSERT(tl_type != NOANCHOR);
 
+	// get control's window class
+	
 	CString st;
-	GetClassName(*pWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	GetClassName(wnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
 	st.MakeUpper();
 
@@ -130,9 +129,9 @@ BOOL CResizableDialog::AddAnchor(CWnd *pWnd, AnchorType ul_type, AnchorType br_t
 	// to avoid unnecessary repainting of controls inside
 	if (st == "BUTTON")
 	{
-		DWORD style = GetWindowLong(*pWnd, GWL_STYLE);
+		DWORD style = GetWindowLong(wnd, GWL_STYLE);
 		if (style & BS_GROUPBOX)
-			SetWindowLong(*pWnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
+			SetWindowLong(wnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
 	}
 
 	// wnd classes that don't redraw client area correctly
@@ -141,114 +140,55 @@ BOOL CResizableDialog::AddAnchor(CWnd *pWnd, AnchorType ul_type, AnchorType br_t
 	if (st == "LISTBOX")
 		hscroll = TRUE;
 
+	// wnd classes that need refresh when resized
+	BOOL refresh = FALSE;
+	if (st == "STATIC")
+	{
+		DWORD style = GetWindowLong(wnd, GWL_STYLE);
+
+		switch (style & SS_TYPEMASK)
+		{
+		case SS_LEFT:
+		case SS_CENTER:
+		case SS_RIGHT:
+			// word-wrapped text needs refresh
+			refresh = TRUE;
+		}
+
+		// centered images or text need refresh
+		if (style & SS_CENTERIMAGE)
+			refresh = TRUE;
+
+		// simple text never needs refresh
+		if (style & SS_TYPEMASK == SS_SIMPLE)
+			refresh = FALSE;
+	}
+
+	// get dialog's and control's rect
 	CRect wndrc, objrc;
 
 	GetClientRect(&wndrc);
-	ClientToScreen(&wndrc);
-	pWnd->GetWindowRect(&objrc);
+	::GetWindowRect(wnd, &objrc);
+	ScreenToClient(&objrc);
 	
-	CSize ul_margin(0,0), br_margin(0,0);
+	CSize tl_margin, br_margin;
+
+	if (br_type == NOANCHOR)
+		br_type = tl_type;
 	
-	// calculate margin for the upper-left corner
+	// calculate margin for the top-left corner
 
-	switch(ul_type)
-	{
-	case TOP_LEFT:
-		ul_margin.cx = objrc.left - wndrc.left;
-		ul_margin.cy = objrc.top - wndrc.top;
-		break;
-	case TOP_CENTER:
-		ul_margin.cx = objrc.left - (wndrc.left + wndrc.right)/2;
-		ul_margin.cy = objrc.top - wndrc.top;
-		break;
-	case MIDDLE_LEFT:
-		ul_margin.cx = objrc.left - wndrc.left;
-		ul_margin.cy = objrc.top - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	case BOTTOM_RIGHT:
-		ul_margin.cx = wndrc.right - objrc.left;
-		ul_margin.cy = wndrc.bottom - objrc.top;
-		break;
-	case BOTTOM_CENTER:
-		ul_margin.cx = objrc.left - (wndrc.left + wndrc.right)/2;
-		ul_margin.cy = wndrc.bottom - objrc.top;
-		break;
-	case MIDDLE_RIGHT:
-		ul_margin.cx = wndrc.right - objrc.left;
-		ul_margin.cy = objrc.top - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	case BOTTOM_LEFT:
-		ul_margin.cx = objrc.left - wndrc.left;
-		ul_margin.cy = wndrc.bottom - objrc.top;
-		break;
-	case TOP_RIGHT:
-		ul_margin.cx = wndrc.right - objrc.left;
-		ul_margin.cy = objrc.top - wndrc.top;
-		break;
-	case MIDDLE_CENTER:
-		ul_margin.cx = objrc.left - (wndrc.left + wndrc.right)/2;
-		ul_margin.cy = objrc.top - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	default:
-		ASSERT(FALSE);	// cannot be NOANCHOR !!
-		return FALSE;
-	}
+	tl_margin.cx = objrc.left - wndrc.Width() * tl_type.cx / 100;
+	tl_margin.cy = objrc.top - wndrc.Height() * tl_type.cy / 100;
 	
-	// calculate margin for the upper-left corner
+	// calculate margin for the bottom-right corner
 
-	switch(br_type)
-	{
-	case TOP_LEFT:
-		br_margin.cx = objrc.right - wndrc.left;
-		br_margin.cy = objrc.bottom - wndrc.top;
-		break;
-	case TOP_CENTER:
-		br_margin.cx = objrc.right - (wndrc.left + wndrc.right)/2;
-		br_margin.cy = objrc.bottom - wndrc.top;
-		break;
-	case MIDDLE_LEFT:
-		br_margin.cx = objrc.right - wndrc.left;
-		br_margin.cy = objrc.bottom - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	case BOTTOM_RIGHT:
-		br_margin.cx = wndrc.right - objrc.right;
-		br_margin.cy = wndrc.bottom - objrc.bottom;
-		break;
-	case BOTTOM_CENTER:
-		br_margin.cx = objrc.right - (wndrc.left + wndrc.right)/2;
-		br_margin.cy = wndrc.bottom - objrc.bottom;
-		break;
-	case MIDDLE_RIGHT:
-		br_margin.cx = wndrc.right - objrc.right;
-		br_margin.cy = objrc.bottom - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	case BOTTOM_LEFT:
-		br_margin.cx = objrc.right - wndrc.left;
-		br_margin.cy = wndrc.bottom - objrc.bottom;
-		break;
-	case TOP_RIGHT:
-		br_margin.cx = wndrc.right - objrc.right;
-		br_margin.cy = objrc.bottom - wndrc.top;
-		break;
-	case MIDDLE_CENTER:
-		br_margin.cx = objrc.right - (wndrc.left + wndrc.right)/2;
-		br_margin.cy = objrc.bottom - (wndrc.top + wndrc.bottom)/2;
-		break;
-
-	default:
-		ASSERT(br_type == NOANCHOR);
-	}
+	br_margin.cx = objrc.right - wndrc.Width() * br_type.cx / 100;
+	br_margin.cy = objrc.bottom - wndrc.Height() * br_type.cy / 100;
 
 	// add to the list
-	m_plLayoutList.AddTail(new Layout(pWnd->GetSafeHwnd(),
-		ul_type, ul_margin,	br_type, br_margin, hscroll));
-
-	return TRUE;
+	m_plLayoutList.AddTail(new Layout(wnd, tl_type, tl_margin,
+		br_type, br_margin, hscroll, refresh));
 }
 
 void CResizableDialog::ArrangeLayout()
@@ -256,10 +196,6 @@ void CResizableDialog::ArrangeLayout()
 	// init some vars
 	CRect wndrc;
 	GetClientRect(&wndrc);
-
-	CPoint center;
-	center.x = wndrc.Width()/2;
-	center.y = wndrc.Height()/2;
 
 	Layout *pl;
 	POSITION pos = m_plLayoutList.GetHeadPosition();
@@ -276,95 +212,19 @@ void CResizableDialog::ArrangeLayout()
 		wnd->GetWindowRect(&objrc);
 		ScreenToClient(&objrc);
 		
-		// upper-left
-		switch(pl->ul_type)
-		{
-		case TOP_LEFT:
-			newrc.left = pl->ul_margin.cx;
-			newrc.top = pl->ul_margin.cy;
-			break;
-		case TOP_CENTER:
-			newrc.left = center.x + pl->ul_margin.cx;
-			newrc.top = pl->ul_margin.cy;
-			break;
-		case MIDDLE_LEFT:
-			newrc.left = pl->ul_margin.cx;
-			newrc.top = center.y + pl->ul_margin.cy;
-			break;
-		case BOTTOM_RIGHT:
-			newrc.left = wndrc.right - pl->ul_margin.cx;
-			newrc.top = wndrc.bottom - pl->ul_margin.cy;
-			break;
-		case BOTTOM_CENTER:
-			newrc.left = center.x + pl->ul_margin.cx;
-			newrc.top = wndrc.bottom - pl->ul_margin.cy;
-			break;
-		case MIDDLE_RIGHT:
-			newrc.left = wndrc.right - pl->ul_margin.cx;
-			newrc.top = center.y + pl->ul_margin.cy;
-			break;
-		case BOTTOM_LEFT:
-			newrc.left = pl->ul_margin.cx;
-			newrc.top = wndrc.bottom - pl->ul_margin.cy;
-			break;
-		case TOP_RIGHT:
-			newrc.left = wndrc.right - pl->ul_margin.cx;
-			newrc.top = pl->ul_margin.cy;
-			break;
-		case MIDDLE_CENTER:
-			newrc.left = center.x + pl->ul_margin.cx;
-			newrc.top = center.y + pl->ul_margin.cy;
-		}
+		// calculate new top-left corner
 
-		// bottom-right
-		switch(pl->br_type)
-		{
-		case TOP_LEFT:
-			newrc.right = pl->br_margin.cx;
-			newrc.bottom = pl->br_margin.cy;
-			break;
-		case TOP_CENTER:
-			newrc.right = center.x + pl->br_margin.cx;
-			newrc.bottom = pl->br_margin.cy;
-			break;
-		case MIDDLE_LEFT:
-			newrc.right = pl->br_margin.cx;
-			newrc.bottom = center.y + pl->br_margin.cy;
-			break;
-		case BOTTOM_RIGHT:
-			newrc.right = wndrc.right - pl->br_margin.cx;
-			newrc.bottom = wndrc.bottom - pl->br_margin.cy;
-			break;
-		case BOTTOM_CENTER:
-			newrc.right = center.x + pl->br_margin.cx;
-			newrc.bottom = wndrc.bottom - pl->br_margin.cy;
-			break;
-		case MIDDLE_RIGHT:
-			newrc.right = wndrc.right - pl->br_margin.cx;
-			newrc.bottom = center.y + pl->br_margin.cy;
-			break;
-		case BOTTOM_LEFT:
-			newrc.right = pl->br_margin.cx;
-			newrc.bottom = wndrc.bottom - pl->br_margin.cy;
-			break;
-		case TOP_RIGHT:
-			newrc.right = wndrc.right - pl->br_margin.cx;
-			newrc.bottom = pl->br_margin.cy;
-			break;
-		case MIDDLE_CENTER:
-			newrc.right = center.x + pl->br_margin.cx;
-			newrc.bottom = center.y + pl->br_margin.cy;
-			break;
-		case NOANCHOR:
-			newrc.right = newrc.left + objrc.Width();
-			newrc.bottom = newrc.top + objrc.Height();
-		}
+		newrc.left = pl->tl_margin.cx + wndrc.Width() * pl->tl_type.cx / 100;
+		newrc.top = pl->tl_margin.cy + wndrc.Height() * pl->tl_type.cy / 100;
+		
+		// calculate new bottom-right corner
+
+		newrc.right = pl->br_margin.cx + wndrc.Width() * pl->br_type.cx / 100;
+		newrc.bottom = pl->br_margin.cy + wndrc.Height() * pl->br_type.cy / 100;
 
 		if (!newrc.EqualRect(&objrc))
 		{
-		    DeferWindowPos(hdwp, pl->hwnd, NULL, newrc.left, newrc.top,
-				newrc.Width(), newrc.Height(), SWP_NOZORDER |
-				SWP_NOACTIVATE);
+			BOOL add = TRUE;
 
 			if (pl->adj_hscroll)
 			{
@@ -373,8 +233,27 @@ void CResizableDialog::ArrangeLayout()
 				int max = wnd->GetScrollLimit(SB_HORZ);
 			
 				if (max > 0 && wnd->GetScrollPos(SB_HORZ) > max - diff)
+				{
+					wnd->MoveWindow(&newrc);
 					wnd->Invalidate();
+					wnd->UpdateWindow();
+					
+					add = FALSE;
+				}
 			}
+
+			if (pl->need_refresh)
+			{
+				wnd->MoveWindow(&newrc);
+				wnd->Invalidate();
+				wnd->UpdateWindow();
+				
+				add = FALSE;
+			}
+
+			if (add)
+				DeferWindowPos(hdwp, pl->hwnd, NULL, newrc.left, newrc.top,
+					newrc.Width(), newrc.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 	}
 
@@ -401,7 +280,7 @@ void CResizableDialog::OnPaint()
 {
 	CPaintDC dc(this);
 
-	if (m_bShowGrip)
+	if (m_bShowGrip && !IsZoomed())
 	{
 		// draw size-grip
 		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
@@ -413,7 +292,7 @@ UINT CResizableDialog::OnNcHitTest(CPoint point)
 	CPoint pt = point;
 	ScreenToClient(&pt);
 
-	if (m_rcGripRect.PtInRect(pt))
+	if (m_bShowGrip && m_rcGripRect.PtInRect(pt))
 		return HTBOTTOMRIGHT;
 	
 	return CDialog::OnNcHitTest(point);
@@ -451,7 +330,10 @@ void CResizableDialog::SetMaximizedRect(const CRect& rc)
 {
 	m_bUseMaxRect = TRUE;
 	m_ptMaxPos = rc.TopLeft();
-	m_ptMaxSize = *(POINT*)&rc.Size();
+	
+	CSize sz = rc.Size();
+	m_ptMaxSize.x = sz.cx;
+	m_ptMaxSize.y = sz.cy;
 }
 
 void CResizableDialog::ResetMaximizedRect()
@@ -471,7 +353,9 @@ void CResizableDialog::ShowSizeGrip(BOOL bShow)
 void CResizableDialog::SetMinTrackSize(const CSize& size)
 {
 	m_bUseMinTrack = TRUE;
-	m_ptMinTrackSize = *(POINT*)&size;
+
+	m_ptMinTrackSize.x = size.cx;
+	m_ptMinTrackSize.y = size.cy;
 }
 
 void CResizableDialog::ResetMinTrackSize()
@@ -482,7 +366,9 @@ void CResizableDialog::ResetMinTrackSize()
 void CResizableDialog::SetMaxTrackSize(const CSize& size)
 {
 	m_bUseMaxTrack = TRUE;
-	m_ptMaxTrackSize = *(POINT*)&size;
+
+	m_ptMaxTrackSize.x = size.cx;
+	m_ptMaxTrackSize.y = size.cy;
 }
 
 void CResizableDialog::ResetMaxTrackSize()

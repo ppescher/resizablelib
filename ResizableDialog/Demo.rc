@@ -78,7 +78,7 @@ STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU |
     WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "CResizableDialog Demo"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LTEXT           "Static text",IDC_LABEL1,7,7,87,10
     CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS | 
@@ -92,6 +92,24 @@ BEGIN
     GROUPBOX        "Size Grip",IDC_GROUP1,7,72,87,42
     DEFPUSHBUTTON   "OK",IDOK,102,76,50,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,102,100,50,14
+END
+
+IDD_SECOND_DIALOG DIALOGEX 0, 0, 186, 94
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "CResizableDialog - New features"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,74,73,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,73,50,14
+    CONTROL         "",IDC_LINE1,"Static",SS_ETCHEDHORZ,7,66,172,1
+    CONTROL         131,IDC_PICTURE1,"Static",SS_BITMAP | SS_CENTERIMAGE | 
+                    SS_RIGHTJUST | SS_SUNKEN,7,7,58,53
+    CONTROL         "This is about 20% with some long text ",IDC_STATIC2,
+                    "Static",SS_LEFTNOWORDWRAP | SS_CENTERIMAGE | SS_SUNKEN | 
+                    SS_WORDELLIPSIS | WS_GROUP,129,7,50,53
+    CTEXT           "This is an example of percentage resizing.\nBitmap is about 30%, this is about 50%.",
+                    IDC_STATIC1,71,7,52,53,SS_NOPREFIX | SS_SUNKEN
 END
 
 
@@ -153,9 +171,24 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 114
     END
+
+    IDD_SECOND_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 87
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
 #endif    // Italian (Italy) resources
 /////////////////////////////////////////////////////////////////////////////
 

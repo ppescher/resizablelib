@@ -21,7 +21,8 @@ code         { color: #990000; font-family: 'Courier New', Courier, mono }
   <P>Here is an extract of the article you can find on CodeProject.</P>
   <P>Please, refer to that article for everything you may need. This could be an
   old version of the Reference, but should be useful to start.</P>
-  <P>Check for updates on CodeProject: <A HREF="http://www.codeproject.com">www.codeproject.com</A></P>
+  <P>Check for updates on CodeProject: <A HREF="http://www.codeproject.com">www.codeproject.com</A>
+  (Dialogs and Windows programming)</P>
 </BLOCKQUOTE>
 <H2><A NAME="usage"></A>Usage - Step by Step</H2>
 <BLOCKQUOTE>
@@ -122,47 +123,45 @@ CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL)</PRE>
   <DL>
     <DD>
       <P>The first is the default constructor.</P>
-      <P>The second form is needed to reproduce the construction scheme of a
-      CDialog derived class. Since the dialog resource template ID is needed by
-      the <CODE>CDialog</CODE> constructor, you have to call this form of the <CODE>CResizableDialog</CODE>
+      <P>The second form is needed to reproduce the construction scheme of a <CODE>CDialog</CODE>
+      derived class. Since the dialog resource template ID is needed by the <CODE>CDialog</CODE>
+      constructor, you have to call this form of the <CODE>CResizableDialog</CODE>
       constructor. This is the reason why replacing one class with the other
       will work (see the <A HREF="#usage">Usage</A> section).</P>
     </DD>
   </DL>
   <H5>CResizableDialog::AddAnchor</H5>
-  <PRE>BOOL AddAnchor(CWnd* pWnd, AnchorType ul_type, AnchorType br_type = NOANCHOR)
-BOOL AddAnchor(UINT ctrl_ID, AnchorType ul_type, AnchorType br_type = NOANCHOR)</PRE>
+  <PRE>void AddAnchor(HWND wnd, CSize tl_type, CSize br_type = NOANCHOR)
+void AddAnchor(UINT ctrl_ID, CSize tl_type, CSize br_type = NOANCHOR)</PRE>
   <DL>
     <DD>
       <P>Add a dialog control to the layout list and set the anchor type for the
-      upper-left and bottom-right corners of the control. During a resizing
-      operation the control's corners are kept at fixed distance from the
-      dialog's corners you specified.</P>
-      <P>The return value is <CODE>TRUE</CODE> if everything is right, <CODE>FALSE</CODE>
-      otherwise.</P>
-      <P>Valid values for the anchor type are:</P>
-    </DD>
+      top-left and bottom-right corners of the control. During a resizing
+      operation the control's corners are kept at fixed distance from the dialog
+      point you specify: argument's <CODE>cx</CODE> member is the horizontal
+      position, while <CODE>cy</CODE> is vertical, in percentage.</P>
+      <P>A set of useful constant values, provided also for compatibility, is
+      defined:</P>
     <DD>
-      <PRE>enum AnchorType
-{
-	NOANCHOR,
-	TOP_LEFT, TOP_CENTER, TOP_RIGHT,
-	MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT,
-	BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT
-}</PRE>
-    </DD>
+      <PRE>const CSize
+	NOANCHOR(-1,-1),
+	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
+	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
+	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);</PRE>
     <DD>I think their meaning is self-explained. Using <CODE>NOANCHOR</CODE> for
-      both corners is equivalent to leaving the control in its initial position
-      and it's quite unuseful, so it will generate an 'assertion failed' in the
-      Debug version and a return value of <CODE>FALSE</CODE> for both the Debug
-      and the Release versions.</DD>
+      top-left corner is not allowed, so it will generate an 'assertion failed'
+      in the Debug version.</DD>
   </DL>
   <H5>CResizableDialog::ShowSizeGrip</H5>
   <PRE>void ShowSizeGrip(BOOL bShow)</PRE>
   <DL>
-    <DD>Shows or hides the size grip at the bottom-right corner of the dialog,
+    <DD>
+      <P>Shows or hides the size grip at the bottom-right corner of the dialog,
       depending on the value of <CODE>bShow</CODE> parameter: <CODE>TRUE</CODE>
-      means visible while <CODE>FALSE</CODE> is hidden. Default is visible.</DD>
+      means visible while <CODE>FALSE</CODE> is hidden. Default is visible.</P>
+      <P>Note that when the dialog is maximized, the size grip is hidden
+      regardless of this setting.</P>
+    </DD>
   </DL>
   <H5>CResizableDialog::SetMaximizedRect</H5>
   <PRE>void SetMaximizedRect(const CRect&amp; rc)</PRE>
