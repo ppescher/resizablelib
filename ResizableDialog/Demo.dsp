@@ -118,6 +118,10 @@ SOURCE=.\ResizableMinMax.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableState.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SecondDialog.cpp
 # End Source File
 # Begin Source File
@@ -152,6 +156,10 @@ SOURCE=.\ResizableLayout.h
 # Begin Source File
 
 SOURCE=.\ResizableMinMax.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableState.h
 # End Source File
 # Begin Source File
 

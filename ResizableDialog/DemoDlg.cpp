@@ -94,7 +94,7 @@ BOOL CDemoDlg::OnInitDialog()
 	// save/restore
 	// (for dialog based app, default is a .INI file with
 	// the application's name in the Windows directory)
-	EnableSaveRestore(_T("DemoDlg"), _T("Window"));
+	EnableSaveRestore(_T("DemoDlg"));
 
 	return FALSE;  // return TRUE  unless you set the focus to a control
 }

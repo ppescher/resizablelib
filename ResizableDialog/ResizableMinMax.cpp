@@ -1,9 +1,25 @@
 // ResizableMinMax.cpp: implementation of the CResizableMinMax class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2000 by Paolo Messina
+// (ppescher@yahoo.com)
+//
+// Free for non-commercial and commercial use,
+// provided that the original author's name
+// and copyright is quoted somewhere in the
+// final executable and in the program's help
+// or documentation.
+// You may change the code to your needs,
+// provided that credits to the original
+// author are given in the modified files.
+// Also a copy of your enhancements would
+// be nice, but it's not required. Please,
+// consider to share your work on CodeProject.
+//  
+/////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "demo.h"
 #include "ResizableMinMax.h"
 
 #ifdef _DEBUG

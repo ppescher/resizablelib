@@ -132,6 +132,10 @@ SOURCE=.\ResizableSheet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableState.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -174,6 +178,10 @@ SOURCE=.\ResizablePage.h
 # Begin Source File
 
 SOURCE=.\ResizableSheet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableState.h
 # End Source File
 # Begin Source File
 

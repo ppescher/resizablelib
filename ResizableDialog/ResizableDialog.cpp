@@ -106,13 +106,13 @@ BOOL CResizableDialog::OnInitDialog()
 
 void CResizableDialog::OnDestroy() 
 {
-	CDialog::OnDestroy();
-	
 	if (m_bEnableSaveRestore)
-		SaveWindowRect();
+		SaveWindowRect(GetSafeHwnd(), m_sSection);
 
-	// remove old windows
+	// remove child windows
 	RemoveAllAnchors();
+
+	CDialog::OnDestroy();
 }
 
 void CResizableDialog::OnPaint() 
@@ -156,61 +156,14 @@ void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	MinMaxInfo(lpMMI);
 }
 
-// NOTE: this must be called after all the other settings
+// NOTE: this must be called after setting the layout
 //       to have the dialog and its controls displayed properly
-void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry)
+void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection)
 {
 	m_sSection = pszSection;
-	m_sEntry = pszEntry;
 
 	m_bEnableSaveRestore = TRUE;
 
-	LoadWindowRect();
-}
-
-
-// used to save/restore window's size and position
-// either in the registry or a private .INI file
-// depending on your application settings
-
-#define PROFILE_FMT 	_T("%d,%d,%d,%d,%d,%d")
-
-void CResizableDialog::SaveWindowRect()
-{
-	CString data;
-	WINDOWPLACEMENT wp;
-
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-	GetWindowPlacement(&wp);
-	
-	RECT& rc = wp.rcNormalPosition;	// alias
-
-	data.Format(PROFILE_FMT, rc.left, rc.top,
-		rc.right, rc.bottom, wp.showCmd, wp.flags);
-
-	AfxGetApp()->WriteProfileString(m_sSection, m_sEntry, data);
-}
-
-void CResizableDialog::LoadWindowRect()
-{
-	CString data;
-	WINDOWPLACEMENT wp;
-
-	data = AfxGetApp()->GetProfileString(m_sSection, m_sEntry);
-	
-	if (data.IsEmpty())	// never saved before
-		return;
-	
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-	GetWindowPlacement(&wp);
-
-	RECT& rc = wp.rcNormalPosition;	// alias
-
-	if (_stscanf(data, PROFILE_FMT, &rc.left, &rc.top,
-		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags) == 6)
-	{
-		SetWindowPlacement(&wp);
-	}
+	// restore immediately
+	LoadWindowRect(GetSafeHwnd(), pszSection);
 }

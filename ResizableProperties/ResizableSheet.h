@@ -26,13 +26,14 @@
 
 #include "ResizableGrip.h"
 #include "ResizableMinMax.h"
+#include "ResizableState.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // ResizableSheet.h : header file
 //
 
 class CResizableSheet : public CPropertySheet, public CResizableGrip,
-						public CResizableMinMax
+						public CResizableMinMax, public CResizableState
 {
 	DECLARE_DYNAMIC(CResizableSheet)
 
@@ -50,7 +51,6 @@ private:
 
 	// internal status
 	CString m_sSection;			// section name and
-	CString m_sEntry;			// entry for save/restore
 
 	BOOL m_bInitDone;			// if all internal vars initialized
 
@@ -78,14 +78,14 @@ public:
 private:
 	void PresetLayout();
 	void Construct();
-	void LoadWindowRect();
-	void SaveWindowRect();
 	void ArrangeLayout();
+	void SavePage();
+	void LoadPage();
 
 // callable from derived classes
 protected:
 	void EnableSaveRestore(LPCTSTR pszSection,
-		LPCTSTR pszEntry, BOOL bWithPage = FALSE);	// section and entry in app's profile
+		BOOL bWithPage = FALSE);	// section and entry in app's profile
 	int GetMinWidth();	// minimum width to display all buttons
 
 

@@ -118,7 +118,10 @@ void CResizableSheet::OnDestroy()
 	CPropertySheet::OnDestroy();
 
 	if (m_bEnableSaveRestore)
-		SaveWindowRect();
+	{
+		SaveWindowRect(GetSafeHwnd(), m_sSection);
+		SavePage();
+	}
 }
 
 // maps an index to a button ID and vice-versa
@@ -350,83 +353,6 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 // protected members
 
-// NOTE: this must be called after all the other settings
-//       to have the dialog and its controls displayed properly
-void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry, BOOL bWithPage)
-{
-	m_sSection = pszSection;
-	m_sEntry = pszEntry;
-	m_bSavePage = bWithPage;
-
-	m_bEnableSaveRestore = TRUE;
-
-	LoadWindowRect();
-}
-
-// private memebers
-
-// used to save/restore window's size and position
-// either in the registry or a private .INI file
-// depending on your application settings
-
-#define PROFILE_FMT 	_T("%d,%d,%d,%d,%d,%d [%d]")
-
-void CResizableSheet::SaveWindowRect()
-{
-	CString data;
-	WINDOWPLACEMENT wp;
-
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-	GetWindowPlacement(&wp);
-	
-	RECT& rc = wp.rcNormalPosition;	// alias
-
-	// also saves active page index, zero (the first) if problems
-	// cannot use GetActivePage, because it always fails
-	CTabCtrl *pTab = GetTabControl();
-	int page = 0;
-
-	if (pTab != NULL) 
-		page = pTab->GetCurSel();
-	if (page < 0)
-		page = 0;
-
-	// always save page
-	data.Format(PROFILE_FMT, rc.left, rc.top,
-		rc.right, rc.bottom, wp.showCmd, wp.flags, page);
-
-	AfxGetApp()->WriteProfileString(m_sSection, m_sEntry, data);
-}
-
-void CResizableSheet::LoadWindowRect()
-{
-	CString data;
-	WINDOWPLACEMENT wp;
-	int page;
-
-	data = AfxGetApp()->GetProfileString(m_sSection, m_sEntry);
-	
-	if (data.IsEmpty())	// never saved before
-		return;
-	
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
-
-	RECT& rc = wp.rcNormalPosition;	// alias
-
-	if (_stscanf(data, PROFILE_FMT, &rc.left, &rc.top,
-		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags, &page) == 7)
-	{
-		SetWindowPlacement(&wp);
-		if (m_bSavePage)
-		{
-			SetActivePage(page);
-			ArrangeLayout();	// needs refresh
-		}
-	}
-}
-
 int CResizableSheet::GetMinWidth()
 {
 	int min = 0;
@@ -457,4 +383,56 @@ int CResizableSheet::GetMinWidth()
 
 	// add the left margin and window's border
 	return -min + objrc.left + border*2;
+}
+
+// NOTE: this must be called after all the other settings
+//       to have the window and its controls displayed properly
+void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bWithPage)
+{
+	m_sSection = pszSection;
+	m_bSavePage = bWithPage;
+
+	m_bEnableSaveRestore = TRUE;
+
+	LoadWindowRect(GetSafeHwnd(), pszSection);
+	LoadPage();
+}
+
+// private memebers
+
+// used to save/restore active page
+// either in the registry or a private .INI file
+// depending on your application settings
+
+#define ACTIVEPAGE 	_T("ActivePage")
+
+void CResizableSheet::SavePage()
+{
+	if (!m_bSavePage)
+		return;
+
+	// saves active page index, zero (the first) if problems
+	// cannot use GetActivePage, because it always fails
+
+	CTabCtrl *pTab = GetTabControl();
+	int page = 0;
+
+	if (pTab != NULL) 
+		page = pTab->GetCurSel();
+	if (page < 0)
+		page = 0;
+
+	AfxGetApp()->WriteProfileInt(m_sSection, ACTIVEPAGE, page);
+}
+
+void CResizableSheet::LoadPage()
+{
+	// restore active page, zero (the first) if not found
+	int page = AfxGetApp()->GetProfileInt(m_sSection, ACTIVEPAGE, 0);
+	
+	if (m_bSavePage)
+	{
+		SetActivePage(page);
+		ArrangeLayout();	// needs refresh
+	}
 }

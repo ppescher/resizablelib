@@ -75,10 +75,10 @@ BOOL CResizablePage::OnInitDialog()
 {
 	CPropertyPage::OnInitDialog();
 	
-	// gets the initial size as the min track size
+/*	// gets the initial size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
-
+*/
 	m_bInitDone = TRUE;
 
 	return TRUE;  // return TRUE unless you set the focus to a control

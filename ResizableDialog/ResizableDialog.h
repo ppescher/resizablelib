@@ -29,12 +29,14 @@
 #include "ResizableLayout.h"
 #include "ResizableGrip.h"
 #include "ResizableMinMax.h"
+#include "ResizableState.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
 
 class CResizableDialog : public CDialog, public CResizableLayout,
-						 public CResizableGrip, public CResizableMinMax
+						 public CResizableGrip, public CResizableMinMax,
+						 public CResizableState
 {
 
 // Construction
@@ -46,13 +48,10 @@ public:
 // Attributes
 private:
 	// flags
+	BOOL m_bInitDone;			// if all internal vars initialized
 	BOOL m_bEnableSaveRestore;
 
-	// internal status
-	CString m_sSection;			// section name and
-	CString m_sEntry;			// entry for save/restore
-
-	BOOL m_bInitDone;			// if all internal vars initialized
+	CString m_sSection;			// section name (identifies a parent window)
 
 // Operations
 public:
@@ -69,12 +68,10 @@ public:
 // used internally
 private:
 	void Construct();
-	void LoadWindowRect();
-	void SaveWindowRect();
 
 // callable from derived classes
 protected:
-	void EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry);	// section and entry in app's profile
+	void EnableSaveRestore(LPCTSTR pszSection);	// section and entry in app's profile
 
 	virtual CWnd* GetLayoutParent()
 	{

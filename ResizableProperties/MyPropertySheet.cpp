@@ -16,7 +16,7 @@ static char BASED_CODE THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNAMIC(CMyPropertySheet, CResizableSheet)
 
 CMyPropertySheet::CMyPropertySheet(CWnd* pWndParent)
-	 : CResizableSheet(IDS_PROPSHT_CAPTION, pWndParent)
+	 : CResizableSheet(_T("CResizableSheet"), pWndParent)
 {
 	AddPage(&m_Page1);
 	AddPage(&m_Page2);
@@ -48,7 +48,7 @@ BOOL CMyPropertySheet::OnInitDialog()
 	SetMinTrackSize(CSize(GetMinWidth(), rc.Height()));
 
 	// enable save/restore, with active page
-	EnableSaveRestore(_T("Properties"),_T("Window"), TRUE);
+	EnableSaveRestore(_T("MyPropertySheet"), TRUE);
 
 	return TRUE;
 }
