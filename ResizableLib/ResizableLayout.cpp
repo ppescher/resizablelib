@@ -45,15 +45,6 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	GetClassName(hWnd, sClassName.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	sClassName.ReleaseBuffer();
 
-	// add the style 'clipsiblings' to a GroupBox
-	// to avoid unnecessary repainting of controls inside
-	if (sClassName == "Button")
-	{
-		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
-		if ((style & BS_TYPEMASK) == BS_GROUPBOX)
-			SetWindowLong(hWnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
-	}
-
 	// get parent window's rect
 	CRect rectParent;
 	GetTotalClientRect(&rectParent);
