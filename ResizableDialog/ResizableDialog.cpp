@@ -59,6 +59,8 @@ CResizableDialog::CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd)
 
 CResizableDialog::~CResizableDialog()
 {
+	// for safety
+	m_arrLayout.RemoveAll();
 }
 
 
