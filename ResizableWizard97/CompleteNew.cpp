@@ -70,6 +70,18 @@ BOOL CCompletionNew::OnInitDialog()
 	AddAnchor(IDC_BIGBOLDTITLE, TOP_LEFT);
 	AddAnchor(IDC_TRANSPARENT1, TOP_LEFT);
 
+	LOGFONT lf;
+	GetDlgItem(IDC_BOLDTITLE)->GetFont()->GetLogFont(&lf);
+	
+	lf.lfWeight = FW_BOLD;
+	m_fontTitle.CreateFontIndirect(&lf);
+	GetDlgItem(IDC_BOLDTITLE)->SetFont(&m_fontTitle);
+
+	lf.lfWeight = FW_BOLD;
+	lf.lfHeight *= 2;
+	m_fontBig.CreateFontIndirect(&lf);
+	GetDlgItem(IDC_BIGBOLDTITLE)->SetFont(&m_fontBig);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }

@@ -26,6 +26,9 @@ class CIntroPage : public CResizablePageEx
 {
 	DECLARE_DYNCREATE(CIntroPage)
 
+	CFont m_fontTitle;
+	CFont m_fontBig;
+
 // Construction
 public:
 	CIntroPage();

@@ -26,6 +26,9 @@ class CCompletion : public CResizablePageEx
 {
 	DECLARE_DYNCREATE(CCompletion)
 
+	CFont m_fontTitle;
+	CFont m_fontBig;
+
 // Construction
 public:
 	CCompletion();
