@@ -47,6 +47,8 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizablePageEx)
+	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -55,9 +57,6 @@ public:
 
 // callable from derived classes
 protected:
-	// override to specify refresh for custom or unsupported windows
-	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
-		const CRect &rectOld, const CRect &rectNew) const;
 
 	virtual CWnd* GetResizableWnd() const
 	{
@@ -72,6 +71,8 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	virtual BOOL OnInitDialog();
+	afx_msg void OnDestroy();
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
