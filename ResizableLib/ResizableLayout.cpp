@@ -87,22 +87,22 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	sizeMarginBR.cx = rectChild.right - rectParent.Width() * sizeTypeBR.cx / 100;
 	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * sizeTypeBR.cy / 100;
 
-	// add to the list
+	// add to the map
 	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
 		sizeTypeBR, sizeMarginBR, bHScroll, bRefresh);
-	// always add before callbacks
-	m_arrLayout.InsertAt(m_iFirstCallback++, layout);
+	m_mapLayout.SetAt(hWnd, layout);
 }
 
-// one callback control cannot rely upon another callback control's
-// size and/or position (they're updated all together at the end)
 void CResizableLayout::AddAnchorCallback(UINT nCallbackID)
 {
+	// one callback control cannot rely upon another callback control's
+	// size and/or position (they're updated all together at the end)
+	// it can however use a non-callback control, which is updated before
+
 	// add to the list
 	LayoutInfo layout;
 	layout.nCallbackID = nCallbackID;
-	// callbacks added to tail (for efficiency)
-	m_arrLayout.Add(layout);
+	m_listLayoutCB.AddTail(layout);
 }
 
 BOOL CResizableLayout::ArrangeLayoutCallback(LayoutInfo& /*layout*/)
@@ -115,85 +115,65 @@ BOOL CResizableLayout::ArrangeLayoutCallback(LayoutInfo& /*layout*/)
 
 void CResizableLayout::ArrangeLayout()
 {
-	CWnd* pParent = GetResizableWnd();
+	// common vars
+	UINT uFlags;
+	LayoutInfo layout;
+	CRect rectParent, rectChild;
+	GetTotalClientRect(&rectParent); // get parent window's rect
+	int count = m_mapLayout.GetCount();
+	int countCB = m_listLayoutCB.GetCount();
 
-	// get parent window's rect
-	CRect rectParent;
-	GetTotalClientRect(&rectParent);
-
-	// init some vars
-	int count = m_arrLayout.GetSize();
-	HDWP hdwp = BeginDeferWindowPos(count);
-
-	for (int i=0; i<count; i++)
+	// reposition child windows
+	HDWP hdwp = ::BeginDeferWindowPos(count);
+	
+	HWND hWnd;
+	POSITION pos = m_mapLayout.GetStartPosition();
+	while (pos != NULL)
 	{
-		LayoutInfo layout = m_arrLayout[i];
+		// get layout info
+		m_mapLayout.GetNextAssoc(pos, hWnd, layout);
 		
-		if (layout.hWnd == NULL)	// callback
+		// calculate new child's position, size and flags for SetWindowPos
+		CalcNewChildPosition(rectParent, layout, rectChild, uFlags);
+
+		// only if size or position changed
+		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
 		{
-			if (i == m_iFirstCallback)	// first time only
-			{
-				// update previous controls
-				EndDeferWindowPos(hdwp);
-				// start again for callback controls
-				hdwp = BeginDeferWindowPos(count-i);
-			}
-			// callbacks are added at the end, so that
-			// you don't have multiple screen updates
-
-			if (!ArrangeLayoutCallback(layout))	// request data
-				continue;
-		}
-
-		CRect rectChild, newrc;
-		CWnd* pWnd = CWnd::FromHandle(layout.hWnd); // temporary solution
-
-		pWnd->GetWindowRect(&rectChild);
-		::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
-		
-		// calculate new top-left corner
-
-		newrc.left = layout.sizeMarginTL.cx + rectParent.Width() * layout.sizeTypeTL.cx / 100;
-		newrc.top = layout.sizeMarginTL.cy + rectParent.Height() * layout.sizeTypeTL.cy / 100;
-		
-		// calculate new bottom-right corner
-
-		newrc.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.sizeTypeBR.cx / 100;
-		newrc.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.sizeTypeBR.cy / 100;
-
-		if (!newrc.EqualRect(&rectChild))
-		{
-			if (layout.bAdjHScroll)
-			{
-				// needs repainting, due to horiz scrolling
-				int diff = newrc.Width() - rectChild.Width();
-				int max = pWnd->GetScrollLimit(SB_HORZ);
-			
-				layout.bNeedRefresh = FALSE;
-				if (max > 0 && pWnd->GetScrollPos(SB_HORZ) > max - diff)
-				{
-					layout.bNeedRefresh = TRUE;
-				}
-			}
-
-			// set flags 
-			DWORD flags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
-			if (layout.bNeedRefresh)
-				flags |= SWP_NOCOPYBITS;
-			if (newrc.TopLeft() == rectChild.TopLeft())
-				flags |= SWP_NOMOVE;
-			if (newrc.Size() == rectChild.Size())
-				flags |= SWP_NOSIZE;
-			
-			hdwp = DeferWindowPos(hdwp, layout.hWnd, NULL, newrc.left, newrc.top,
-				newrc.Width(), newrc.Height(), flags);
+			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left, rectChild.top,
+				rectChild.Width(), rectChild.Height(), uFlags);
 		}
 	}
-	// go re-arrange child windows
-	EndDeferWindowPos(hdwp);
+	::EndDeferWindowPos(hdwp);
+
+	// force updating of non-callback windows
+	// since the others may need it
+
+	// reposition callback windows
+	hdwp = ::BeginDeferWindowPos(countCB);
+
+	pos = m_listLayoutCB.GetHeadPosition();
+	while (pos != NULL)
+	{
+		// get layout info
+		layout = m_listLayoutCB.GetNext(pos);
+		// request data
+		if (!ArrangeLayoutCallback(layout))
+			continue;
+
+		// calculate new child's position, size and flags for SetWindowPos
+		CalcNewChildPosition(rectParent, layout, rectChild, uFlags);
+
+		// only if size or position changed
+		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
+		{
+			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left, rectChild.top,
+				rectChild.Width(), rectChild.Height(), uFlags);
+		}
+	}
+	::EndDeferWindowPos(hdwp);
 }
 
-void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CRgn* pRegion)
+void CResizableLayout::ClipChildWindow(HWND hWnd, CRgn* pRegion)
 {
 	// obtain window position
 	CRect rect;
@@ -223,6 +203,8 @@ void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CRgn* pRegion)
 
 void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 {
+	CWnd* pWnd = GetResizableWnd();
+
 	// System's default clipping area is screen's size,
 	// not enough for max track size:
 	// if screen is 1024 x 768 and resizing border is 4 pixels,
@@ -234,35 +216,63 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 
 	// reset clipping region to the whole client area
 	CRect rect;
-	GetResizableWnd()->GetClientRect(&rect);
+	pWnd->GetClientRect(&rect);
 	pRegion->CreateRectRgnIndirect(&rect);
 
-	// only clips anchored controls
-	for (int i=0; i<m_arrLayout.GetSize(); ++i)
+	// clip only anchored controls
+	LayoutInfo layout;
+	HWND hWnd;
+	POSITION pos = m_mapLayout.GetStartPosition();
+	while (pos != NULL)
 	{
-		LayoutInfo layout = m_arrLayout[i];
+		// get layout info
+		m_mapLayout.GetNextAssoc(pos, hWnd, layout);
 		
-		if (layout.hWnd == NULL
-			&& !ArrangeLayoutCallback(layout))	// request data
-				continue;
 		if (::IsWindowVisible(layout.hWnd))
-			EnumAndClipChildWindow(layout.hWnd, pRegion);
+			ClipChildWindow(layout.hWnd, pRegion);
 	}
+	pos = m_listLayoutCB.GetHeadPosition();
+	while (pos != NULL)
+	{
+		// get layout info
+		layout = m_listLayoutCB.GetNext(pos);
+		// request data
+		if (!ArrangeLayoutCallback(layout))
+			continue;
+
+		if (::IsWindowVisible(layout.hWnd))
+			ClipChildWindow(layout.hWnd, pRegion);
+	}
+
+	// fix for RTL layouts (1 pixel too-much)
+	if (pWnd->GetExStyle() & WS_EX_LAYOUTRTL)
+		pRegion->OffsetRgn(-1,0);
 }
 
 void CResizableLayout::EraseBackground(CDC* pDC)
 {
-	CWnd* pWnd = GetResizableWnd();
-	
+	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
+
+	// retrieve the background brush
+	HBRUSH hBrush = NULL;
+	// is this a dialog box?
+	ATOM atomWndClass = (ATOM)::GetClassLong(hWnd, GCW_ATOM);
+	if (WC_DIALOG == MAKEINTATOM(atomWndClass))
+	{
+		// send a message to the dialog box
+		hBrush = (HBRUSH)::SendMessage(hWnd, WM_CTLCOLORDLG,
+			(WPARAM)pDC->GetSafeHdc(), (LPARAM)hWnd);
+	}
+	else
+	{
+		// take the background brush from the window's class
+		hBrush = (HBRUSH)::GetClassLong(hWnd, GCL_HBRBACKGROUND);
+	}
+
 	CRgn rgn;
 	GetClippingRegion(&rgn);
-	if (pWnd->GetExStyle() & WS_EX_LAYOUTRTL)
-		rgn.OffsetRgn(-1,0);	// fix for RTL layouts
 
-	HBRUSH hbr = (HBRUSH)pWnd->SendMessage(WM_CTLCOLORDLG,
-		(WPARAM)pDC->GetSafeHdc(), (LPARAM)pWnd->GetSafeHwnd());
-	
-	FillRgn(pDC->GetSafeHdc(), rgn, hbr);
+	::FillRgn(pDC->GetSafeHdc(), rgn, hBrush);
 }
 
 // support legacy code (will disappear in future versions)
@@ -283,17 +293,17 @@ void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
 BOOL CResizableLayout::NeedsRefresh(HWND hWnd)
 {
 	// get window class
-	CString st;
-	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
-	st.ReleaseBuffer();
+	CString str;
+	::GetClassName(hWnd, str.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	str.ReleaseBuffer();
 
 	// optimistic, no need to refresh
 	BOOL bRefresh = FALSE;
 
 	// window classes that need refresh when resized
-	if (st == "Static")
+	if (str == "Static")
 	{
-		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+		DWORD style = ::GetWindowLong(hWnd, GWL_STYLE);
 
 		switch (style & SS_TYPEMASK)
 		{
@@ -325,18 +335,18 @@ BOOL CResizableLayout::NeedsRefresh(HWND hWnd)
 BOOL CResizableLayout::LikesClipping(HWND hWnd)
 {
 	// check child type
-	CString st;
-	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
-	st.ReleaseBuffer();
+	CString str;
+	::GetClassName(hWnd, str.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	str.ReleaseBuffer();
 
-	DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+	DWORD style = ::GetWindowLong(hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
-	if (st == TOOLBARCLASSNAME && (style & TBSTYLE_TRANSPARENT))
+	if (str == TOOLBARCLASSNAME && (style & TBSTYLE_TRANSPARENT))
 		return FALSE;
-	if (st == "Button" && (style & BS_TYPEMASK) == BS_GROUPBOX)
+	if (str == "Button" && (style & BS_TYPEMASK) == BS_GROUPBOX)
 		return FALSE;
-	if (st == "Static")
+	if (str == "Static")
 	{
 		switch (style & SS_TYPEMASK)
 		{
@@ -359,4 +369,49 @@ BOOL CResizableLayout::LikesClipping(HWND hWnd)
 
 	// assume the others like clipping
 	return TRUE;
+}
+
+void CResizableLayout::CalcNewChildPosition(const CRect &rectParent, CResizableLayout::LayoutInfo &layout, CRect &rectChild, UINT& uFlags)
+{
+	CWnd* pParent = GetResizableWnd();
+
+	CRect rectNew;
+	CWnd* pWnd = CWnd::FromHandle(layout.hWnd); // temporary solution
+
+	pWnd->GetWindowRect(&rectChild);
+	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
+	
+	// calculate new top-left corner
+	rectNew.left = layout.sizeMarginTL.cx + rectParent.Width() * layout.sizeTypeTL.cx / 100;
+	rectNew.top = layout.sizeMarginTL.cy + rectParent.Height() * layout.sizeTypeTL.cy / 100;
+	
+	// calculate new bottom-right corner
+	rectNew.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.sizeTypeBR.cx / 100;
+	rectNew.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.sizeTypeBR.cy / 100;
+
+	// fix for horizontally scrollable windows
+	if (layout.bAdjHScroll && !rectNew.EqualRect(&rectChild))
+	{
+		int diff = rectNew.Width() - rectChild.Width();
+		int max = pWnd->GetScrollLimit(SB_HORZ);
+	
+		layout.bNeedRefresh = FALSE;
+		if (max > 0 && pWnd->GetScrollPos(SB_HORZ) > max - diff)
+		{
+			// needs repainting, due to horiz scrolling
+			layout.bNeedRefresh = TRUE;
+		}
+	}
+
+	// set flags 
+	uFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
+	if (layout.bNeedRefresh)
+		uFlags |= SWP_NOCOPYBITS;
+	if (rectNew.TopLeft() == rectChild.TopLeft())
+		uFlags |= SWP_NOMOVE;
+	if (rectNew.Size() == rectChild.Size())
+		uFlags |= SWP_NOSIZE;
+
+	// update rect
+	rectChild = rectNew;
 }

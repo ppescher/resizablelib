@@ -73,23 +73,29 @@ protected:
 	};
 
 private:
-	// list of repositionable controls (in 2 parts: anchors, callbacks)
-	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;
-	int m_iFirstCallback;		// index of first callback
+	// list of repositionable controls
+	CMap<HWND, HWND, LayoutInfo, LayoutInfo&> m_mapLayout;
+	CList<LayoutInfo, LayoutInfo&> m_listLayoutCB;
 
-	void EnumAndClipChildWindow(HWND hWnd, CRgn* pRegion);
+	void ClipChildWindow(HWND hWnd, CRgn* pRegion);
+
+	void CalcNewChildPosition(const CRect &rectParent,
+		LayoutInfo &layout, CRect &rectChild, UINT& uFlags);
 
 protected:
+	// override to specify clipping for custom or unsupported windows
 	virtual BOOL LikesClipping(HWND hWnd);
+
+	// override to specify refresh for custom or unsupported windows
 	virtual BOOL NeedsRefresh(HWND hWnd);
 
-	// paint background (for XP theme's compatibility)
+	// paint the background on the given DC (for XP theme's compatibility)
 	void EraseBackground(CDC* pDC);
 
-	// support legacy code
+	// clip out child windows from the given DC (support old code)
 	void ClipChildren(CDC* pDC);
 
-	// clip child windows in the specified region
+	// get the clipping region (without clipped child windows)
 	void GetClippingRegion(CRgn* pRegion);
 	
 	// override for scrollable or expanding parent windows
@@ -108,23 +114,56 @@ protected:
 	// add a callback (control ID or HWND is unknown or may change)
 	void AddAnchorCallback(UINT nCallbackID);
 
+	// get rect of an anchored window, given the parent's client area
+	BOOL GetAnchorPosition(HWND hWnd, const CRect &rectParent,
+		CRect &rectChild, UINT& uFlags)
+	{
+		LayoutInfo layout;
+		if (!m_mapLayout.Lookup(hWnd, layout))
+			return FALSE;
+
+		CalcNewChildPosition(rectParent, layout, rectChild, uFlags);
+		return TRUE;
+	}
+
+	// get rect of an anchored window, given the parent's client area
+	BOOL GetAnchorPosition(UINT nID, const CRect &rectParent,
+		CRect &rectChild, UINT& uFlags)
+	{
+		return GetAnchorPosition(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+			rectParent, rectChild, uFlags);
+	}
+
+	// remove an anchored control from the layout, given its HWND
+	void RemoveAnchor(HWND hWnd)
+	{
+		m_mapLayout.RemoveKey(hWnd);
+	}
+
+	// remove an anchored control from the layout, given its HWND
+	void RemoveAnchor(UINT nID)
+	{
+		RemoveAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID));
+	}
+
+	// reset layout content
+	void RemoveAllAnchors()
+	{
+		m_mapLayout.RemoveAll();
+		m_listLayoutCB.RemoveAll();
+	}
+
 	// adjust children's layout, when parent's size changes
 	void ArrangeLayout();
 
 	// override to provide dynamic control's layout info
 	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
 
-	// reset layout content
-	void RemoveAllAnchors()
-	{
-		m_arrLayout.RemoveAll();
-		m_iFirstCallback = 0;
-	}
-
+	// override to provide the parent window
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
-	CResizableLayout() { m_iFirstCallback = 0; }
+	CResizableLayout() { }
 
 	virtual ~CResizableLayout()
 	{
