@@ -59,6 +59,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableDialog)
 	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -86,8 +87,8 @@ protected:
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

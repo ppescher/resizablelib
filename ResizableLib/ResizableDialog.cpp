@@ -59,46 +59,36 @@ BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
+	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog message handlers
 
-int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableDialog::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CDialog::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
+	if (!CDialog::OnNcCreate(lpCreateStruct))
+		return FALSE;
+	
 	// child dialogs don't want resizable border or size grip,
 	// nor they can handle the min/max size constraints
-	BOOL bChild = GetStyle() & WS_CHILD;
-
-	if (!bChild)
-	{
-		// keep client area
-		CRect rect;
-		GetClientRect(&rect);
-		// set resizable style
-		ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
-		// adjust size to reflect new style
-		::AdjustWindowRectEx(&rect, GetStyle(),
-			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-		SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
-			SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
-
-		// set the initial size as the min track size
-		SetMinTrackSize(rect.Size());
-	}
+	BOOL bChild = lpCreateStruct->style & WS_CHILD;
 
 	// create and init the size-grip
 	if (!CreateSizeGrip(!bChild))
-		return -1;
+		return FALSE;
 
-	return 0;
+	if (!bChild)
+	{
+		// set the initial size as the min track size
+		SetMinTrackSize(CSize(lpCreateStruct->cx, lpCreateStruct->cy));
+	}
+	
+	MakeResizable(lpCreateStruct);
+
+	return TRUE;
 }
 
 void CResizableDialog::OnDestroy() 
@@ -147,7 +137,6 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	LoadWindowRect(pszSection, bRectOnly);
 }
 
-
 BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC) 
 {
 	ClipChildren(pDC, FALSE);
@@ -157,4 +146,16 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 	ClipChildren(pDC, TRUE);
 
 	return bRet;
+}
+
+LRESULT CResizableDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CDialog::WindowProc(message, wParam, lParam);
+
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CDialog::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }
