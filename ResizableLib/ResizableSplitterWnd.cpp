@@ -113,11 +113,12 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 				sizeMax.cy += max + m_cySplitterGap;
 			sizeMin.cy += min + m_cySplitterGap;
 		}
-		// adjust total size
-		sizeMax.cx -= m_cxSplitterGap;
-		sizeMax.cy -= m_cySplitterGap;
-		sizeMin.cx -= m_cxSplitterGap;
-		sizeMin.cy -= m_cySplitterGap;
+		// adjust total size: add the client border and
+		// we counted one splitter more than necessary
+		sizeMax.cx += 2*m_cxBorder - m_cxSplitterGap;
+		sizeMax.cy += 2*m_cyBorder - m_cySplitterGap;
+		sizeMin.cx += 2*m_cxBorder - m_cxSplitterGap;
+		sizeMin.cy += 2*m_cyBorder - m_cySplitterGap;
 		// add non-client size
 		CRect rectExtra(0,0,0,0);
 		::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
