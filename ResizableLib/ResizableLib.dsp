@@ -180,7 +180,25 @@ SOURCE=.\ResizablePage.cpp
 # Begin Source File
 
 SOURCE=.\ResizablePageEx.cpp
+
+!IF  "$(CFG)" == "ResizableLib - Win32 Release"
+
 # SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
+
+# ADD CPP /Yu
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -189,7 +207,29 @@ SOURCE=.\ResizableSheet.cpp
 # Begin Source File
 
 SOURCE=.\ResizableSheetEx.cpp
+
+!IF  "$(CFG)" == "ResizableLib - Win32 Release"
+
 # SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
+
+# ADD CPP /Yu
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableSplitterWnd.cpp
 # End Source File
 # Begin Source File
 
@@ -267,6 +307,10 @@ SOURCE=.\ResizableSheet.h
 # Begin Source File
 
 SOURCE=.\ResizableSheetEx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableSplitterWnd.h
 # End Source File
 # Begin Source File
 
