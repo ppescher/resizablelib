@@ -86,8 +86,10 @@ int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
 
-	if (!InitGrip())
+	// create and init the size-grip
+	if (!CreateSizeGrip())
 		return -1;
+	ShowSizeGrip(); // show by default
 
 	return 0;
 }
@@ -217,7 +219,7 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 		return;		// arrangement not needed
 
 	// update size-grip
-	UpdateGripPos();
+	UpdateSizeGrip();
 
 	ArrangeLayout();
 }

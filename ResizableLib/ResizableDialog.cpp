@@ -86,9 +86,10 @@ int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// set the initial size as the min track size
 	SetMinTrackSize(rect.Size());
 
-	// create and reposition the size-grip
-	if (!InitGrip())
+	// create and init the size-grip
+	if (!CreateSizeGrip())
 		return -1;
+	ShowSizeGrip(); // show by default
 
 	return 0;
 }
@@ -112,7 +113,7 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 		return;		// arrangement not needed
 
 	// update size-grip
-	UpdateGripPos();
+	UpdateSizeGrip();
 
 	ArrangeLayout();
 }
