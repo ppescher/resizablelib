@@ -26,7 +26,7 @@
 
 // useful compatibility constants (the only one required is NOANCHOR)
 
-const CSize NOANCHOR(-1,-1),
+const CSize
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
@@ -41,7 +41,7 @@ protected:
 		HWND hWnd;
 		UINT nCallbackID;
 
-		CString sWndClass;
+		TCHAR sWndClass[MAX_PATH];
 
 		// upper-left corner
 		SIZE sizeTypeTL;
@@ -60,12 +60,13 @@ protected:
 		{ }
 
 		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
-			SIZE br_t, SIZE br_m, CString classname)
-			: hWnd(hwnd), nCallbackID(0),
-			sWndClass(classname), bMsgSupport(FALSE),
+			SIZE br_t, SIZE br_m)
+			: hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
 			sizeTypeTL(tl_t), sizeMarginTL(tl_m),
 			sizeTypeBR(br_t), sizeMarginBR(br_m)
-		{ }
+		{
+			sWndClass[0] = 0;
+		}
 	};
 
 private:
@@ -106,13 +107,26 @@ protected:
 	virtual void GetTotalClientRect(LPRECT lpRect);
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR = NOANCHOR);
+	void AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR);
+
+	// add anchors to a control, given its HWND
+	void AddAnchor(HWND hWnd, CSize sizeTypeTL)
+	{
+		AddAnchor(hWnd, sizeTypeTL, sizeTypeTL);
+	}
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT nID, CSize sizeTypeTL, CSize sizeTypeBR = NOANCHOR)
+	void AddAnchor(UINT nID, CSize sizeTypeTL, CSize sizeTypeBR)
 	{
 		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
 			sizeTypeTL, sizeTypeBR);
+	}
+
+	// add anchors to a control, given its ID
+	void AddAnchor(UINT nID, CSize sizeTypeTL)
+	{
+		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+			sizeTypeTL, sizeTypeTL);
 	}
 
 	// add a callback (control ID or HWND is unknown or may change)

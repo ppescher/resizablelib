@@ -47,11 +47,6 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	// top-left anchor must be valid
 	ASSERT(sizeTypeTL != NOANCHOR);
 
-	// get control's window class
-	CString sClassName;
-	GetClassName(hWnd, sClassName.GetBufferSetLength(MAX_PATH), MAX_PATH);
-	sClassName.ReleaseBuffer();
-
 	// get parent window's rect
 	CRect rectParent;
 	GetTotalClientRect(&rectParent);
@@ -66,9 +61,6 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	// go calculate margins
 	CSize sizeMarginTL, sizeMarginBR;
 
-	if (sizeTypeBR == NOANCHOR)
-		sizeTypeBR = sizeTypeTL;
-	
 	// calculate margin for the top-left corner
 
 	sizeMarginTL.cx = rectChild.left - rectParent.Width() * sizeTypeTL.cx / 100;
@@ -81,7 +73,10 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 
 	// prepare the structure
 	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
-		sizeTypeBR, sizeMarginBR, sClassName);
+		sizeTypeBR, sizeMarginBR);
+
+	// get control's window class
+	GetClassName(hWnd, layout.sWndClass, MAX_PATH);
 
 	// initialize resize properties (overridable)
 	InitResizeProperties(layout);
@@ -322,7 +317,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	BOOL bRefresh = FALSE;
 
 	// window classes that need refresh when resized
-	if (layout.sWndClass == WC_STATIC)
+	if (0 == lstrcmp(layout.sWndClass, WC_STATIC))
 	{
 		DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
@@ -364,7 +359,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	// window classes that don't redraw client area correctly
 	// when the hor scroll pos changes due to a resizing
 	BOOL bHScroll = FALSE;
-	if (layout.sWndClass == WC_LISTBOX)
+	if (0 == lstrcmp(layout.sWndClass, WC_LISTBOX))
 		bHScroll = TRUE;
 
 	// fix for horizontally scrollable windows
@@ -404,7 +399,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 	DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
-	if (layout.sWndClass == WC_BUTTON)
+	if (0 == lstrcmp(layout.sWndClass, WC_BUTTON))
 	{
 		CRect rect;
 		switch (style & _BS_TYPEMASK)
@@ -424,7 +419,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 		}
 		return TRUE;
 	}
-	else if (layout.sWndClass == WC_STATIC)
+	else if (0 == lstrcmp(layout.sWndClass, WC_STATIC))
 	{
 		switch (style & SS_TYPEMASK)
 		{
