@@ -381,6 +381,10 @@ SOURCE=.\ResizableState.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableVersion.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableWndState.cpp
 # End Source File
 # Begin Source File
@@ -463,6 +467,10 @@ SOURCE=.\ResizableSplitterWnd.h
 # Begin Source File
 
 SOURCE=.\ResizableState.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableVersion.h
 # End Source File
 # Begin Source File
 
