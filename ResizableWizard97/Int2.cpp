@@ -70,6 +70,7 @@ BOOL CInterior2::OnInitDialog()
 	AddAnchor(IDC_STATIC1, TOP_LEFT, MIDDLE_RIGHT);
 	AddAnchor(IDC_RADIO2, MIDDLE_LEFT, MIDDLE_RIGHT);
 	AddAnchor(IDC_STATIC2, MIDDLE_LEFT, BOTTOM_RIGHT);
+	AddAnchor(IDC_STATIC3, TOP_LEFT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

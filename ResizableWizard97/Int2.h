@@ -33,7 +33,7 @@ public:
 
 // Dialog Data
 	//{{AFX_DATA(CInterior2)
-	enum { IDD = IDD_INTERIOR2_NEW };
+	enum { IDD = IDD_INTERIOR2 };
 		// NOTE - ClassWizard will add data members here.
 		//    DO NOT EDIT what you see in these blocks of generated code !
 	//}}AFX_DATA

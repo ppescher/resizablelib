@@ -66,6 +66,8 @@ BOOL CIntroPage::OnInitDialog()
 {
 	CResizablePageEx::OnInitDialog();
 	
+	AddAnchor(IDC_BOLDTITLE, TOP_LEFT);
+	AddAnchor(IDC_BIGBOLDTITLE, TOP_LEFT);
 	AddAnchor(IDC_TRANSPARENT1, TOP_LEFT, MIDDLE_RIGHT);
 	AddAnchor(IDC_TRANSPARENT2, MIDDLE_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_TRANSPARENT3, BOTTOM_LEFT);
@@ -73,5 +75,3 @@ BOOL CIntroPage::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
-
-

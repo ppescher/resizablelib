@@ -31,6 +31,7 @@ CInterior1::CInterior1() : CResizablePageEx(CInterior1::IDD, 0, IDS_HEADERTITLE,
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	//m_strHeaderTitle = "Setup Page (Test)";
+	//m_psp.dwFlags |= PSP_HIDEHEADER;
 }
 
 CInterior1::~CInterior1()
@@ -72,6 +73,7 @@ BOOL CInterior1::OnInitDialog()
 	AddAnchor(IDC_BUTTON1, BOTTOM_RIGHT);
 	AddAnchor(IDC_STATIC1, BOTTOM_LEFT, BOTTOM_CENTER);
 	AddAnchor(IDC_STATIC2, BOTTOM_CENTER, BOTTOM_RIGHT);
+	AddAnchor(IDC_STATIC3, TOP_LEFT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE

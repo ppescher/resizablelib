@@ -33,7 +33,7 @@ public:
 
 // Dialog Data
 	//{{AFX_DATA(CCompletion)
-	enum { IDD = IDD_COMPLETION_NEW };
+	enum { IDD = IDD_COMPLETION };
 		// NOTE - ClassWizard will add data members here.
 		//    DO NOT EDIT what you see in these blocks of generated code !
 	//}}AFX_DATA
@@ -52,7 +52,7 @@ public:
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CCompletion)
-		// NOTE: the ClassWizard will add member functions here
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 

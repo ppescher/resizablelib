@@ -33,7 +33,7 @@ public:
 
 // Dialog Data
 	//{{AFX_DATA(CIntroPage)
-	enum { IDD = IDD_INTRO_NEW };
+	enum { IDD = IDD_INTRO };
 		// NOTE - ClassWizard will add data members here.
 		//    DO NOT EDIT what you see in these blocks of generated code !
 	//}}AFX_DATA

@@ -48,7 +48,6 @@ void CCompletion::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCompletion, CResizablePageEx)
 	//{{AFX_MSG_MAP(CCompletion)
-		// NOTE: the ClassWizard will add message map macros here
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -61,4 +60,16 @@ BOOL CCompletion::OnSetActive()
 	ASSERT_KINDOF(CPropertySheet, pSheet);
 	pSheet->SetWizardButtons( PSWIZB_BACK | PSWIZB_NEXT | PSWIZB_FINISH);
 	return CResizablePageEx::OnSetActive();
+}
+
+BOOL CCompletion::OnInitDialog() 
+{
+	CResizablePageEx::OnInitDialog();
+
+	AddAnchor(IDC_BOLDTITLE, TOP_LEFT);
+	AddAnchor(IDC_BIGBOLDTITLE, TOP_LEFT);
+	AddAnchor(IDC_TRANSPARENT1, TOP_LEFT);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
 }
