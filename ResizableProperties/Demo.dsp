@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W4 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MT /W4 /GX /O2 /I "..\ResizableLib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "NDEBUG" /d "_AFXDLL"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\ResizableLib" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG" /d "_AFXDLL"
@@ -112,30 +112,6 @@ SOURCE=.\MyPropertySheet.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ResizableGrip.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableLayout.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableMinMax.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizablePage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableSheet.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableState.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -158,30 +134,6 @@ SOURCE=.\MyPropertyPages.h
 # Begin Source File
 
 SOURCE=.\MyPropertySheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableGrip.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableLayout.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableMinMax.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizablePage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableSheet.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResizableState.h
 # End Source File
 # Begin Source File
 

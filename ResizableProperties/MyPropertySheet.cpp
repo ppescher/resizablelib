@@ -40,6 +40,8 @@ END_MESSAGE_MAP()
 BOOL CMyPropertySheet::OnInitDialog() 
 {
 	CResizableSheet::OnInitDialog();
+
+	// ModifyStyleEx(WS_EX_DLGMODALFRAME, 0);	// enable sys menu and icon
 	
 	// set minimal size
 	CRect rc;
