@@ -1,5 +1,3 @@
-// ResizableWndState.h: interface for the CResizableWndState class.
-//
 /////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of ResizableLib
@@ -17,6 +15,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+/*!
+ *  @file
+ *  @brief Interface for the CResizableWndState class.
+ */
+
 #if !defined(AFX_RESIZABLEWNDSTATE_H__INCLUDED_)
 #define AFX_RESIZABLEWNDSTATE_H__INCLUDED_
 
@@ -26,13 +29,28 @@
 
 #include "ResizableState.h"
 
+/*! @addtogroup CoreComponents
+ *  @{
+ */
+
+//! @brief Persists window position, size and state
+/*!
+ *  Derive from this class when you want to persist the size, position and
+ *  minimized/maximized state of top level windows.
+ *  This class is used in the provided resizable counterparts of
+ *  the standard MFC window and dialog classes.
+ */
 class CResizableWndState : public CResizableState  
 {
 protected:
-	// non-zero if successful
+
+	//! @brief Load and set the window position and size
 	BOOL LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly);
+
+	//! @brief Save the current window position and size
 	BOOL SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly);
 
+	//! @brief Override to provide the parent window
 	virtual CWnd* GetResizableWnd() const = 0;
 
 public:
@@ -40,4 +58,5 @@ public:
 	virtual ~CResizableWndState();
 };
 
+// @}
 #endif // !defined(AFX_RESIZABLEWNDSTATE_H__INCLUDED_)

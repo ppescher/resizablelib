@@ -1,5 +1,3 @@
-// ResizableSheetState.h: interface for the CResizableSheetState class.
-//
 /////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of ResizableLib
@@ -17,6 +15,11 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+/*!
+ *  @file
+ *  @brief Interface for the CResizableSheetState class.
+ */
+
 #if !defined(AFX_RESIZABLESHEETSTATE_H__INCLUDED_)
 #define AFX_RESIZABLESHEETSTATE_H__INCLUDED_
 
@@ -26,13 +29,28 @@
 
 #include "ResizableWndState.h"
 
+/*! @addtogroup CoreComponents
+ *  @{
+ */
+
+//! @brief Persists active page in property sheets or wizard dialogs
+/*!
+ *  Derive from this class when you want to persist the active page
+ *  in property sheets or wizard dialogs.
+ *  This class is used in the provided resizable counterparts of
+ *  the standard MFC property sheet classes.
+ */
 class CResizableSheetState : public CResizableWndState  
 {
 protected:
-	// non-zero if successful
+
+	//! @brief Load and set the active property page 
 	BOOL LoadPage(LPCTSTR pszName);
+
+	//! @brief Save the current active property page 
 	BOOL SavePage(LPCTSTR pszName);
 
+	//! @brief Override to provide the parent window
 	virtual CWnd* GetResizableWnd() const = 0;
 
 public:
@@ -40,4 +58,5 @@ public:
 	virtual ~CResizableSheetState();
 };
 
+// @}
 #endif // !defined(AFX_RESIZABLESHEETSTATE_H__INCLUDED_)
