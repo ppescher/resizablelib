@@ -31,17 +31,18 @@ BOOL CResizableSheetState::SavePage(LPCTSTR pszName)
 	// cannot use GetActivePage, because it always fails
 
 	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
+	if (pSheet == NULL)
+		return FALSE;
 
+	int page = pSheet->m_psh.nStartPage;
 	CTabCtrl *pTab = pSheet->GetTabControl();
-	int page = 0;
-
 	if (pTab != NULL) 
 		page = pTab->GetCurSel();
 	if (page < 0)
 		page = pSheet->m_psh.nStartPage;
 
 	CString data, id;
-	data.Format("%d", page);
+	_itot(page, data.GetBuffer(10), 10);
 	id = CString(pszName) + ACTIVEPAGE;
 	return WriteState(id, data);
 }
@@ -57,6 +58,7 @@ BOOL CResizableSheetState::LoadPage(LPCTSTR pszName)
 	
 	int page = _ttoi(data);
 	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
-	pSheet->SetActivePage(page);
-	return TRUE;
+	if (pSheet != NULL)
+		return pSheet->SetActivePage(page);
+	return FALSE;
 }
