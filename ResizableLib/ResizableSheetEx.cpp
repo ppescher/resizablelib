@@ -384,3 +384,8 @@ void CResizableSheetEx::LoadPage()
 		ArrangeLayout();	// needs refresh
 	}
 }
+
+void CResizableSheetEx::RefreshLayout()
+{
+	SendMessage(WM_SIZE);
+}

@@ -352,3 +352,7 @@ void CResizableSheet::LoadPage()
 	}
 }
 
+void CResizableSheet::RefreshLayout()
+{
+	SendMessage(WM_SIZE);
+}

@@ -67,6 +67,7 @@ public:
 
 // Implementation
 public:
+	void RefreshLayout();
 	virtual ~CResizableSheet();
 
 // used internally
