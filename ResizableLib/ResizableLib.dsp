@@ -275,6 +275,10 @@ SOURCE=.\ResizableMinMax.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableMsgSupport.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizablePage.cpp
 # End Source File
 # Begin Source File
