@@ -213,7 +213,15 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout) const
 		if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
 			return FALSE; // no page yet
 
+		// temporarily resize the tab control to calc page size
+		CRect rectSave;
+		pTab->GetWindowRect(rectSave);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
+		pTab->SetRedraw(FALSE);
+		pTab->MoveWindow(rectPage, FALSE);
 		pTab->AdjustRect(FALSE, &rectPage);
+		pTab->MoveWindow(rectSave, FALSE);
+		pTab->SetRedraw(TRUE);
 
 		// set margins
 		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
@@ -221,8 +229,8 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout) const
 	}
 
 	// set anchor types
-	layout.sizeTypeTL = TOP_LEFT;
-	layout.sizeTypeBR = BOTTOM_RIGHT;
+	layout.anchorTypeTL = TOP_LEFT;
+	layout.anchorTypeBR = BOTTOM_RIGHT;
 
 	// use this layout info
 	return TRUE;
@@ -278,10 +286,26 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, CSize sizeChild, CSize &
 
 	// get margin caused by tabcontrol
 	CRect rectTabMargins(0,0,0,0);
+
+	// get tab position after resizing and calc page rect
+	CRect rectPage, rectSheet;
+	GetTotalClientRect(&rectSheet);
+
+	if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
+		return FALSE; // no page yet
+
+	// temporarily resize the tab control to calc page size
+	CRect rectSave;
+	pTab->GetWindowRect(rectSave);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
+	pTab->SetRedraw(FALSE);
+	pTab->MoveWindow(rectPage, FALSE);
 	pTab->AdjustRect(TRUE, &rectTabMargins);
+	pTab->MoveWindow(rectSave, FALSE);
+	pTab->SetRedraw(TRUE);
 
 	// add non-client size
-	::AdjustWindowRectEx(&rectTabMargins, GetStyle(),
+	::AdjustWindowRectEx(&rectTabMargins, GetStyle(), !(GetStyle() & WS_CHILD) &&
 		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
 
 	// compute extra size
@@ -306,7 +330,7 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			// use pre-calculated margins
 			CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
 			// add non-client size
-			::AdjustWindowRectEx(&rectExtra, GetStyle(),
+			::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
 				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
 			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
 		}
