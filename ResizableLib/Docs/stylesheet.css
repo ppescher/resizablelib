@@ -150,6 +150,7 @@ TD.md TD.md
 }
 TD CODE
 {
+	display: inline;
 	border: none;
 	padding: 0px;
 	background-color: transparent;
