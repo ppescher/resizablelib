@@ -171,6 +171,11 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		// (standard grip returns DLGC_WANTARROWS, like any standard scrollbar)
 		return DLGC_STATIC;
 
+	case WM_SETFOCUS:
+		// fix to prevent the control to gain focus, if set directly
+		// (for example when it's the only one control in a dialog)
+		return 0;
+
 	case WM_NCHITTEST:
 		// choose proper cursor shape
 		if (IsRTL())
