@@ -1,12 +1,28 @@
 // ResizableVersion.cpp: implementation of the CResizableVersion class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2000-2004 by Paolo Messina
+// (http://www.geocities.com/ppescher - ppescher@hotmail.com)
+//
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
+/////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "ResizableVersion.h"
 
 //////////////////////////////////////////////////////////////////////
 // Static initializer object (with macros to hide in ClassView)
+
+// static intializer must be called before user code
+#pragma warning(disable:4073)
+#pragma init_seg(lib)
 
 #ifdef _UNDEFINED_
 #define BEGIN_HIDDEN {
@@ -41,7 +57,7 @@ static OSVERSIONINFOEX g_osviWindows;
 static void CheckOsVersion()
 {
 	// Try calling GetVersionEx using the OSVERSIONINFOEX structure.
-	ZeroMemory(&g_dviCommCtrls, sizeof(DLLVERSIONINFO));
+	ZeroMemory(&g_osviWindows, sizeof(OSVERSIONINFOEX));
 	g_osviWindows.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	if (GetVersionEx((LPOSVERSIONINFO)&g_osviWindows))
 		return;
@@ -62,7 +78,7 @@ static void CheckOsVersion()
 static void CheckCommCtrlsVersion()
 {
 	// Check Common Controls version
-	ZeroMemory(&g_osviWindows, sizeof(OSVERSIONINFOEX));
+	ZeroMemory(&g_dviCommCtrls, sizeof(DLLVERSIONINFO));
 	HMODULE hMod = ::LoadLibrary(_T("comctl32.dll"));
 	if (hMod != NULL)
 	{
@@ -75,7 +91,10 @@ static void CheckCommCtrlsVersion()
 			// Obtain version information
 			g_dviCommCtrls.cbSize = sizeof(DLLVERSIONINFO);
 			if (SUCCEEDED(pfnDllGetVersion(&g_dviCommCtrls)))
+			{
+				::FreeLibrary(hMod);
 				return;
+			}
 		}
 
 		::FreeLibrary(hMod);
