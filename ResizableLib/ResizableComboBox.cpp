@@ -15,6 +15,8 @@ static char THIS_FILE[] = __FILE__;
 
 CResizableComboBox::CResizableComboBox()
 {
+	m_bClipMaxHeight = TRUE;
+	m_bIntegralHeight = TRUE;
 }
 
 CResizableComboBox::~CResizableComboBox()
@@ -55,6 +57,14 @@ HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 LRESULT CResizableComboBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
+	switch (message)
+	{
+	case CB_GETDROPPEDCONTROLRECT:
+		*(LPRECT)lParam = m_rectDropDown;
+		MapWindowPoints(NULL, (LPRECT)lParam);
+		return TRUE;
+	}
+
 	LRESULT lResult = CComboBox::WindowProc(message, wParam, lParam);
 
 	// if listbox is attached, update horizontal extent
@@ -122,7 +132,81 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 
 void CResizableComboBox::PreSubclassWindow() 
 {
+	ASSERT(GetStyle() & CBS_NOINTEGRALHEIGHT);
+
 	InitHorizontalExtent();
 	
+	GetDroppedControlRect(&m_rectDropDown);
+	::MapWindowPoints(NULL, GetSafeHwnd(),
+		(LPPOINT)&m_rectDropDown, 2);
+	
 	CComboBox::PreSubclassWindow();
+}
+
+int CResizableComboBox::MakeIntegralHeight(const int height)
+{
+	int inth = height;	// integral height (result)
+	int availh = height;	// available height
+	int n = GetCount();
+
+	DWORD dwStyle = GetStyle();
+
+	if (!m_bIntegralHeight || n == 0)
+		return inth;
+	
+	if (dwStyle & CBS_OWNERDRAWVARIABLE)
+	{
+		inth = 0;	// try to reach availh by integral steps
+
+		// use items below the first visible
+		for (int i=GetTopIndex(); availh>0 && i<n; i++)
+		{
+			int h = GetItemHeight(i);
+			if (h == CB_ERR)
+				break;
+
+			inth += h;
+			availh -= h;
+		}
+		// to fill the remaining height, use items above
+		for (i=GetTopIndex()-1; availh>0 && i>=0; i--)
+		{
+			int h = GetItemHeight(i);
+			if (h == CB_ERR)
+				break;
+
+			inth += h;
+			availh -= h;
+		}
+		// scroll into view
+		SetTopIndex(i);
+
+		if (!m_bClipMaxHeight) // it can be higher than all the items
+		{
+			// to fill the remaining height, use last item
+			int h = GetItemHeight(n-1);
+			if (h != CB_ERR)
+			{
+				inth += availh - availh % h;
+			}
+		}
+	}
+	else
+	{
+		// every item has the same height (take the first)
+		int h = GetItemHeight(0);
+		if (h != CB_ERR && n != CB_ERR)
+		{
+			int rows = availh / h;
+			// can't be higher than all the items
+			if (m_bClipMaxHeight && rows > n)
+				rows = n;
+			inth = rows * h;
+			// scroll into view
+			if (n - rows < GetTopIndex())
+				SetTopIndex(n-rows);
+		}
+	}
+
+	return inth;
 }

@@ -7,6 +7,8 @@
 // ResizableComboLBox.h : header file
 //
 
+class CResizableComboBox;
+
 /////////////////////////////////////////////////////////////////////////////
 // CResizableComboLBox window
 
@@ -47,11 +49,9 @@ private:
 protected:
 	DWORD m_dwAddToStyle;
 	DWORD m_dwAddToStyleEx;
-	BOOL m_bClipMaxHeight;
 	CSize m_sizeMin;			// initial size (minimum)
-	CComboBox* m_pOwnerCombo;	// owner combobox
+	CResizableComboBox* m_pOwnerCombo;	// owner combobox
 
-	int MakeIntegralHeight(const int height);
 	void ApplyLimitsToPos(WINDOWPOS* lpwndpos);
 	void EndSizing();
 

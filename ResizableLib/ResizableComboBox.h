@@ -14,6 +14,8 @@
 
 class CResizableComboBox : public CComboBox
 {
+	friend class CResizableComboLBox;
+
 // Construction
 public:
 	CResizableComboBox();
@@ -40,10 +42,14 @@ public:
 	virtual ~CResizableComboBox();
 
 protected:
+	RECT m_rectDropDown;
+	BOOL m_bClipMaxHeight;
+	BOOL m_bIntegralHeight;
 	int m_iExtent;
 
 	void InitHorizontalExtent();
 	void UpdateHorizontalExtent(LPCTSTR szText);
+	int MakeIntegralHeight(const int height);
 
 // Generated message map functions
 protected:

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "ResizableComboLBox.h"
+#include "ResizableComboBox.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -17,7 +18,6 @@ CResizableComboLBox::CResizableComboLBox()
 {
 	m_dwAddToStyle = WS_THICKFRAME;
 	m_dwAddToStyleEx = 0;//WS_EX_CLIENTEDGE;
-	m_bClipMaxHeight = TRUE;
 	m_bSizing = FALSE;
 }
 
@@ -29,11 +29,11 @@ CResizableComboLBox::~CResizableComboLBox()
 
 BEGIN_MESSAGE_MAP(CResizableComboLBox, CWnd)
 	//{{AFX_MSG_MAP(CResizableComboLBox)
-	ON_WM_CAPTURECHANGED()
+	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	ON_WM_MOUSEMOVE()
 	ON_WM_NCHITTEST()
+	ON_WM_CAPTURECHANGED()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_WINDOWPOSCHANGED()
 	//}}AFX_MSG_MAP
@@ -231,7 +231,7 @@ void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 	CWnd::OnWindowPosChanging(lpwndpos);
 }
 
-void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* /*lpwndpos*/) 
+void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* lpwndpos) 
 {
 	// default implementation sends a WM_SIZE message
 	// that can change the size again to force integral height
@@ -239,6 +239,12 @@ void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* /*lpwndpos*/)
 	// since we do that manually during resize, we should also
 	// update the horizontal scrollbar 
 	SendMessage(WM_HSCROLL, SB_ENDSCROLL, 0);
+
+	GetWindowRect(&m_pOwnerCombo->m_rectDropDown);
+	::MapWindowPoints(NULL, m_pOwnerCombo->GetSafeHwnd(),
+		(LPPOINT)&m_pOwnerCombo->m_rectDropDown, 2);
+
+	CWnd::OnWindowPosChanged(lpwndpos);
 }
 
 void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
@@ -274,7 +280,7 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 
 	//TRACE(">H c(%d)\n", sizeClient.cy);
 	// adjust height, if needed
-	sizeClient.cy = MakeIntegralHeight(sizeClient.cy);
+	sizeClient.cy = m_pOwnerCombo->MakeIntegralHeight(sizeClient.cy);
 	//TRACE(">H c(%d)\n", sizeClient.cy);
 
 	// back to window rect
@@ -288,70 +294,3 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 	//TRACE("H c(%d) w(%d)\n", sizeClient.cy, lpwndpos->cy);
 }
 
-int CResizableComboLBox::MakeIntegralHeight(const int height)
-{
-	int inth = height;	// integral height (result)
-	int availh = height;	// available height
-	int n = m_pOwnerCombo->GetCount();
-
-	DWORD dwStyle = GetStyle();
-
-	if (dwStyle & LBS_NOINTEGRALHEIGHT || n == 0)
-		return inth;
-	
-	if (dwStyle & LBS_OWNERDRAWVARIABLE)
-	{
-		inth = 0;	// try to reach availh by integral steps
-
-		// use items below the first visible
-		for (int i=m_pOwnerCombo->GetTopIndex(); availh>0 && i<n; i++)
-		{
-			int h = m_pOwnerCombo->GetItemHeight(i);
-			if (h == LB_ERR)
-				break;
-
-			inth += h;
-			availh -= h;
-		}
-		// to fill the remaining height, use items above
-		for (i=m_pOwnerCombo->GetTopIndex()-1; availh>0 && i>=0; i--)
-		{
-			int h = m_pOwnerCombo->GetItemHeight(i);
-			if (h == LB_ERR)
-				break;
-
-			inth += h;
-			availh -= h;
-		}
-		// scroll into view
-		m_pOwnerCombo->SetTopIndex(i);
-
-		if (!m_bClipMaxHeight) // it can be higher than all the items
-		{
-			// to fill the remaining height, use last item
-			int h = m_pOwnerCombo->GetItemHeight(n-1);
-			if (h != LB_ERR)
-			{
-				inth += availh - availh % h;
-			}
-		}
-	}
-	else
-	{
-		// every item has the same height (take the first)
-		int h = m_pOwnerCombo->GetItemHeight(0);
-		if (h != LB_ERR && n != LB_ERR)
-		{
-			int rows = availh / h;
-			// can't be higher than all the items
-			if (m_bClipMaxHeight && rows > n)
-				rows = n;
-			inth = rows * h;
-			// scroll into view
-			if (n - rows < m_pOwnerCombo->GetTopIndex())
-				m_pOwnerCombo->SetTopIndex(n-rows);
-		}
-	}
-
-	return inth;
-}
