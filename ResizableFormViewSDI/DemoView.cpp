@@ -93,6 +93,7 @@ BOOL CDemoView::OnInitDialog()
 	CResizableFormView::OnInitDialog();
 	
 	// add controls to the layout here
+	AddAnchor(IDC_EDIT1, TOP_LEFT);
 	AddAnchor(IDC_LIST1, TOP_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_GROUP1, TOP_LEFT, BOTTOM_LEFT);
 	AddAnchor(IDC_RADIO1, TOP_LEFT);
