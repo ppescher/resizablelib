@@ -79,17 +79,18 @@ class CResizableLayout
 		}
 	};
 
-	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;	// list of repositionable controls
+	// list of repositionable controls (in 2 parts: anchors, callbacks)
+	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;
+	int iFirstCallback;		// index of first callback
 
-	CDC* m_pClipDC;
-	static BOOL CALLBACK EnumAndClipChildWindow(HWND hWnd, LPARAM lParam);
+	void EnumAndClipChildWindow(HWND hWnd, CDC* pDC);
 
 protected:
 	virtual BOOL LikesClipping(HWND hWnd);
 	virtual BOOL NeedsRefresh(HWND hWnd);
 
 	// exclude child windows from the clipping region
-	void ClipChildren(CDC *pDC, BOOL bOnlyAnchored = FALSE);
+	void ClipChildren(CDC *pDC);
 	
 	// override for scrollable or expanding parent windows
 	virtual void GetTotalClientRect(LPRECT lpRect);
@@ -117,12 +118,13 @@ protected:
 	void RemoveAllAnchors()
 	{
 		m_arrLayout.RemoveAll();
+		iFirstCallback = 0;
 	}
 
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
-	CResizableLayout() { m_pClipDC = NULL; }
+	CResizableLayout() { iFirstCallback = 0; }
 
 	virtual ~CResizableLayout()
 	{
