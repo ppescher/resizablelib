@@ -1,5 +1,7 @@
 Debug
+Debug_Static
 Release
+Release_Static
 *.clw
 *.aps
 *.ncb
