@@ -108,15 +108,6 @@ BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*lay
 
 void CResizableLayout::ArrangeLayout()
 {
-	CWnd* pParent = GetResizableWnd();
-	BOOL bParentVisible = pParent->IsWindowVisible();
-
-	if (bParentVisible)
-	{
-		//pParent->LockWindowUpdate();
-		pParent->SetRedraw(FALSE);
-	}
-
 	// common vars
 	UINT uFlags;
 	LayoutInfo layout;
@@ -172,13 +163,6 @@ void CResizableLayout::ArrangeLayout()
 		}
 	}
 	::EndDeferWindowPos(hdwp);
-
-	if (bParentVisible)
-	{
-		//pParent->UnlockWindowUpdate();
-		pParent->SetRedraw(TRUE);
-		pParent->Invalidate(TRUE);
-	}
 }
 
 void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layout,
@@ -265,7 +249,7 @@ void CResizableLayout::EraseBackground(CDC* pDC)
 	HBRUSH hBrush = NULL;
 	// is this a dialog box?
 	ATOM atomWndClass = (ATOM)::GetClassLong(hWnd, GCW_ATOM);
-	if (WC_DIALOG == MAKEINTATOM(atomWndClass))
+	if (atomWndClass == (ATOM)0x8002)
 	{
 		// send a message to the dialog box
 		hBrush = (HBRUSH)::SendMessage(hWnd, WM_CTLCOLORDLG,
