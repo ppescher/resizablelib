@@ -116,9 +116,12 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 	// enlarge reported client area when needed
 	CRect rect(lpRect);
 	if (rect.Width() < size.cx)
-		lpRect->right = lpRect->left + size.cx;
+		rect.right = rect.left + size.cx;
 	if (rect.Height() < size.cy)
-		lpRect->bottom = lpRect->top + size.cy;
+		rect.bottom = rect.top + size.cy;
+
+	rect.OffsetRect(-GetScrollPosition());
+	*lpRect = rect;
 }
 
 BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC) 

@@ -431,6 +431,9 @@ void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& 
 	rectNew.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.sizeTypeBR.cx / 100;
 	rectNew.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.sizeTypeBR.cy / 100;
 
+	// adjust position, if client area has been scrolled
+	rectNew.OffsetRect(rectParent.TopLeft());
+
 	// window classes that need refresh when resized
 	BOOL bRefresh = NeedsRefresh(layout, rectChild, rectNew);
 
