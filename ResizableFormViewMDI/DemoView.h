@@ -53,6 +53,8 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CDemoView)
+	afx_msg void OnButton2();
+	afx_msg void OnButton1();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

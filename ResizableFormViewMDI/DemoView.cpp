@@ -20,6 +20,8 @@ IMPLEMENT_DYNCREATE(CDemoView, CResizableFormView)
 
 BEGIN_MESSAGE_MAP(CDemoView, CResizableFormView)
 	//{{AFX_MSG_MAP(CDemoView)
+	ON_BN_CLICKED(IDC_BUTTON2, OnButton2)
+	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -90,3 +92,17 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 
 /////////////////////////////////////////////////////////////////////////////
 // CDemoView message handlers
+
+void CDemoView::OnButton2() 
+{
+	// ever wanted a real dialog?
+	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+	GetParent()->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME, SWP_FRAMECHANGED);
+}
+
+void CDemoView::OnButton1() 
+{
+	// go back to formview
+	ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
+	GetParent()->ModifyStyle(WS_DLGFRAME, WS_THICKFRAME|WS_CAPTION, SWP_FRAMECHANGED);
+}

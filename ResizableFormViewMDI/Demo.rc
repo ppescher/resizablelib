@@ -178,8 +178,8 @@ BEGIN
                     WS_VSCROLL
     CONTROL         "Static",IDC_STATIC,"Static",SS_SIMPLE | WS_GROUP,7,7,63,
                     8
-    PUSHBUTTON      "Button1",IDC_BUTTON1,7,109,73,14
-    PUSHBUTTON      "Button2",IDC_BUTTON2,7,94,73,14
+    PUSHBUTTON      "&UnFreeze!",IDC_BUTTON1,7,109,73,14
+    PUSHBUTTON      "&Freeze to Dialog!",IDC_BUTTON2,7,94,73,14
     COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
