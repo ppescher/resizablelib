@@ -35,6 +35,9 @@ void CDemoDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CDemoDlg)
 	ON_WM_CREATE()
+	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, OnButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, OnButton3)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -50,9 +53,8 @@ BOOL CDemoDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	AddAnchor(IDOK, TOP_RIGHT);
-	AddAnchor(IDCANCEL, TOP_RIGHT);
 	AddAnchor(IDC_COMBO1, TOP_LEFT, TOP_RIGHT);
-	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
+	AddAnchor(IDC_EDIT1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_LIST1, TOP_RIGHT, BOTTOM_RIGHT);
 
 	m_ctrlList1.AddString("a very very very loooong item text");
@@ -64,10 +66,29 @@ BOOL CDemoDlg::OnInitDialog()
 
 int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-//	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
+	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
 	
 	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
 	return 0;
+}
+
+void CDemoDlg::OnButton1() 
+{
+	CString str;
+	GetDlgItemText(IDC_EDIT1, str);
+	m_ctrlCombo1.AddString(str);
+}
+
+void CDemoDlg::OnButton2() 
+{
+	m_ctrlCombo1.ResetContent();
+}
+
+void CDemoDlg::OnButton3() 
+{
+	CString str;
+	GetDlgItemText(IDC_EDIT1, str);
+	m_ctrlCombo1.Dir(0, str);
 }

@@ -24,7 +24,7 @@ public:
 	//{{AFX_DATA(CDemoDlg)
 	enum { IDD = IDD_TESTCOMBOBOX_DIALOG };
 	CListBox	m_ctrlList1;
-	CResizableComboBox /*CComboBox*/	m_ctrlCombo1;
+	CResizableComboBox m_ctrlCombo1;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -41,6 +41,9 @@ protected:
 	//{{AFX_MSG(CDemoDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnButton1();
+	afx_msg void OnButton2();
+	afx_msg void OnButton3();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
