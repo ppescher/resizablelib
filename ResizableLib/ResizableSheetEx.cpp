@@ -33,8 +33,18 @@ inline void CResizableSheetEx::PrivateConstruct()
 	m_bEnableSaveRestore = FALSE;
 	m_bSavePage = FALSE;
 	m_dwGripTempState = 1;
+	m_bLayoutDone = FALSE;
 }
 
+inline BOOL CResizableSheetEx::IsWizard() const
+{
+	return (m_psh.dwFlags & PSH_WIZARD);
+}
+
+inline BOOL CResizableSheetEx::IsWizard97() const
+{
+	return (m_psh.dwFlags & (PSH_IE4WIZARD97 | PSH_IE5WIZARD97));
+}
 
 CResizableSheetEx::CResizableSheetEx()
 {
@@ -69,43 +79,32 @@ BEGIN_MESSAGE_MAP(CResizableSheetEx, CPropertySheetEx)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
+	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 	ON_NOTIFY_REFLECT_EX(PSN_SETACTIVE, OnPageChanging)
+	ON_REGISTERED_MESSAGE(WMU_RESIZESUPPORT, OnResizeSupport)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSheetEx message handlers
 
-int CResizableSheetEx::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableSheetEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CPropertySheetEx::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	BOOL bIsChild = GetStyle() & WS_CHILD;
-	if (!bIsChild)
-	{
-		// keep client area
-		CRect rect;
-		GetClientRect(&rect);
+	if (!CPropertySheetEx::OnNcCreate(lpCreateStruct))
+		return FALSE;
 
-		// set resizable style
-		ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
-
-		// adjust size to reflect new style
-		::AdjustWindowRectEx(&rect, GetStyle(),
-			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-		SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
-			SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
-	}
+	// child dialogs don't want resizable border or size grip,
+	// nor they can handle the min/max size constraints
+	BOOL bChild = lpCreateStruct->style & WS_CHILD;
 
 	// create and init the size-grip
-	if (!CreateSizeGrip(!bIsChild))
-		return -1;
+	if (!CreateSizeGrip(!bChild))
+		return FALSE;
 
-
-	return 0;
+	MakeResizable(lpCreateStruct);
+	
+	return TRUE;
 }
 
 BOOL CResizableSheetEx::OnInitDialog() 
@@ -119,11 +118,45 @@ BOOL CResizableSheetEx::OnInitDialog()
 
 	// initialize layout
 	PresetLayout();
-
-	// prevent flickering
-	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
+	m_bLayoutDone = TRUE;
 
 	return bResult;
+}
+
+LRESULT CResizableSheetEx::OnResizeSupport(WPARAM wParam, LPARAM lParam)
+{
+	switch (wParam)
+	{
+	case RSZSUP_SHEETPAGEEXHACK:
+		{
+			// a window object must be still associated to the page handle
+			// but MFC subclassing has been turned off to allow the system
+			// to subclass it first, so we can catch all the messages
+			CWnd* pWnd = CWnd::FromHandlePermanent((HWND)lParam);
+			if (pWnd == NULL)
+				return 0;
+
+			// suclass the window again and refresh page and sheet
+			pWnd->SubclassWindow(pWnd->Detach());
+			RefreshLayout();
+			pWnd->SendMessage(WM_SIZE);
+			Invalidate();
+			UnlockWindowUpdate();
+
+			if (pWnd->IsWindowVisible())
+			{
+				// send lost PSN_SETACTIVE notification message
+				CPropertyPage* pPage = DYNAMIC_DOWNCAST(CPropertyPage, pWnd);
+				if (pPage != NULL)
+					SetActivePage(pPage);
+			}
+		}
+		break;
+
+	default:
+		return FALSE;
+	}
+	return TRUE;
 }
 
 void CResizableSheetEx::OnDestroy() 
@@ -189,7 +222,7 @@ void CResizableSheetEx::PresetLayout()
 	}
 }
 
-BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout) const
+BOOL CResizableSheetEx::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 {
 	if (layout.nCallbackID != 1)	// we only added 1 callback
 		return CResizableLayout::ArrangeLayoutCallback(layout);
@@ -215,9 +248,9 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout) const
 		if (!(GetActivePage()->m_psp.dwFlags & PSP_HIDEHEADER))
 		{
 			// add header vertical offset
-			CRect rectLine;
-			GetDlgItem(ID_WIZLINEHDR)->GetWindowRect(&rectLine);
-			::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectLine, 2);
+			CRect rectLine, rectSheet;
+			GetTotalClientRect(&rectSheet);
+			GetAnchorPosition(ID_WIZLINEHDR, rectSheet, rectLine);
 
 			layout.sizeMarginTL.cy = rectLine.bottom;
 		}
@@ -272,6 +305,14 @@ void CResizableSheetEx::OnSize(UINT nType, int cx, int cy)
 	// update grip and layout
 	UpdateSizeGrip();
 	ArrangeLayout();
+
+	if (IsWizard97())
+	{
+		// refresh header area
+		CRect rect;
+		GetHeaderRect(rect);
+		InvalidateRect(rect, FALSE);
+	}
 }
 
 BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pResult*/)
@@ -285,7 +326,17 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
-	ClipChildren(pDC, FALSE);
+	if (ClipChildren(pDC, FALSE))
+	{
+		// when clipping, remove header from clipping area
+		if (IsWizard97())
+		{
+			// clip header area out
+			CRect rect;
+			GetHeaderRect(rect);
+			pDC->ExcludeClipRect(rect);
+		}
+	}
 
 	BOOL bRet = CPropertySheetEx::OnEraseBkgnd(pDC);
 
@@ -363,9 +414,9 @@ void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			if (!(GetPage(idx)->m_psp.dwFlags & PSP_HIDEHEADER))
 			{
 				// add header vertical offset
-				CRect rectLine;
-				GetDlgItem(ID_WIZLINEHDR)->GetWindowRect(&rectLine);
-				::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectLine, 2);
+				CRect rectLine, rectSheet;
+				GetTotalClientRect(&rectSheet);
+				GetAnchorPosition(ID_WIZLINEHDR, rectSheet, rectLine);
 
 				rectExtra.top = -rectLine.bottom;
 			}
@@ -382,6 +433,21 @@ void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 }
 
 // protected members
+
+void CResizableSheetEx::GetHeaderRect(LPRECT lpRect)
+{
+	CWnd* pWizLineHdr = GetDlgItem(ID_WIZLINEHDR);
+	if (pWizLineHdr != NULL && pWizLineHdr->IsWindowVisible())
+	{
+		pWizLineHdr->GetWindowRect(lpRect);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)lpRect, 2);
+		LONG bottom = lpRect->top;
+		GetClientRect(lpRect);
+		lpRect->bottom = bottom;
+	}
+	else
+		::SetRectEmpty(lpRect);
+}
 
 int CResizableSheetEx::GetMinWidth()
 {
@@ -475,4 +541,17 @@ void CResizableSheetEx::LoadPage()
 void CResizableSheetEx::RefreshLayout()
 {
 	SendMessage(WM_SIZE);
+}
+
+LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
+		return CPropertySheetEx::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CPropertySheetEx::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }
