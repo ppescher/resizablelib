@@ -14,7 +14,12 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#define _WIN32_IE 0x0400	// for CPropertyPageEx, CPropertySheetEx
+#define _WIN32_WINNT 0x0500	// for CPropertyPageEx, CPropertySheetEx
+#include <afxwin.h>         // MFC core and standard components
+#include <afxext.h>         // MFC extensions
+#include <afxcmn.h>         // MFC support for Windows Common Controls
+
 #include "ResizableSheetEx.h"
 
 #ifdef _DEBUG

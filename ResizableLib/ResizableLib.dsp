@@ -168,6 +168,19 @@ SOURCE=.\ResizablePage.cpp
 # Begin Source File
 
 SOURCE=.\ResizablePageEx.cpp
+
+!IF  "$(CFG)" == "ResizableLib - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -176,6 +189,19 @@ SOURCE=.\ResizableSheet.cpp
 # Begin Source File
 
 SOURCE=.\ResizableSheetEx.cpp
+
+!IF  "$(CFG)" == "ResizableLib - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
+
+# SUBTRACT CPP /YX /Yc /Yu
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
+
+!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

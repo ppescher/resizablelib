@@ -33,6 +33,7 @@ const CSize NOANCHOR(-1,-1),
 
 class CResizableLayout
 {
+protected:
 	class LayoutInfo
 	{
 	public:
@@ -71,6 +72,7 @@ class CResizableLayout
 		}
 	};
 
+private:
 	// list of repositionable controls (in 2 parts: anchors, callbacks)
 	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;
 	int m_iFirstCallback;		// index of first callback
