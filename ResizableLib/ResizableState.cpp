@@ -27,8 +27,6 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CString CResizableState::m_sDefaultStorePath(_T("ResizableState"));
-
 CResizableState::CResizableState()
 {
 	m_sStorePath = m_sDefaultStorePath;
@@ -38,6 +36,12 @@ CResizableState::~CResizableState()
 {
 
 }
+
+// static intializer must be called before user code
+#pragma warning(disable:4073)
+#pragma init_seg(lib)
+CString CResizableState::m_sDefaultStorePath(_T("ResizableState"));
+
 
 void CResizableState::SetDefaultStateStore(LPCTSTR szPath)
 {
