@@ -112,6 +112,10 @@ SOURCE=.\MyPropertySheet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableLayout.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizablePage.cpp
 # End Source File
 # Begin Source File
@@ -145,6 +149,10 @@ SOURCE=.\MyPropertySheet.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableLayout.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizablePage.h
 # End Source File
 # Begin Source File
@@ -172,9 +180,5 @@ SOURCE=.\res\Demo.ico
 SOURCE=.\res\Demo.rc2
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\ReadMe.txt
-# End Source File
 # End Target
 # End Project
