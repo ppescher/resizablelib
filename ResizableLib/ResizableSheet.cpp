@@ -184,7 +184,7 @@ void CResizableSheet::PresetLayout()
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 }
 
-BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
+BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout) const
 {
 	if (layout.nCallbackID != 1)	// we only added 1 callback
 		return CResizableLayout::ArrangeLayoutCallback(layout);
@@ -265,43 +265,56 @@ BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
+BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, CSize sizeChild, CSize &sizeExtra)
+{
+	CTabCtrl* pTab = GetTabControl();
+	if (!pTab)
+		return FALSE;
+
+	// get margins of tabcontrol
+	CRect rectMargins;
+	if (!GetAnchorMargins(pTab->m_hWnd, sizeChild, rectMargins))
+		return FALSE;
+
+	// get margin caused by tabcontrol
+	CRect rectTabMargins(0,0,0,0);
+	pTab->AdjustRect(TRUE, &rectTabMargins);
+
+	// add non-client size
+	::AdjustWindowRectEx(&rectTabMargins, GetStyle(),
+		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+
+	// compute extra size
+	sizeExtra = rectMargins.TopLeft() + rectMargins.BottomRight() +
+		rectTabMargins.Size();
+	return TRUE;
+}
+
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	MinMaxInfo(lpMMI);
 
-	CSize sizeExtra;
-	if (IsWizard())	// wizard mode
-	{
-		// use pre-calculated margins
-		// WRONG!!! uses client coords
-		sizeExtra = m_sizePageTL - m_sizePageBR;
-	}
-	else	// tab mode
-	{
-		CTabCtrl* pTab = GetTabControl();
-		if (!pTab)
-			return;
-
-		// get tab position after resizing and calc page rect
-		CRect rectPage, rectSheet;
-		GetTotalClientRect(&rectSheet);
-
-		if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
-			return; // no page yet
-
-		pTab->AdjustRect(FALSE, &rectPage);
-
-		GetWindowRect(&rectSheet);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSheet, 2);
-
-		// set margins
-		sizeExtra = rectPage.TopLeft() - rectSheet.TopLeft() +
-			rectSheet.BottomRight() - rectPage.BottomRight();
-	}
+	CTabCtrl* pTab = GetTabControl();
+	if (!pTab)
+		return;
 
 	int nCount = GetPageCount();
 	for (int idx = 0; idx < nCount; ++idx)
-		ChainMinMaxInfo(lpMMI, *GetPage(idx), sizeExtra);
+	{
+		if (IsWizard())	// wizard mode
+		{
+			// use pre-calculated margins
+			CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
+			// add non-client size
+			::AdjustWindowRectEx(&rectExtra, GetStyle(),
+				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
+		}
+		else	// tab mode
+		{
+			ChainMinMaxInfoCB(lpMMI, *GetPage(idx));
+		}
+	}
 }
 
 // protected members

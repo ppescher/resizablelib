@@ -77,7 +77,7 @@ private:
 	void SavePage();
 	void LoadPage();
 
-	BOOL IsWizard() { return (m_psh.dwFlags & PSH_WIZARD); }
+	BOOL IsWizard() const { return (m_psh.dwFlags & PSH_WIZARD); }
 
 // callable from derived classes
 protected:
@@ -90,15 +90,16 @@ protected:
 	int GetMinWidth();	// minimum width to display all buttons
 
 
-	virtual CWnd* GetResizableWnd()
+	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return this;
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 // Generated message map functions
 protected:
-	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
+	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
+	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout) const;
 	//{{AFX_MSG(CResizableSheet)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
