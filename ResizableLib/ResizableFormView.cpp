@@ -30,7 +30,7 @@ IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 
 inline void CResizableFormView::PrivateConstruct()
 {
-	m_bInitDone = FALSE;
+//	m_bInitDone = FALSE;
 	m_dwGripTempState = GHR_SCROLLBAR | GHR_ALIGNMENT | GHR_MAXIMIZED;
 }
 
@@ -116,45 +116,29 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 	ArrangeLayout();
 }
 
-void CResizableFormView::OnInitialUpdate() 
-{
-	CFormView::OnInitialUpdate();
-	
-	m_bInitDone = TRUE;
-
-	// MDI child need this
-	ArrangeLayout();
-}
-
 void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 {
 	GetClientRect(lpRect);
 
 	// get dialog template's size
 	// (this is set in CFormView::Create)
-	CSize size = GetTotalSize();
-
-	// before initialization use dialog's size
-	if (!m_bInitDone)
-	{
-		lpRect->right = lpRect->left + size.cx;
-		lpRect->bottom = lpRect->top + size.cy;
-		return;
-	}
+	CSize sizeTotal, sizePage, sizeLine;
+	int nMapMode = 0;
+	GetDeviceScrollSizes(nMapMode, sizeTotal, sizePage, sizeLine);
 
 	// otherwise, give the correct size if scrollbars active
 
-	if (m_nMapMode < 0)	// scrollbars disabled
+	if (nMapMode < 0)	// scrollbars disabled
 		return;
 
 	// enlarge reported client area when needed
 	CRect rect(lpRect);
-	if (rect.Width() < size.cx)
-		rect.right = rect.left + size.cx;
-	if (rect.Height() < size.cy)
-		rect.bottom = rect.top + size.cy;
+	if (rect.Width() < sizeTotal.cx)
+		rect.right = rect.left + sizeTotal.cx;
+	if (rect.Height() < sizeTotal.cy)
+		rect.bottom = rect.top + sizeTotal.cy;
 
-	rect.OffsetRect(-GetScrollPosition());
+	rect.OffsetRect(-GetDeviceScrollPosition());
 	*lpRect = rect;
 }
 
@@ -191,4 +175,29 @@ void CResizableFormView::OnDestroy()
 	RemoveAllAnchors();
 
 	CFormView::OnDestroy();
+}
+
+LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message == WM_INITDIALOG)
+		return (LRESULT)OnInitDialog();
+
+	return CFormView::WindowProc(message, wParam, lParam);
+}
+
+BOOL CResizableFormView::OnInitDialog() 
+{
+	const MSG* pMsg = GetCurrentMessage();
+
+	BOOL bRet = (BOOL)CFormView::WindowProc(pMsg->message, pMsg->wParam, pMsg->lParam);
+
+	// we need to associate member variables with control IDs
+	UpdateData(FALSE);
+	
+	// set default scroll size
+	CRect rectTemplate;
+	GetWindowRect(rectTemplate);
+	SetScrollSizes(MM_TEXT, rectTemplate.Size());
+
+	return bRet;
 }

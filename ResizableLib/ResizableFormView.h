@@ -46,8 +46,6 @@ protected:      // must derive your own class
 private:
 	void PrivateConstruct();
 	
-	BOOL m_bInitDone;		// if all internal vars initialized
-
 	// support for temporarily hiding the grip
 	DWORD m_dwGripTempState;
 	enum GripHideReason		// bitmask
@@ -79,7 +77,8 @@ public:
 public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableFormView)
-	virtual void OnInitialUpdate();
+	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -97,6 +96,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnDestroy();
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
