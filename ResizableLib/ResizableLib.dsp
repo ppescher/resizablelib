@@ -284,45 +284,6 @@ SOURCE=.\ResizablePage.cpp
 # Begin Source File
 
 SOURCE=.\ResizablePageEx.cpp
-
-!IF  "$(CFG)" == "ResizableLib - Win32 Release"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
-
-# ADD CPP /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static Unicode"
-
-# ADD BASE CPP /Yu
-# ADD CPP /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -331,45 +292,6 @@ SOURCE=.\ResizableSheet.cpp
 # Begin Source File
 
 SOURCE=.\ResizableSheetEx.cpp
-
-!IF  "$(CFG)" == "ResizableLib - Win32 Release"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static"
-
-# ADD CPP /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static"
-
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Release Static Unicode"
-
-# ADD BASE CPP /Yu
-# ADD CPP /Yu
-
-!ELSEIF  "$(CFG)" == "ResizableLib - Win32 Debug Static Unicode"
-
-# SUBTRACT BASE CPP /YX /Yc /Yu
-# SUBTRACT CPP /YX /Yc /Yu
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -490,11 +412,43 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\Docs\DoDoxygen.bat
+SOURCE=.\Docs\class.txt
 # End Source File
 # Begin Source File
 
-SOURCE=.\Docs\doxyfile.txt
+SOURCE=.\Docs\default.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\Doxyfile
+# End Source File
+# Begin Source File
+
+SOURCE=".\Docs\Doxyfile-include"
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\footer.html
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\function.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\header.html
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\struct.txt
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\stylesheet.css
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\typedef.txt
 # End Source File
 # End Group
 # Begin Source File
