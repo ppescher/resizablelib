@@ -30,6 +30,7 @@ IMPLEMENT_DYNCREATE(CResizableMDIChild, CMDIChildWnd)
 
 CResizableMDIChild::CResizableMDIChild()
 {
+	m_bEnableSaveRestore = FALSE;
 }
 
 CResizableMDIChild::~CResizableMDIChild()
@@ -41,6 +42,7 @@ BEGIN_MESSAGE_MAP(CResizableMDIChild, CMDIChildWnd)
 	//{{AFX_MSG_MAP(CResizableMDIChild)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -100,4 +102,25 @@ void CResizableMDIChild::OnSize(UINT nType, int cx, int cy)
 		pFrame->GetWindowRect(rect);
 		pFrame->MoveWindow(rect);
 	}
+}
+
+// NOTE: this must be called after setting the layout
+//       to have the view and its controls displayed properly
+BOOL CResizableMDIChild::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
+{
+	m_sSection = pszSection;
+
+	m_bEnableSaveRestore = TRUE;
+	m_bRectOnly = bRectOnly;
+
+	// restore immediately
+	return LoadWindowRect(pszSection, bRectOnly);
+}
+
+void CResizableMDIChild::OnDestroy() 
+{
+	if (m_bEnableSaveRestore)
+		SaveWindowRect(m_sSection, m_bRectOnly);
+
+	CMDIChildWnd::OnDestroy();
 }

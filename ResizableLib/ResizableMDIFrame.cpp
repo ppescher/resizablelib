@@ -30,6 +30,7 @@ IMPLEMENT_DYNCREATE(CResizableMDIFrame, CMDIFrameWnd)
 
 CResizableMDIFrame::CResizableMDIFrame()
 {
+	m_bEnableSaveRestore = FALSE;
 }
 
 CResizableMDIFrame::~CResizableMDIFrame()
@@ -40,6 +41,7 @@ CResizableMDIFrame::~CResizableMDIFrame()
 BEGIN_MESSAGE_MAP(CResizableMDIFrame, CMDIFrameWnd)
 	//{{AFX_MSG_MAP(CResizableMDIFrame)
 	ON_WM_GETMINMAXINFO()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -81,4 +83,25 @@ void CResizableMDIFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 	// MDI should call default implementation
 	CMDIFrameWnd::OnGetMinMaxInfo(lpMMI);
+}
+
+// NOTE: this must be called after setting the layout
+//       to have the view and its controls displayed properly
+BOOL CResizableMDIFrame::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
+{
+	m_sSection = pszSection;
+
+	m_bEnableSaveRestore = TRUE;
+	m_bRectOnly = bRectOnly;
+
+	// restore immediately
+	return LoadWindowRect(pszSection, bRectOnly);
+}
+
+void CResizableMDIFrame::OnDestroy() 
+{
+	if (m_bEnableSaveRestore)
+		SaveWindowRect(m_sSection, m_bRectOnly);
+
+	CMDIFrameWnd::OnDestroy();
 }

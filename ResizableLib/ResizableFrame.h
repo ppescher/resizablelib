@@ -21,11 +21,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "ResizableMinMax.h"
+#include "ResizableState.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFrame frame
 
-class CResizableFrame : public CFrameWnd, public CResizableMinMax
+class CResizableFrame : public CFrameWnd, public CResizableMinMax,
+						public CResizableState
 {
 	DECLARE_DYNCREATE(CResizableFrame)
 protected:
@@ -46,9 +48,27 @@ public:
 protected:
 	virtual ~CResizableFrame();
 
+	BOOL EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE);
+
+	virtual CWnd* GetResizableWnd()
+	{
+		// make the layout know its parent window
+		return this;
+	};
+
+private:
+	// flags
+	BOOL m_bEnableSaveRestore;
+	BOOL m_bRectOnly;
+
+	// internal status
+	CString m_sSection;			// section name (identifies a parent window)
+
+protected:
 	// Generated message map functions
 	//{{AFX_MSG(CResizableFrame)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -30,6 +30,7 @@ IMPLEMENT_DYNCREATE(CResizableFrame, CFrameWnd)
 
 CResizableFrame::CResizableFrame()
 {
+	m_bEnableSaveRestore = FALSE;
 }
 
 CResizableFrame::~CResizableFrame()
@@ -40,6 +41,7 @@ CResizableFrame::~CResizableFrame()
 BEGIN_MESSAGE_MAP(CResizableFrame, CFrameWnd)
 	//{{AFX_MSG_MAP(CResizableFrame)
 	ON_WM_GETMINMAXINFO()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -77,4 +79,25 @@ void CResizableFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 		mmiView.ptMaxTrackSize.x);
 	lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
 		mmiView.ptMaxTrackSize.y);
+}
+
+// NOTE: this must be called after setting the layout
+//       to have the view and its controls displayed properly
+BOOL CResizableFrame::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
+{
+	m_sSection = pszSection;
+
+	m_bEnableSaveRestore = TRUE;
+	m_bRectOnly = bRectOnly;
+
+	// restore immediately
+	return LoadWindowRect(pszSection, bRectOnly);
+}
+
+void CResizableFrame::OnDestroy() 
+{
+	if (m_bEnableSaveRestore)
+		SaveWindowRect(m_sSection, m_bRectOnly);
+
+	CFrameWnd::OnDestroy();
 }
