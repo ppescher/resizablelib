@@ -31,7 +31,8 @@ IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 inline void CResizableFormView::PrivateConstruct()
 {
 	m_bInitDone = FALSE;
-	m_bGripStatus = TRUE;
+	m_bGripScroll = TRUE;
+	m_bGripStatusBar = TRUE;
 }
 
 CResizableFormView::CResizableFormView(UINT nIDTemplate)
@@ -84,9 +85,19 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 	// hide size grip when there are scrollbars
 	CSize size = GetTotalSize();
 	if (cx < size.cx || cy < size.cy)
-		HideSizeGrip(&m_bGripStatus);
+		HideSizeGrip(&m_bGripScroll);
 	else
-		ShowSizeGrip(&m_bGripStatus);
+		ShowSizeGrip(&m_bGripScroll);
+
+	// hide size grip when there is a statusbar or parent is not a Frame
+	CFrameWnd* pParentWnd = DYNAMIC_DOWNCAST(CFrameWnd, GetParent());
+	CWnd* pStatusBar = (pParentWnd != NULL) ? pParentWnd->GetMessageBar() : NULL;
+	if ( (pParentWnd == NULL) || ((pStatusBar != NULL)
+		&& (pStatusBar->GetParent() == pParentWnd)
+		&& (pStatusBar->GetStyle() & WS_VISIBLE)) )
+		HideSizeGrip(&m_bGripStatusBar);
+	else
+		ShowSizeGrip(&m_bGripStatusBar);
 
 	// update grip and layout
 	UpdateSizeGrip();
@@ -151,15 +162,10 @@ int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFormView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// create and reposition the size-grip
+	// create and init the size-grip
 	if (!CreateSizeGrip())
 		return -1;
-
-	// show the grip by default only in MDI windows
-	// (grip doesn't work in SDI)
-	CWnd* pParentWnd = CWnd::FromHandle(lpCreateStruct->hwndParent);
-	if (pParentWnd->IsKindOf(RUNTIME_CLASS(CMDIChildWnd)))
-		ShowSizeGrip();
+	ShowSizeGrip();	// show by default
 
 	return 0;
 }

@@ -45,10 +45,10 @@ protected:      // must derive your own class
 
 private:
 	void PrivateConstruct();
-	// internal status
-
+	
 	BOOL m_bInitDone;		// if all internal vars initialized
-	BOOL m_bGripStatus;		// support for hiding the grip
+	BOOL m_bGripScroll;		// support for hiding the grip with scrollbars
+	BOOL m_bGripStatusBar;	// support for hiding the grip with statusbar
 
 // called from base class
 protected:
