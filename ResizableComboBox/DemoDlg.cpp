@@ -63,10 +63,14 @@ BOOL CDemoDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+#ifndef WS_EX_LAYOUTRTL
+#pragma message("Please update your Windows header files, get the latest SDK")
+#define WS_EX_LAYOUTRTL	0x00400000
+#endif
 
 int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
+//	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
 	
 	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
