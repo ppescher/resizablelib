@@ -25,11 +25,11 @@
 #endif // _MSC_VER > 1000
 
 // special type for layout anchors
-struct ANCHOR
+typedef struct tagANCHOR
 {
-	ANCHOR() { }
+	tagANCHOR() {}
 
-	ANCHOR(int x, int y)
+	tagANCHOR(int x, int y)
 	{
 		cx = x;
 		cy = y;
@@ -37,7 +37,7 @@ struct ANCHOR
 
 	int cx;
 	int cy;
-};
+} ANCHOR, *PANCHOR, *LPANCHOR;
 
 const ANCHOR
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),

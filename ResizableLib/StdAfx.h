@@ -10,9 +10,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// Use target Windows version for compatibility
+// Use target Common Controls version for compatibility
 // with CPropertyPageEx, CPropertySheetEx
-#define _WIN32_IE 0x0400
+#define _WIN32_IE 0x0400	// (can be greater, but not lower or undefined)
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
