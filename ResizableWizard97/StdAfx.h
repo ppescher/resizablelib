@@ -10,10 +10,15 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
+// Set target Windows platform
+#define WINVER 0x0501
+#define _WIN32_WINNT 0x0501
 
-#define _WIN32_IE 0x0400	// for CPropertyPageEx, CPropertySheetEx
-#define _WIN32_WINNT 0x0500	// for CPropertyPageEx, CPropertySheetEx
+// Use target Common Controls version for compatibility
+// with CPropertyPageEx, CPropertySheetEx
+#define _WIN32_IE 0x0500
+
+#define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
