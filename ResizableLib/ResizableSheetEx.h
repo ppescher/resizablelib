@@ -100,6 +100,7 @@ protected:
 
 // Generated message map functions
 protected:
+	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
 	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout) const;
 	//{{AFX_MSG(CResizableSheetEx)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);

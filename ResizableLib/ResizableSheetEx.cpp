@@ -231,8 +231,18 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout) const
 		CRect rectPage, rectSheet;
 		GetTotalClientRect(&rectSheet);
 
-		VERIFY(GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage));
+		if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
+			return FALSE; // no page yet
+
+		// temporarily resize the tab control to calc page size
+		CRect rectSave;
+		pTab->GetWindowRect(rectSave);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
+		pTab->SetRedraw(FALSE);
+		pTab->MoveWindow(rectPage, FALSE);
 		pTab->AdjustRect(FALSE, &rectPage);
+		pTab->MoveWindow(rectSave, FALSE);
+		pTab->SetRedraw(TRUE);
 
 		// set margins
 		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
@@ -240,8 +250,8 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout) const
 	}
 
 	// set anchor types
-	layout.sizeTypeTL = TOP_LEFT;
-	layout.sizeTypeBR = BOTTOM_RIGHT;
+	layout.anchorTypeTL = TOP_LEFT;
+	layout.anchorTypeBR = BOTTOM_RIGHT;
 
 	// use this layout info
 	return TRUE;
@@ -284,9 +294,91 @@ BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
+BOOL CResizableSheetEx::CalcSizeExtra(HWND /*hWndChild*/, CSize sizeChild, CSize &sizeExtra)
+{
+	CTabCtrl* pTab = GetTabControl();
+	if (!pTab)
+		return FALSE;
+
+	// get margins of tabcontrol
+	CRect rectMargins;
+	if (!GetAnchorMargins(pTab->m_hWnd, sizeChild, rectMargins))
+		return FALSE;
+
+	// get margin caused by tabcontrol
+	CRect rectTabMargins(0,0,0,0);
+
+	// get tab position after resizing and calc page rect
+	CRect rectPage, rectSheet;
+	GetTotalClientRect(&rectSheet);
+
+	if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
+		return FALSE; // no page yet
+
+	// temporarily resize the tab control to calc page size
+	CRect rectSave;
+	pTab->GetWindowRect(rectSave);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
+	pTab->SetRedraw(FALSE);
+	pTab->MoveWindow(rectPage, FALSE);
+	pTab->AdjustRect(TRUE, &rectTabMargins);
+	pTab->MoveWindow(rectSave, FALSE);
+	pTab->SetRedraw(TRUE);
+
+	// add non-client size
+	::AdjustWindowRectEx(&rectTabMargins, GetStyle(), !(GetStyle() & WS_CHILD) &&
+		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+
+	// compute extra size
+	sizeExtra = rectMargins.TopLeft() + rectMargins.BottomRight() +
+		rectTabMargins.Size();
+	return TRUE;
+}
+
 void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	MinMaxInfo(lpMMI);
+
+	CTabCtrl* pTab = GetTabControl();
+	if (!pTab)
+		return;
+
+	int nCount = GetPageCount();
+	for (int idx = 0; idx < nCount; ++idx)
+	{
+		if (IsWizard())	// wizard mode
+		{
+			// use pre-calculated margins
+			CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
+			// add non-client size
+			::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
+				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
+		}
+		else if (IsWizard97())	// wizard 97
+		{
+			// use pre-calculated margins
+			CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
+
+			if (!(GetPage(idx)->m_psp.dwFlags & PSP_HIDEHEADER))
+			{
+				// add header vertical offset
+				CRect rectLine;
+				GetDlgItem(ID_WIZLINEHDR)->GetWindowRect(&rectLine);
+				::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectLine, 2);
+
+				rectExtra.top = -rectLine.bottom;
+			}
+			// add non-client size
+			::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
+				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
+		}
+		else	// tab mode
+		{
+			ChainMinMaxInfoCB(lpMMI, *GetPage(idx));
+		}
+	}
 }
 
 // protected members
