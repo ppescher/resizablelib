@@ -102,7 +102,6 @@ int CResizableSheetEx::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// create and init the size-grip
 	if (!CreateSizeGrip())
 		return -1;
-	SetSizeGripVisibility(TRUE); // show by default
 
 	return 0;
 }
