@@ -1,0 +1,11 @@
+# Doxygen include file
+# Used to specify compiler's include directories for the preprocessor
+
+# The INCLUDE_PATH tag can be used to specify one or more directories that 
+# contain include files that are not input files but should be processed by 
+# the preprocessor.
+
+INCLUDE_PATH           = "C:\SDK\Windows\include" \
+                         "C:\VS6\VC\MFC\INCLUDE" \
+                         "C:\VS6\VC\ATL\INCLUDE" \
+                         "C:\SDK\WTL70\include"
