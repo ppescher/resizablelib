@@ -123,7 +123,14 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 
 BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC) 
 {
-	ClipChildren(pDC);	// avoid flickering
+	// Windows XP doesn't like clipping regions ...try this!
+	CRgn rgn;
+	GetClippingRegion(&rgn);
+	HBRUSH hbr = (HBRUSH)SendMessage(WM_CTLCOLORDLG, (WPARAM)pDC->GetSafeHdc(), (LPARAM)GetSafeHwnd());
+	FillRgn(pDC->GetSafeHdc(), rgn, hbr);
+	return TRUE;
+
+//	ClipChildren(pDC);	// old-method (for safety)
 
 	return CFormView::OnEraseBkgnd(pDC);
 }

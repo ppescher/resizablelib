@@ -160,15 +160,14 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 
 BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC) 
 {
-/*	Windows XP doesn't like clipping regions ...try this!
+	// Windows XP doesn't like clipping regions ...try this!
 	CRgn rgn;
 	GetClippingRegion(&rgn);
 	HBRUSH hbr = (HBRUSH)SendMessage(WM_CTLCOLORDLG, (WPARAM)pDC->GetSafeHdc(), (LPARAM)GetSafeHwnd());
 	FillRgn(pDC->GetSafeHdc(), rgn, hbr);
 	return TRUE;
-*/
 
-	ClipChildren(pDC);
+//	ClipChildren(pDC);	// old-method (for safety)
 
 	return CDialog::OnEraseBkgnd(pDC);
 }
