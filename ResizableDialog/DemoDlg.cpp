@@ -63,9 +63,9 @@ BOOL CDemoDlg::OnInitDialog()
 	AddAnchor(IDC_LABEL1, TOP_LEFT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
 
+	AddAnchor(IDC_GROUP1, BOTTOM_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_RADIO1, BOTTOM_LEFT);
 	AddAnchor(IDC_RADIO2, BOTTOM_LEFT);
-	AddAnchor(IDC_GROUP1, BOTTOM_LEFT, BOTTOM_RIGHT);
 
 	// other initializations
 
