@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(CResizablePageEx, CPropertyPageEx)
 	//{{AFX_MSG_MAP(CResizablePageEx)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_WM_GETMINMAXINFO()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -83,4 +84,22 @@ BOOL CResizablePageEx::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 		return TRUE;
 
 	return CResizableLayout::NeedsRefresh(layout, rectOld, rectNew);
+}
+
+void CResizablePageEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+{
+	MinMaxInfo(lpMMI);
+}
+
+BOOL CResizablePageEx::OnInitDialog() 
+{
+	CPropertyPageEx::OnInitDialog();
+	
+	// set the initial size as the min track size
+	CRect rc;
+	GetWindowRect(&rc);
+	SetMinTrackSize(rc.Size());
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
 }
