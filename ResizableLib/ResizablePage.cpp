@@ -52,6 +52,7 @@ BEGIN_MESSAGE_MAP(CResizablePage, CPropertyPage)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_GETMINMAXINFO()
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -93,4 +94,24 @@ BOOL CResizablePage::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
+}
+
+void CResizablePage::OnDestroy() 
+{
+	// remove child windows
+	RemoveAllAnchors();
+
+	CPropertyPage::OnDestroy();
+}
+
+LRESULT CResizablePage::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0)
+		return CPropertyPage::WindowProc(message, wParam, lParam);
+
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CPropertyPage::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }
