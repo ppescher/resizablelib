@@ -12,7 +12,7 @@
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
-#include <afx.h>
+#define _WIN32_IE 0x0400	// for CPropertyPageEx, CPropertySheetEx
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
