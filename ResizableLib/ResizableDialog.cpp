@@ -107,7 +107,7 @@ BOOL CResizableDialog::OnInitDialog()
 void CResizableDialog::OnDestroy() 
 {
 	if (m_bEnableSaveRestore)
-		SaveWindowRect(m_sSection);
+		SaveWindowRect(m_sSection, m_bRectOnly);
 
 	// remove child windows
 	RemoveAllAnchors();
@@ -163,6 +163,7 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	m_sSection = pszSection;
 
 	m_bEnableSaveRestore = TRUE;
+	m_bRectOnly = bRectOnly;
 
 	// restore immediately
 	LoadWindowRect(pszSection, bRectOnly);

@@ -48,10 +48,12 @@ public:
 // Attributes
 private:
 	// flags
-	BOOL m_bInitDone;			// if all internal vars initialized
 	BOOL m_bEnableSaveRestore;
+	BOOL m_bRectOnly;
 
+	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
+	BOOL m_bInitDone;			// if all internal vars initialized
 
 // Operations
 public:

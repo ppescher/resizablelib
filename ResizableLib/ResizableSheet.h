@@ -47,11 +47,11 @@ public:
 private:
 	// flags
 	BOOL m_bEnableSaveRestore;
+	BOOL m_bRectOnly;
 	BOOL m_bSavePage;
 
 	// internal status
-	CString m_sSection;			// section name and
-
+	CString m_sSection;			// section name (identifies a parent window)
 	BOOL m_bInitDone;			// if all internal vars initialized
 
 	// layout variables

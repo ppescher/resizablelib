@@ -50,21 +50,32 @@ CResizableState::~CResizableState()
 #define PLACEMENT_ENT	_T("WindowPlacement")
 #define PLACEMENT_FMT 	_T("%d,%d,%d,%d,%d,%d")
 
-BOOL CResizableState::SaveWindowRect(LPCTSTR pszSection)
+BOOL CResizableState::SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 {
 	CString data;
 	WINDOWPLACEMENT wp;
-	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
-	if (!GetWindowPlacement(hWnd, &wp))
+	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 	
 	RECT& rc = wp.rcNormalPosition;	// alias
 
-	data.Format(PLACEMENT_FMT, rc.left, rc.top,
-		rc.right, rc.bottom, wp.showCmd, wp.flags);
+	if (bRectOnly)	// save size/pos only (normal state)
+	{
+		// use screen coordinates
+		GetResizableWnd()->GetWindowRect(&rc);
+
+		data.Format(PLACEMENT_FMT, rc.left, rc.top,
+			rc.right, rc.bottom, SW_NORMAL, 0);
+	}
+	else	// save also min/max state
+	{
+		// use workspace coordinates
+		data.Format(PLACEMENT_FMT, rc.left, rc.top,
+			rc.right, rc.bottom, wp.showCmd, wp.flags);
+	}
 
 	return AfxGetApp()->WriteProfileString(pszSection, PLACEMENT_ENT, data);
 }
@@ -73,7 +84,6 @@ BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 {
 	CString data;
 	WINDOWPLACEMENT wp;
-	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
 	data = AfxGetApp()->GetProfileString(pszSection, PLACEMENT_ENT);
 	
@@ -82,31 +92,25 @@ BOOL CResizableState::LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly)
 	
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
-	if (!GetWindowPlacement(hWnd, &wp))
+	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 
 	RECT& rc = wp.rcNormalPosition;	// alias
 
-	if (bRectOnly)	// restore size/pos only
+	if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
+		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags) == 6)
 	{
-		UINT flags, showCmd;	// discarded
-
-		if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
-			&rc.right, &rc.bottom, &showCmd, &flags) == 6)
+		if (bRectOnly)	// restore size/pos only
 		{
-			if (SetWindowPlacement(hWnd, &wp))
-				return TRUE;
+			CRect rect(rc);
+			return GetResizableWnd()->SetWindowPos(NULL, rect.left, rect.top,
+				rect.Width(), rect.Height(), SWP_NOACTIVATE | SWP_NOZORDER |
+				SWP_NOREPOSITION);
+		}
+		else	// restore also min/max state
+		{
+			return GetResizableWnd()->SetWindowPlacement(&wp);
 		}
 	}
-	else	// restore also min/max state
-	{
-		if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
-			&rc.right, &rc.bottom, &wp.showCmd, &wp.flags) == 6)
-		{
-			if (SetWindowPlacement(hWnd, &wp))
-				return TRUE;
-		}
-	}
-
 	return FALSE;
 }

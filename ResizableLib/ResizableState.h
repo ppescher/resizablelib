@@ -14,7 +14,7 @@ class CResizableState
 protected:
 	// non-zero if successful
 	BOOL LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
-	BOOL SaveWindowRect(LPCTSTR pszSection);
+	BOOL SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
 
 	virtual CWnd* GetResizableWnd() = 0;
 

@@ -120,7 +120,7 @@ void CResizableSheet::OnDestroy()
 
 	if (m_bEnableSaveRestore)
 	{
-		SaveWindowRect(m_sSection);
+		SaveWindowRect(m_sSection, m_bRectOnly);
 		SavePage();
 	}
 }
@@ -394,7 +394,9 @@ void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BOOL
 	m_bSavePage = bWithPage;
 
 	m_bEnableSaveRestore = TRUE;
+	m_bRectOnly = bRectOnly;
 
+	// restore immediately
 	LoadWindowRect(pszSection, bRectOnly);
 	LoadPage();
 }
