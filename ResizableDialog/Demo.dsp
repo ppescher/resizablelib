@@ -165,6 +165,10 @@ SOURCE=.\SecondDialog.cpp
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
+# Begin Source File
+
+SOURCE=.\TestDialog.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -188,6 +192,10 @@ SOURCE=.\SecondDialog.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TestDialog.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

@@ -7,6 +7,7 @@
 #define IDD_SECOND_DIALOG               130
 #define IDB_BITMAP1                     131
 #define IDR_TOOLBAR1                    132
+#define IDD_TEST_DIALOG                 134
 #define IDC_LABEL1                      1000
 #define IDC_EDIT1                       1001
 #define IDC_RADIO1                      1002
@@ -17,6 +18,16 @@
 #define IDC_PICTURE1                    1007
 #define IDC_STATIC1                     1010
 #define IDC_STATIC2                     1011
+#define IDC_CHECK_CENTERIMAGE           1012
+#define IDC_CHECK_RIGHTJUST             1013
+#define IDC_CHECK_REALSIZEIMAGE         1014
+#define IDC_CHECK_ENDELLIPSIS           1015
+#define IDC_CHECK_PATHELLIPSIS          1016
+#define IDC_COMBO_TYPE                  1017
+#define IDC_BUTTON_UPDATE               1018
+#define IDC_EDIT_TEXT                   1019
+#define IDC_STATIC_TEST                 1020
+#define IDC_GROUPBOX                    1021
 #define ID_BUTTON1                      32776
 #define ID_BUTTON3                      32777
 #define ID_BUTTON2                      32778
@@ -26,9 +37,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        134
+#define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32780
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

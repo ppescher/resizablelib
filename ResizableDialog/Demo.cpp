@@ -5,6 +5,7 @@
 #include "Demo.h"
 #include "DemoDlg.h"
 #include "SecondDialog.h"
+#include "TestDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,9 +42,11 @@ BOOL CDemoApp::InitInstance()
 {
 	CDemoDlg dlg;
 	CSecondDialog dlg2;
+	CTestDialog dlg3;
 
 	dlg.DoModal();
 	dlg2.DoModal();
+	dlg3.DoModal();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
