@@ -189,7 +189,7 @@ void CResizableSheetEx::PresetLayout()
 	}
 }
 
-BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
+BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout) const
 {
 	if (layout.nCallbackID != 1)	// we only added 1 callback
 		return CResizableLayout::ArrangeLayoutCallback(layout);
