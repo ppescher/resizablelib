@@ -26,7 +26,7 @@ protected:
 	void UpdateGripPos();
 	UINT HitTest(CPoint point);		// in screen coord
 
-	virtual CWnd* GetLayoutParent() = 0;
+	virtual CWnd* GetResizableWnd() = 0;
 
 public:
 	CResizableGrip();

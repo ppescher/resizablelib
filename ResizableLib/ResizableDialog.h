@@ -72,9 +72,10 @@ private:
 
 // callable from derived classes
 protected:
-	void EnableSaveRestore(LPCTSTR pszSection);	// section and entry in app's profile
+	// section to use in app's profile
+	void EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE);
 
-	virtual CWnd* GetLayoutParent()
+	virtual CWnd* GetResizableWnd()
 	{
 		// make the layout know its parent window
 		return this;

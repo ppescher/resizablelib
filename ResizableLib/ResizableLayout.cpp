@@ -34,7 +34,7 @@ static char THIS_FILE[]=__FILE__;
 
 void CResizableLayout::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 {
-	CWnd* pParent = GetLayoutParent();
+	CWnd* pParent = GetResizableWnd();
 
 	// child window must be valid
 	ASSERT(::IsWindow(wnd));
@@ -118,7 +118,7 @@ void CResizableLayout::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 
 void CResizableLayout::ArrangeLayout()
 {
-	CWnd* pParent = GetLayoutParent();
+	CWnd* pParent = GetResizableWnd();
 
 	// init some vars
 	CRect wndrc;

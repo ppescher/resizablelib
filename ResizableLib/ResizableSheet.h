@@ -84,12 +84,13 @@ private:
 
 // callable from derived classes
 protected:
-	void EnableSaveRestore(LPCTSTR pszSection,
-		BOOL bWithPage = FALSE);	// section and entry in app's profile
+	// section to use in app's profile
+	void EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE,
+		BOOL bWithPage = FALSE);
 	int GetMinWidth();	// minimum width to display all buttons
 
 
-	virtual CWnd* GetLayoutParent()
+	virtual CWnd* GetResizableWnd()
 	{
 		// make the layout know its parent window
 		return this;

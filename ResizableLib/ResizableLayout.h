@@ -95,7 +95,7 @@ protected:
 	// add anchors to a control, given its ID
 	void AddAnchor(UINT ctrl_ID, CSize tl_type, CSize br_type = NOANCHOR)
 	{
-		AddAnchor(::GetDlgItem(GetLayoutParent()->GetSafeHwnd(), ctrl_ID),
+		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), ctrl_ID),
 			tl_type, br_type);
 	};
 
@@ -108,7 +108,7 @@ protected:
 		m_arrLayout.RemoveAll();
 	};
 
-	virtual CWnd* GetLayoutParent() = 0;
+	virtual CWnd* GetResizableWnd() = 0;
 
 public:
 	CResizableLayout() {};

@@ -120,7 +120,7 @@ void CResizableSheet::OnDestroy()
 
 	if (m_bEnableSaveRestore)
 	{
-		SaveWindowRect(GetSafeHwnd(), m_sSection);
+		SaveWindowRect(m_sSection);
 		SavePage();
 	}
 }
@@ -388,14 +388,14 @@ int CResizableSheet::GetMinWidth()
 
 // NOTE: this must be called after all the other settings
 //       to have the window and its controls displayed properly
-void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bWithPage)
+void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BOOL bWithPage)
 {
 	m_sSection = pszSection;
 	m_bSavePage = bWithPage;
 
 	m_bEnableSaveRestore = TRUE;
 
-	LoadWindowRect(GetSafeHwnd(), pszSection);
+	LoadWindowRect(pszSection, bRectOnly);
 	LoadPage();
 }
 

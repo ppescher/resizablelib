@@ -69,7 +69,7 @@ private:
 // callable from derived classes
 protected:
 
-	virtual CWnd* GetLayoutParent()
+	virtual CWnd* GetResizableWnd()
 	{
 		// make the layout know its parent window
 		return this;

@@ -107,7 +107,7 @@ BOOL CResizableDialog::OnInitDialog()
 void CResizableDialog::OnDestroy() 
 {
 	if (m_bEnableSaveRestore)
-		SaveWindowRect(GetSafeHwnd(), m_sSection);
+		SaveWindowRect(m_sSection);
 
 	// remove child windows
 	RemoveAllAnchors();
@@ -158,12 +158,12 @@ void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 // NOTE: this must be called after setting the layout
 //       to have the dialog and its controls displayed properly
-void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection)
+void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 {
 	m_sSection = pszSection;
 
 	m_bEnableSaveRestore = TRUE;
 
 	// restore immediately
-	LoadWindowRect(GetSafeHwnd(), pszSection);
+	LoadWindowRect(pszSection, bRectOnly);
 }
