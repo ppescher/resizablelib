@@ -43,19 +43,16 @@ class CResizableLayout
 		BOOL bNeedRefresh;
 
 		// upper-left corner
-		CSize sizeTypeTL;
-		CSize sizeMarginTL;
+		SIZE sizeTypeTL;
+		SIZE sizeMarginTL;
 		
 		// bottom-right corner
-		CSize sizeTypeBR;
-		CSize sizeMarginBR;
+		SIZE sizeTypeBR;
+		SIZE sizeMarginBR;
 	
 	public:
-		LayoutInfo() : hWnd(NULL), nCallbackID(0),
-			bAdjHScroll(FALSE), bNeedRefresh(FALSE),
-			sizeTypeTL(0,0), sizeMarginTL(0,0),
-			sizeTypeBR(0,0), sizeMarginBR(0,0)
-		{ }
+		LayoutInfo()
+		{ ZeroMemory(this, sizeof(LayoutInfo)); }
 
 		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
 			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
@@ -76,7 +73,7 @@ class CResizableLayout
 
 	// list of repositionable controls (in 2 parts: anchors, callbacks)
 	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;
-	int iFirstCallback;		// index of first callback
+	int m_iFirstCallback;		// index of first callback
 
 	void EnumAndClipChildWindow(HWND hWnd, CDC* pDC);
 
@@ -113,13 +110,13 @@ protected:
 	void RemoveAllAnchors()
 	{
 		m_arrLayout.RemoveAll();
-		iFirstCallback = 0;
+		m_iFirstCallback = 0;
 	}
 
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
-	CResizableLayout() { iFirstCallback = 0; }
+	CResizableLayout() { m_iFirstCallback = 0; }
 
 	virtual ~CResizableLayout()
 	{

@@ -91,7 +91,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
 		sizeTypeBR, sizeMarginBR, bHScroll, bRefresh);
 	// always add before callbacks
-	m_arrLayout.InsertAt(iFirstCallback++, layout);
+	m_arrLayout.InsertAt(m_iFirstCallback++, layout);
 }
 
 // one callback control cannot rely upon another callback control's
@@ -131,7 +131,7 @@ void CResizableLayout::ArrangeLayout()
 		
 		if (layout.hWnd == NULL)	// callback
 		{
-			if (i == iFirstCallback)	// first time only
+			if (i == m_iFirstCallback)	// first time only
 			{
 				// update previous controls
 				EndDeferWindowPos(hdwp);
