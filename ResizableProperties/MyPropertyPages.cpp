@@ -65,7 +65,7 @@ BOOL CMyPropertyPage1::OnSetActive()
 {
 	((CPropertySheet*)GetParent())->SetWizardButtons(PSWIZB_NEXT);
 	
-	return CPropertyPage::OnSetActive();
+	return CResizablePage::OnSetActive();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ BOOL CMyPropertyPage2::OnSetActive()
 {
 	((CPropertySheet*)GetParent())->SetWizardButtons(PSWIZB_BACK | PSWIZB_NEXT);
 	
-	return CPropertyPage::OnSetActive();
+	return CResizablePage::OnSetActive();
 }
 
 
@@ -169,6 +169,6 @@ BOOL CMyPropertyPage3::OnSetActive()
 {
 	((CPropertySheet*)GetParent())->SetWizardButtons(PSWIZB_BACK | PSWIZB_FINISH);
 	
-	return CPropertyPage::OnSetActive();
+	return CResizablePage::OnSetActive();
 }
 
