@@ -68,16 +68,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockControlBar(&m_wndToolBar);
 
 	// save/restore window position and size
-	EnableSaveRestore(_T("Demo SDI Wnd"));
+	EnableSaveRestore(_T("DemoSDI"));
 
 	return 0;
-}
-
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
-{
-	if( !CResizableFrame::PreCreateWindow(cs) )
-		return FALSE;
-	return TRUE;
 }
 
 /////////////////////////////////////////////////////////////////////////////
