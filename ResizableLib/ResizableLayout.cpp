@@ -16,6 +16,7 @@
 
 #include "stdafx.h"
 #include "ResizableLayout.h"
+#include "ResizableMsgSupport.inl"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -72,15 +73,19 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	sizeMarginBR.cx = rectChild.right - rectParent.Width() * sizeTypeBR.cx / 100;
 	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * sizeTypeBR.cy / 100;
 
-	// add to the list and the map
+	// prepare the structure
 	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
 		sizeTypeBR, sizeMarginBR, sClassName);
 
-	POSITION pos;
+	// initialize resize properties (overridable)
+	InitResizeProperties(layout);
+
 	// must not be already there!
 	// (this is probably due to a duplicate call to AddAnchor)
+	POSITION pos;
 	ASSERT(!m_mapLayout.Lookup(hWnd, pos));
 
+	// add to the list and the map
 	pos = m_listLayout.AddTail(layout);
 	m_mapLayout.SetAt(hWnd, pos);
 }
@@ -116,7 +121,7 @@ void CResizableLayout::ArrangeLayout()
 	int countCB = m_listLayoutCB.GetCount();
 
 	// reposition child windows
-	HDWP hdwp = ::BeginDeferWindowPos(count);
+	HDWP hdwp = ::BeginDeferWindowPos(count + countCB);
 	
 	POSITION pos = m_listLayout.GetHeadPosition();
 	while (pos != NULL)
@@ -130,24 +135,20 @@ void CResizableLayout::ArrangeLayout()
 		// only if size or position changed
 		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
 		{
-			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left, rectChild.top,
-				rectChild.Width(), rectChild.Height(), uFlags);
+			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left,
+				rectChild.top, rectChild.Width(), rectChild.Height(), uFlags);
 		}
 	}
-	::EndDeferWindowPos(hdwp);
 
-	// force updating of non-callback windows
-	// since the others may need it
-
-	// reposition callback windows
-	hdwp = ::BeginDeferWindowPos(countCB);
+	// for callback items you may use GetAnchorPosition to know the
+	// new position and size of a non-callback item after resizing
 
 	pos = m_listLayoutCB.GetHeadPosition();
 	while (pos != NULL)
 	{
 		// get layout info
 		layout = m_listLayoutCB.GetNext(pos);
-		// request data
+		// request layout data
 		if (!ArrangeLayoutCallback(layout))
 			continue;
 
@@ -157,10 +158,12 @@ void CResizableLayout::ArrangeLayout()
 		// only if size or position changed
 		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
 		{
-			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left, rectChild.top,
-				rectChild.Width(), rectChild.Height(), uFlags);
+			hdwp = ::DeferWindowPos(hdwp, layout.hWnd, NULL, rectChild.left,
+				rectChild.top, rectChild.Width(), rectChild.Height(), uFlags);
 		}
 	}
+
+	// finally move all the windows at once
 	::EndDeferWindowPos(hdwp);
 }
 
@@ -186,8 +189,12 @@ void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layou
 		rgn.SetRectRgn(&rect);
 	}
 
-	// go clipping?
-	if (LikesClipping(layout))
+	// get the clipping property
+	BOOL bClipping = layout.properties.bAskClipping ?
+		LikesClipping(layout) : layout.properties.bCachedLikesClipping;
+
+	// modify region accordingly
+	if (bClipping)
 		pRegion->CombineRgn(pRegion, &rgn, RGN_DIFF);
 	else
 		pRegion->CombineRgn(pRegion, &rgn, RGN_OR);
@@ -198,7 +205,7 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 	CWnd* pWnd = GetResizableWnd();
 
 	// System's default clipping area is screen's size,
-	// not enough for max track size:
+	// not enough for max track size, for example:
 	// if screen is 1024 x 768 and resizing border is 4 pixels,
 	// maximized size is 1024+4*2=1032 x 768+4*2=776,
 	// but max track size is 4 pixels bigger 1036 x 780 (don't ask me why!)
@@ -235,7 +242,7 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 			ClipChildWindow(layout, pRegion);
 	}
 
-	// fix for RTL layouts (1 pixel too-much)
+	// fix for RTL layouts (1 pixel of horz offset)
 	if (pWnd->GetExStyle() & WS_EX_LAYOUTRTL)
 		pRegion->OffsetRgn(-1,0);
 }
@@ -246,7 +253,9 @@ void CResizableLayout::EraseBackground(CDC* pDC)
 
 	// retrieve the background brush
 	HBRUSH hBrush = NULL;
+
 	// is this a dialog box?
+	// (using class atom is quickier than using the class name)
 	ATOM atomWndClass = (ATOM)::GetClassLong(hWnd, GCW_ATOM);
 	if (atomWndClass == (ATOM)0x8002)
 	{
@@ -260,6 +269,7 @@ void CResizableLayout::EraseBackground(CDC* pDC)
 		hBrush = (HBRUSH)::GetClassLong(hWnd, GCL_HBRBACKGROUND);
 	}
 
+	// fill the clipped background
 	CRgn rgn;
 	GetClippingRegion(&rgn);
 
@@ -284,6 +294,15 @@ void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
 BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 									const CRect& rectOld, const CRect& rectNew)
 {
+	if (layout.bMsgSupport)
+	{
+		REFRESHPROPERTY refresh;
+		refresh.rcOld = rectOld;
+		refresh.rcNew = rectNew;
+		if (Send_NeedsRefresh(layout.hWnd, &refresh))
+			return refresh.bNeedsRefresh;
+	}
+
 	int nDiffWidth = (rectNew.Width() - rectOld.Width());
 	int nDiffHeight = (rectNew.Height() - rectOld.Height());
 
@@ -295,7 +314,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	BOOL bRefresh = FALSE;
 
 	// window classes that need refresh when resized
-	if (layout.sWndClass == "Static")
+	if (layout.sWndClass == WC_STATIC)
 	{
 		DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
@@ -337,7 +356,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	// window classes that don't redraw client area correctly
 	// when the hor scroll pos changes due to a resizing
 	BOOL bHScroll = FALSE;
-	if (layout.sWndClass == "ListBox")
+	if (layout.sWndClass == WC_LISTBOX)
 		bHScroll = TRUE;
 
 	// fix for horizontally scrollable windows
@@ -367,6 +386,13 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 
 BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 {
+	if (layout.bMsgSupport)
+	{
+		CLIPPINGPROPERTY clipping;
+		if (Send_LikesClipping(layout.hWnd, &clipping))
+			return clipping.bLikesClipping;
+	}
+
 	DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
@@ -450,8 +476,9 @@ void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& 
 	// adjust position, if client area has been scrolled
 	rectNew.OffsetRect(rectParent.TopLeft());
 
-	// window classes that need refresh when resized
-	BOOL bRefresh = NeedsRefresh(layout, rectChild, rectNew);
+	// get the refresh property
+	BOOL bRefresh = layout.properties.bAskRefresh ?
+		NeedsRefresh(layout, rectChild, rectNew) : layout.properties.bCachedNeedsRefresh;
 
 	// set flags 
 	uFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
@@ -464,4 +491,21 @@ void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& 
 
 	// update rect
 	rectChild = rectNew;
+}
+
+void CResizableLayout::InitResizeProperties(CResizableLayout::LayoutInfo &layout)
+{
+	// check if custom window supports this library
+	// (properties must be correctly set by the window)
+	layout.bMsgSupport = Send_QueryProperties(layout.hWnd, &layout.properties);
+
+	// default properties
+	if (!layout.bMsgSupport)
+	{
+		// clipping property is assumed as static
+		layout.properties.bAskClipping = FALSE;
+		layout.properties.bCachedLikesClipping = LikesClipping(layout);
+		// refresh property is assumed as dynamic
+		layout.properties.bAskRefresh = TRUE;
+	}
 }

@@ -18,6 +18,7 @@
 #define AFX_RESIZABLELAYOUT_H__INCLUDED_
 
 #include <afxtempl.h>
+#include "ResizableMsgSupport.h"
 
 #if _MSC_VER > 1000
 #pragma once
@@ -49,14 +50,19 @@ protected:
 		// bottom-right corner
 		SIZE sizeTypeBR;
 		SIZE sizeMarginBR;
+
+		// custom window support
+		BOOL bMsgSupport;
+		RESIZEPROPERTIES properties;
 	
 	public:
-		LayoutInfo() : hWnd(NULL), nCallbackID(0)
+		LayoutInfo() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
 		{ }
 
 		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
 			SIZE br_t, SIZE br_m, CString classname)
-			: hWnd(hwnd), nCallbackID(0), sWndClass(classname),
+			: hWnd(hwnd), nCallbackID(0),
+			sWndClass(classname), bMsgSupport(FALSE),
 			sizeTypeTL(tl_t), sizeMarginTL(tl_m),
 			sizeTypeBR(br_t), sizeMarginBR(br_m)
 		{ }
@@ -74,10 +80,13 @@ private:
 		const CRect &rectParent, CRect &rectChild, UINT& uFlags);
 
 protected:
-	// override to specify clipping for custom or unsupported windows
+	// override to initialize resize properties (clipping, refresh)
+	virtual void InitResizeProperties(CResizableLayout::LayoutInfo& layout);
+
+	// override to specify clipping for unsupported windows
 	virtual BOOL LikesClipping(const CResizableLayout::LayoutInfo &layout);
 
-	// override to specify refresh for custom or unsupported windows
+	// override to specify refresh for unsupported windows
 	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
 		const CRect &rectOld, const CRect &rectNew);
 
@@ -108,22 +117,24 @@ protected:
 
 	// get rect of an anchored window, given the parent's client area
 	BOOL GetAnchorPosition(HWND hWnd, const CRect &rectParent,
-		CRect &rectChild, UINT& uFlags)
+		CRect &rectChild, UINT* lpFlags = NULL)
 	{
 		POSITION pos;
 		if (!m_mapLayout.Lookup(hWnd, pos))
 			return FALSE;
 
-		CalcNewChildPosition(m_listLayout.GetAt(pos), rectParent, rectChild, uFlags);
+		UINT uTmpFlags;
+		CalcNewChildPosition(m_listLayout.GetAt(pos), rectParent, rectChild,
+			(lpFlags != NULL) ? (*lpFlags) : uTmpFlags);
 		return TRUE;
 	}
 
 	// get rect of an anchored window, given the parent's client area
 	BOOL GetAnchorPosition(UINT nID, const CRect &rectParent,
-		CRect &rectChild, UINT& uFlags)
+		CRect &rectChild, UINT* lpFlags = NULL)
 	{
 		return GetAnchorPosition(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
-			rectParent, rectChild, uFlags);
+			rectParent, rectChild, lpFlags);
 	}
 
 	// remove an anchored control from the layout, given its HWND
