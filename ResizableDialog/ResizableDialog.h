@@ -26,25 +26,12 @@
 //  
 /////////////////////////////////////////////////////////////////////////////
 
-#include <afxtempl.h>
-
-// useful compatibility constants (the only one required is NOANCHOR)
-
-#if !defined(__SIZE_ANCHORS_)
-#define __SIZE_ANCHORS_
-
-const CSize
-	NOANCHOR(-1,-1),
-	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
-	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
-	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
-
-#endif // !defined(__SIZE_ANCHORS_)
+#include "ResizableLayout.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
 
-class CResizableDialog : public CDialog
+class CResizableDialog : public CDialog, public CResizableLayout
 {
 
 // Construction
@@ -77,48 +64,6 @@ private:
 	POINT m_ptMaxPos;			// maximized position
 	POINT m_ptMaxSize;			// maximized size
 
-	class Layout
-	{
-	public:
-		HWND hwnd;
-
-		BOOL adj_hscroll;
-		BOOL need_refresh;
-
-		// upper-left corner
-		CSize tl_type;
-		CSize tl_margin;
-		
-		// bottom-right corner
-		CSize br_type;
-		CSize br_margin;
-	
-	public:
-		Layout()
-			: hwnd(NULL), adj_hscroll(FALSE), need_refresh(FALSE),
-			tl_type(0,0), tl_margin(0,0),
-			br_type(0,0), br_margin(0,0)
-		{
-		};
-
-		Layout(HWND hw, SIZE tl_t, SIZE tl_m, 
-			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
-		{
-			hwnd = hw;
-
-			adj_hscroll = hscroll;
-			need_refresh = refresh;
-
-			tl_type = tl_t;
-			tl_margin = tl_m;
-			
-			br_type = br_t;
-			br_margin = br_m;
-		};
-	};
-
-	CArray<Layout, Layout&> m_arrLayout;	// list of repositionable controls
-
 // Operations
 public:
 
@@ -136,19 +81,10 @@ private:
 	void Construct();
 	void LoadWindowRect();
 	void SaveWindowRect();
-	void ArrangeLayout();
 	void UpdateGripPos();
 
 // callable from derived classes
-//protected:
-public:
-	void AddAnchor(HWND wnd, CSize tl_type,
-		CSize br_type = NOANCHOR);	// add anchors to a control
-	void AddAnchor(UINT ctrl_ID, CSize tl_type,
-		CSize br_type = NOANCHOR)	// add anchors to a control
-	{
-		AddAnchor(::GetDlgItem(*this, ctrl_ID), tl_type, br_type);
-	};
+protected:
 	void ShowSizeGrip(BOOL bShow);				// show or hide the size grip
 	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
 	void ResetMaximizedRect();					// reset to default maximized rect
@@ -157,6 +93,12 @@ public:
 	void SetMaxTrackSize(const CSize& size);	// set maximum tracking size
 	void ResetMaxTrackSize();					// reset to default maximum tracking size
 	void EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry);	// section and entry in app's profile
+
+	virtual CWnd* GetLayoutParent()
+	{
+		// make the layout know its parent window
+		return this;
+	};
 
 // Generated message map functions
 protected:

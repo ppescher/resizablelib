@@ -66,8 +66,6 @@ CResizableDialog::CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd)
 
 CResizableDialog::~CResizableDialog()
 {
-	// for safety
-	m_arrLayout.RemoveAll();
 }
 
 
@@ -112,7 +110,7 @@ void CResizableDialog::OnDestroy()
 		SaveWindowRect();
 
 	// remove old windows
-	m_arrLayout.RemoveAll();
+	RemoveAllAnchors();
 }
 
 void CResizableDialog::OnPaint() 
@@ -135,6 +133,11 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 
 	if (m_bInitDone)
 	{
+		// update size-grip
+		InvalidateRect(&m_rcGripRect);
+		UpdateGripPos();
+		InvalidateRect(&m_rcGripRect);
+
 		ArrangeLayout();
 	}
 }
@@ -170,163 +173,6 @@ void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	}
 }
 
-// layout functions
-
-void CResizableDialog::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
-{
-	ASSERT(wnd != NULL && ::IsWindow(wnd));
-	ASSERT(::IsChild(*this, wnd));
-	ASSERT(tl_type != NOANCHOR);
-
-	// get control's window class
-	
-	CString st;
-	GetClassName(wnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
-	st.ReleaseBuffer();
-	st.MakeUpper();
-
-	// add the style 'clipsiblings' to a GroupBox
-	// to avoid unnecessary repainting of controls inside
-	if (st == "BUTTON")
-	{
-		DWORD style = GetWindowLong(wnd, GWL_STYLE);
-		if ((style & 0x0FL) == BS_GROUPBOX)
-			SetWindowLong(wnd, GWL_STYLE, style | WS_CLIPSIBLINGS);
-	}
-
-	// wnd classes that don't redraw client area correctly
-	// when the hor scroll pos changes due to a resizing
-	BOOL hscroll = FALSE;
-	if (st == "LISTBOX")
-		hscroll = TRUE;
-
-	// wnd classes that need refresh when resized
-	BOOL refresh = FALSE;
-	if (st == "STATIC")
-	{
-		DWORD style = GetWindowLong(wnd, GWL_STYLE);
-
-		switch (style & SS_TYPEMASK)
-		{
-		case SS_LEFT:
-		case SS_CENTER:
-		case SS_RIGHT:
-			// word-wrapped text needs refresh
-			refresh = TRUE;
-		}
-
-		// centered images or text need refresh
-		if (style & SS_CENTERIMAGE)
-			refresh = TRUE;
-
-		// simple text never needs refresh
-		if (style & SS_TYPEMASK == SS_SIMPLE)
-			refresh = FALSE;
-	}
-
-	// get dialog's and control's rect
-	CRect wndrc, objrc;
-
-	GetClientRect(&wndrc);
-	::GetWindowRect(wnd, &objrc);
-	ScreenToClient(&objrc);
-	
-	CSize tl_margin, br_margin;
-
-	if (br_type == NOANCHOR)
-		br_type = tl_type;
-	
-	// calculate margin for the top-left corner
-
-	tl_margin.cx = objrc.left - wndrc.Width() * tl_type.cx / 100;
-	tl_margin.cy = objrc.top - wndrc.Height() * tl_type.cy / 100;
-	
-	// calculate margin for the bottom-right corner
-
-	br_margin.cx = objrc.right - wndrc.Width() * br_type.cx / 100;
-	br_margin.cy = objrc.bottom - wndrc.Height() * br_type.cy / 100;
-
-	// add to the list
-	Layout obj(wnd, tl_type, tl_margin,	br_type, br_margin, hscroll, refresh);
-	m_arrLayout.Add(obj);
-}
-
-void CResizableDialog::ArrangeLayout()
-{
-	// update size-grip
-	InvalidateRect(&m_rcGripRect);
-	UpdateGripPos();
-	InvalidateRect(&m_rcGripRect);
-
-	// init some vars
-	CRect wndrc;
-	GetClientRect(&wndrc);
-
-	int i, count = m_arrLayout.GetSize();
-	HDWP hdwp = BeginDeferWindowPos(count);
-
-	for (i=0; i<count; ++i)
-	{
-		Layout& obj = m_arrLayout[i];
-
-		CRect objrc, newrc;
-		CWnd* wnd = CWnd::FromHandle(obj.hwnd); // temporary solution
-
-		wnd->GetWindowRect(&objrc);
-		ScreenToClient(&objrc);
-		
-		// calculate new top-left corner
-
-		newrc.left = obj.tl_margin.cx + wndrc.Width() * obj.tl_type.cx / 100;
-		newrc.top = obj.tl_margin.cy + wndrc.Height() * obj.tl_type.cy / 100;
-		
-		// calculate new bottom-right corner
-
-		newrc.right = obj.br_margin.cx + wndrc.Width() * obj.br_type.cx / 100;
-		newrc.bottom = obj.br_margin.cy + wndrc.Height() * obj.br_type.cy / 100;
-
-		if (!newrc.EqualRect(&objrc))
-		{
-			if (obj.adj_hscroll)
-			{
-				// needs repainting, due to horiz scrolling
-				int diff = newrc.Width() - objrc.Width();
-				int max = wnd->GetScrollLimit(SB_HORZ);
-			
-				obj.need_refresh = FALSE;
-				if (max > 0 && wnd->GetScrollPos(SB_HORZ) > max - diff)
-				{
-					obj.need_refresh = TRUE;
-				}
-			}
-
-			// set flags 
-			DWORD flags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
-			if (newrc.TopLeft() == objrc.TopLeft())
-				flags |= SWP_NOMOVE;
-			if (newrc.Size() == objrc.Size())
-				flags |= SWP_NOSIZE;
-			
-			DeferWindowPos(hdwp, obj.hwnd, NULL, newrc.left, newrc.top,
-				newrc.Width(), newrc.Height(), flags);
-		}
-	}
-	// go re-arrange child windows
-	EndDeferWindowPos(hdwp);
-
-	// refresh those that need
-	for (i=0; i<count; ++i)
-	{
-		Layout& obj = m_arrLayout[i];
-		CWnd* wnd = CWnd::FromHandle(obj.hwnd); // temporary solution
-	
-		if (obj.need_refresh)
-		{
-			wnd->Invalidate();
-			wnd->UpdateWindow();
-		}
-	}
-}
 
 void CResizableDialog::UpdateGripPos()
 {

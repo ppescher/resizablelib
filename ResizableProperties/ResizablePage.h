@@ -26,25 +26,13 @@
 //  
 /////////////////////////////////////////////////////////////////////////////
 
-#include <afxtempl.h>
+#include "ResizableLayout.h"
 
-// useful compatibility constants (the only one required is NOANCHOR)
-
-#if !defined(__SIZE_ANCHORS_)
-#define __SIZE_ANCHORS_
-
-const CSize
-	NOANCHOR(-1,-1),
-	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
-	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
-	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
-
-#endif // !defined(__SIZE_ANCHORS_)
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizablePage window
 
-class CResizablePage : public CPropertyPage
+class CResizablePage : public CPropertyPage, public CResizableLayout
 {
 	DECLARE_DYNCREATE(CResizablePage)
 
@@ -59,52 +47,8 @@ public:
 
 private:
 	// internal status
-	CString m_sSection;			// section name and
-	CString m_sEntry;			// entry for save/restore
 
 	BOOL m_bInitDone;			// if all internal vars initialized
-
-	class Layout
-	{
-	public:
-		HWND hwnd;
-
-		BOOL adj_hscroll;
-		BOOL need_refresh;
-
-		// upper-left corner
-		CSize tl_type;
-		CSize tl_margin;
-		
-		// bottom-right corner
-		CSize br_type;
-		CSize br_margin;
-	
-	public:
-		Layout()
-			: hwnd(NULL), adj_hscroll(FALSE), need_refresh(FALSE),
-			tl_type(0,0), tl_margin(0,0),
-			br_type(0,0), br_margin(0,0)
-		{
-		};
-
-		Layout(HWND hw, SIZE tl_t, SIZE tl_m, 
-			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
-		{
-			hwnd = hw;
-
-			adj_hscroll = hscroll;
-			need_refresh = refresh;
-
-			tl_type = tl_t;
-			tl_margin = tl_m;
-			
-			br_type = br_t;
-			br_margin = br_m;
-		};
-	};
-
-	CArray<Layout, Layout&> m_arrLayout;	// list of repositionable controls
 
 // Operations
 public:
@@ -121,16 +65,14 @@ public:
 // used internally
 private:
 	void Construct();
-	void ArrangeLayout();
 
 // callable from derived classes
 protected:
-	void AddAnchor(HWND wnd, CSize tl_type,
-		CSize br_type = NOANCHOR);	// add anchors to a control
-	void AddAnchor(UINT ctrl_ID, CSize tl_type,
-		CSize br_type = NOANCHOR)	// add anchors to a control
+
+	virtual CWnd* GetLayoutParent()
 	{
-		AddAnchor(::GetDlgItem(*this, ctrl_ID), tl_type, br_type);
+		// make the layout know its parent window
+		return this;
 	};
 
 // Generated message map functions
