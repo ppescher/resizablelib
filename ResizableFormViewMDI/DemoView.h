@@ -34,7 +34,6 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CDemoView)
 	public:
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual void OnInitialUpdate(); // called first time after construct

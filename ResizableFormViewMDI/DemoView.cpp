@@ -48,11 +48,6 @@ void CDemoView::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 }
 
-BOOL CDemoView::PreCreateWindow(CREATESTRUCT& cs)
-{
-	return CResizableFormView::PreCreateWindow(cs);
-}
-
 void CDemoView::OnInitialUpdate()
 {
 	AddAnchor(IDC_EDIT1, TOP_LEFT, CSize(40,100));
@@ -95,14 +90,29 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 
 void CDemoView::OnButton2() 
 {
+	CWnd* pParent = GetParent();
+	CRect rect;
+	GetTotalClientRect(&rect);
+	DWORD style = pParent->GetStyle() & ~WS_THICKFRAME | WS_DLGFRAME;
+	::AdjustWindowRect(&rect, style, ::IsMenu(pParent->GetMenu()->m_hMenu));
 	// ever wanted a real dialog?
-	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
-	GetParent()->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME, SWP_FRAMECHANGED);
+	ModifyStyleEx(WS_EX_CLIENTEDGE, 0);
+	pParent->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME);
+	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
+		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
 }
 
 void CDemoView::OnButton1() 
 {
+	CWnd* pParent = GetParent();
+	CRect rect;
+	GetTotalClientRect(&rect);
+	DWORD style = pParent->GetStyle() & ~WS_DLGFRAME | WS_THICKFRAME|WS_CAPTION;
+	::AdjustWindowRectEx(&rect, style, ::IsMenu(pParent->GetMenu()->m_hMenu),
+		WS_EX_CLIENTEDGE);
 	// go back to formview
-	ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
-	GetParent()->ModifyStyle(WS_DLGFRAME, WS_THICKFRAME|WS_CAPTION, SWP_FRAMECHANGED);
+	ModifyStyleEx(0, WS_EX_CLIENTEDGE);
+	pParent->ModifyStyle(WS_DLGFRAME, WS_THICKFRAME|WS_CAPTION);
+	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
+		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
 }
