@@ -74,6 +74,10 @@ private:
 	CList<LayoutInfo, LayoutInfo&> m_listLayout;
 	CList<LayoutInfo, LayoutInfo&> m_listLayoutCB;
 
+	// used for clipping
+	HRGN m_hOldClipRgn;
+	int m_nOldClipRgn;
+
 	void ClipChildWindow(const CResizableLayout::LayoutInfo &layout, CRgn* pRegion);
 
 	void CalcNewChildPosition(const CResizableLayout::LayoutInfo &layout,
@@ -91,10 +95,9 @@ protected:
 		const CRect &rectOld, const CRect &rectNew);
 
 	// paint the background on the given DC (for XP theme's compatibility)
-	void EraseBackground(CDC* pDC);
 
-	// clip out child windows from the given DC (support old code)
-	void ClipChildren(CDC* pDC);
+	// clip out child windows from the given DC
+	void ClipChildren(CDC* pDC, BOOL bUndo);
 
 	// get the clipping region (without clipped child windows)
 	void GetClippingRegion(CRgn* pRegion);
@@ -172,7 +175,10 @@ protected:
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
-	CResizableLayout() { }
+	CResizableLayout()
+	{
+		m_hOldClipRgn = ::CreateRectRgn(0,0,0,0);
+	}
 
 	virtual ~CResizableLayout()
 	{
