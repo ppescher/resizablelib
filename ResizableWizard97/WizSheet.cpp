@@ -79,6 +79,8 @@ BOOL CWizard97Sheet::OnInitDialog()
 	GetWindowRect(&rect);
 	SetMinTrackSize(CSize(GetMinWidth(), rect.Height()));
 	
+	//EnableSaveRestore("Wizard97");
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
