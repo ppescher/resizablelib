@@ -78,8 +78,15 @@ int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CPropertySheet::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
-	// change window style to be resizable
-	ModifyStyle(DS_MODALFRAME, WS_THICKFRAME, SWP_FRAMECHANGED);
+	// keep client area
+	CRect rect;
+	GetClientRect(&rect);
+	// set resizable style
+	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
+	// adjust size to reflect new style
+	CalcWindowRect(&rect);
+	SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
+		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
 
 	if (!InitGrip())
 		return -1;
