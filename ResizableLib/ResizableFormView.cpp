@@ -95,28 +95,26 @@ void CResizableFormView::OnInitialUpdate()
 
 void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 {
+	GetClientRect(lpRect);
+
 	// get scrollable size
 	CSize size = GetTotalSize();
 
+	// before initialization, "size" is dialog template size
 	if (!m_bInitDone)
 	{
-		// before initialization, "size" is dialog template size
-		lpRect->left = 0;
-		lpRect->top = 0;
-		lpRect->right = m_totalLog.cx;
-		lpRect->bottom = m_totalLog.cy;
+		lpRect->right = lpRect->left + size.cx;
+		lpRect->bottom = lpRect->top + size.cy;
 		return;
 	}
 
 	// otherwise, give correct size if scrollbars active
 
-	GetClientRect(lpRect);
-	CRect rect(lpRect);
-
 	if (m_nMapMode < 0)	// scrollbars disabled
 		return;
 
 	// enlarge reported client area when needed
+	CRect rect(lpRect);
 	if (rect.Width() < size.cx)
 		lpRect->right = lpRect->left + size.cx;
 	if (rect.Height() < size.cy)
