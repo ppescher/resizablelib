@@ -246,11 +246,27 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 	}
 }
 
-// support legacy code
+void CResizableLayout::EraseBackground(CDC* pDC)
+{
+	CWnd* pWnd = GetResizableWnd();
+	
+	CRgn rgn;
+	GetClippingRegion(&rgn);
+	if (pWnd->GetStyle() & WS_EX_LAYOUTRTL)
+		rgn.OffsetRgn(-1,0);	// fix for RTL layouts
+
+	HBRUSH hbr = (HBRUSH)pWnd->SendMessage(WM_CTLCOLORDLG,
+		(WPARAM)pDC->GetSafeHdc(), (LPARAM)pWnd->GetSafeHwnd());
+	
+	FillRgn(pDC->GetSafeHdc(), rgn, hbr);
+}
+
+// support legacy code (will disappear in future versions)
 void CResizableLayout::ClipChildren(CDC* pDC)
 {
 	CRgn rgn;
 	GetClippingRegion(&rgn);
+	// the clipping region is in device units
 	rgn.OffsetRgn(-pDC->GetWindowOrg());
 	pDC->SelectClipRgn(&rgn);
 }

@@ -271,10 +271,7 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
 	// Windows XP doesn't like clipping regions ...try this!
-	CRgn rgn;
-	GetClippingRegion(&rgn);
-	HBRUSH hbr = (HBRUSH)SendMessage(WM_CTLCOLORDLG, (WPARAM)pDC->GetSafeHdc(), (LPARAM)GetSafeHwnd());
-	FillRgn(pDC->GetSafeHdc(), rgn, hbr);
+	EraseBackground(pDC);
 	return TRUE;
 
 //	ClipChildren(pDC);	// old-method (for safety)

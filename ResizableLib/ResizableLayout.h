@@ -81,6 +81,9 @@ protected:
 	virtual BOOL LikesClipping(HWND hWnd);
 	virtual BOOL NeedsRefresh(HWND hWnd);
 
+	// paint background (for XP theme's compatibility)
+	void EraseBackground(CDC* pDC);
+
 	// support legacy code
 	void ClipChildren(CDC* pDC);
 
