@@ -41,6 +41,9 @@ public:
 
 // Implementation
 public:
+	void DialogToFormView();
+	void FormViewToDialog();
+
 	virtual ~CDemoView();
 #ifdef _DEBUG
 	virtual void AssertValid() const;

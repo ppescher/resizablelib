@@ -90,27 +90,39 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 
 void CDemoView::OnButton2() 
 {
+	FormViewToDialog();
+}
+
+void CDemoView::OnButton1() 
+{
+	DialogToFormView();
+}
+
+void CDemoView::FormViewToDialog()
+{
 	CWnd* pParent = GetParent();
+	// estimate new window's size
 	CRect rect;
-	GetTotalClientRect(&rect);
+	GetTotalClientRect(&rect);	// uses GetTotalSize()
 	DWORD style = pParent->GetStyle() & ~WS_THICKFRAME | WS_DLGFRAME;
-	::AdjustWindowRect(&rect, style, ::IsMenu(pParent->GetMenu()->m_hMenu));
-	// ever wanted a real dialog?
+	::AdjustWindowRect(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())));
+	// change style and size
 	ModifyStyleEx(WS_EX_CLIENTEDGE, 0);
 	pParent->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME);
 	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
 }
 
-void CDemoView::OnButton1() 
+void CDemoView::DialogToFormView()
 {
 	CWnd* pParent = GetParent();
+	// estimate new window's size
 	CRect rect;
-	GetTotalClientRect(&rect);
+	GetTotalClientRect(&rect);	// uses GetTotalSize()
 	DWORD style = pParent->GetStyle() & ~WS_DLGFRAME | WS_THICKFRAME|WS_CAPTION;
-	::AdjustWindowRectEx(&rect, style, ::IsMenu(pParent->GetMenu()->m_hMenu),
+	::AdjustWindowRectEx(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())),
 		WS_EX_CLIENTEDGE);
-	// go back to formview
+	// change style and size
 	ModifyStyleEx(0, WS_EX_CLIENTEDGE);
 	pParent->ModifyStyle(WS_DLGFRAME, WS_THICKFRAME|WS_CAPTION);
 	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
