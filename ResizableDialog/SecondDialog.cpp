@@ -68,9 +68,9 @@ BOOL CSecondDialog::OnInitDialog()
 	m_wndToolBar.SetWindowPos(&wndBottom,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
 	// set layout
-	AddAnchor(IDC_PICTURE1, TOP_LEFT, CSize(30,100));
-	AddAnchor(IDC_STATIC1, CSize(30,0), CSize(80,100));
-	AddAnchor(IDC_STATIC2, CSize(80,0), BOTTOM_RIGHT);
+	AddAnchor(IDC_PICTURE1, TOP_LEFT, ANCHOR(30,100));
+	AddAnchor(IDC_STATIC1, ANCHOR(30,0), ANCHOR(80,100));
+	AddAnchor(IDC_STATIC2, ANCHOR(80,0), BOTTOM_RIGHT);
 
 	AddAnchor(IDC_LINE1, BOTTOM_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDOK, BOTTOM_RIGHT);
