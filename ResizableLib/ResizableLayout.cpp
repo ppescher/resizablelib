@@ -16,7 +16,6 @@
 
 #include "stdafx.h"
 #include "ResizableLayout.h"
-#include "ResizableMsgSupport.inl"
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -290,10 +290,6 @@ SOURCE=.\ResizableMsgSupport.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ResizableMsgSupport.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\ResizablePage.h
 # End Source File
 # Begin Source File
