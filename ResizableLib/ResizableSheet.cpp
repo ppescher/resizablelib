@@ -242,14 +242,13 @@ BOOL CResizableSheet::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pResul
 
 BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC) 
 {
-	// Windows XP doesn't like clipping regions ...try this!
-	EraseBackground(pDC);
-	return TRUE;
+	ClipChildren(pDC, FALSE);
 
-/*	ClipChildren(pDC);	// old-method (for safety)
+	BOOL bRet = CPropertySheet::OnEraseBkgnd(pDC);
 
-	return CPropertySheet::OnEraseBkgnd(pDC);
-*/
+	ClipChildren(pDC, TRUE);
+
+	return bRet;
 }
 
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 

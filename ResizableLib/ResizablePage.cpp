@@ -67,12 +67,11 @@ void CResizablePage::OnSize(UINT nType, int cx, int cy)
 
 BOOL CResizablePage::OnEraseBkgnd(CDC* pDC) 
 {
-	// Windows XP doesn't like clipping regions ...try this!
-	EraseBackground(pDC);
-	return TRUE;
+	ClipChildren(pDC, FALSE);
 
-/*	ClipChildren(pDC);	// old-method (for safety)
-	
-	return CPropertyPage::OnEraseBkgnd(pDC);
-*/
+	BOOL bRet = CPropertyPage::OnEraseBkgnd(pDC);
+
+	ClipChildren(pDC, TRUE);
+
+	return bRet;
 }
