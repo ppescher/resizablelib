@@ -76,6 +76,7 @@ BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
 	ON_WM_PAINT()
+	ON_WM_CREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -292,4 +293,14 @@ void CResizableDialog::LoadWindowRect()
 	{
 		SetWindowPlacement(&wp);
 	}
+}
+
+int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (CDialog::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	ModifyStyle(DS_MODALFRAME, WS_POPUP|WS_THICKFRAME);
+
+	return 0;
 }
