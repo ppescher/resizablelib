@@ -159,6 +159,7 @@ BOOL CMyPropertyPage3::OnInitDialog()
 	CResizablePage::OnInitDialog();
 	
 	// preset layout
+	AddAnchor(IDC_LABEL1, TOP_LEFT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_SLIDER1, BOTTOM_LEFT, BOTTOM_RIGHT);
 	
