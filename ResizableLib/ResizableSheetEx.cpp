@@ -200,7 +200,9 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 		return CResizableLayout::ArrangeLayoutCallback(layout);
 
 	// set layout info for active page
-	layout.hWnd = GetActivePage()->GetSafeHwnd();
+	layout.hWnd = (HWND)::SendMessage(GetSafeHwnd(), PSM_GETCURRENTPAGEHWND, 0, 0);
+	if (!::IsWindow(layout.hWnd))
+		return FALSE;
 
 	// set margins
 	if (IsWizard())	// wizard mode
