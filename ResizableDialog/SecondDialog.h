@@ -33,7 +33,7 @@ public:
 
 // Implementation
 protected:
-	CToolBar m_tbToolbar;
+	CToolBar m_wndToolBar;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSecondDialog)

@@ -53,14 +53,18 @@ BOOL CSecondDialog::OnInitDialog()
 	// move toolbar to its position
 	// before adding it to the layout
 	CSize size;
-	CRect rc1, rc2;
-	GetDlgItem(IDOK)->GetWindowRect(&rc1);
-	GetDlgItem(IDC_LINE1)->GetWindowRect(&rc2);
-	rc1.left = rc2.left;
-	ScreenToClient(&rc1);
+	CRect rect, rc;
+	GetDlgItem(IDOK)->GetWindowRect(&rect);
+	GetDlgItem(IDC_LINE1)->GetWindowRect(&rc);
+	rect.left = rc.left;
+	ScreenToClient(&rect);
+	m_wndToolBar.GetToolBarCtrl().GetMaxSize(&size);
+	rect.right = rect.left + size.cx;
+	rect.bottom = rect.top + size.cy;
 
-	m_tbToolbar.GetToolBarCtrl().GetMaxSize(&size);
-	m_tbToolbar.MoveWindow(rc1.left,rc1.top,size.cx,size.cy,FALSE);
+	m_wndToolBar.SetBarStyle(CBRS_ALIGN_TOP | CBRS_TOOLTIPS | CBRS_FLYBY);
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, 
+		CWnd::reposDefault, NULL, rect);
 
 	// set layout
 	AddAnchor(IDC_PICTURE1, TOP_LEFT, CSize(30,100));
@@ -73,13 +77,12 @@ BOOL CSecondDialog::OnInitDialog()
 
 	// these should be equivalent, as long as you leave the
 	// default control ID for the toolbar in the Create() call
-	// AddAnchor(m_tbToolbar.GetSafeHwnd(), BOTTOM_LEFT);
-	AddAnchor(AFX_IDW_TOOLBAR, BOTTOM_LEFT);
+	//AddAnchor(AFX_IDW_TOOLBAR, BOTTOM_LEFT);
+	AddAnchor(m_wndToolBar.GetSafeHwnd(), BOTTOM_LEFT);
 
 	ResetMinTrackSize();
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 int CSecondDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
@@ -88,11 +91,13 @@ int CSecondDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// create toolbar, with just buttons and no border
-	m_tbToolbar.Create(this);
-	m_tbToolbar.LoadToolBar(IDR_TOOLBAR1);
-	m_tbToolbar.SetBorders(0,0,0,0);
-	m_tbToolbar.SetBarStyle(m_tbToolbar.GetBarStyle() & ~CBRS_BORDER_TOP);
-
+	if (!m_wndToolBar.CreateEx(this, TBSTYLE_TRANSPARENT|TBSTYLE_FLAT) ||
+		!m_wndToolBar.LoadToolBar(IDR_TOOLBAR1))
+	{
+		TRACE0("Failed to create toolbar\n");
+		return -1;      // fail to create
+	}
+	m_wndToolBar.SetBorders(0,0,0,0);
 	// tooltips don't work! (see note below)
 
 	return 0;
@@ -130,3 +135,4 @@ void CSecondDialog::OnButton4()
 	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(250,250,180));
 	Invalidate();
 }
+
