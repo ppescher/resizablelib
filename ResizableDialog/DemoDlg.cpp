@@ -73,12 +73,12 @@ BOOL CDemoDlg::OnInitDialog()
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO2);
 	GetDlgItem(IDC_RADIO2)->SetFocus();
 
-	SetDlgItemText(IDC_EDIT1, _T("CResizableDialog\r\n\r\n"
-		"This dialog can be resized to full width and half the height of the screen.\r\n"
-		"The minimum size is by default the one in the dialog editor.\r\n"
-		"Size grip can be switched off.\r\n\r\n"
-		"Try to maximize and then to restore the dialog!\r\n"
-		"Isn't it cool?"));
+	SetDlgItemText(IDC_EDIT1, _T("CResizableDialog\r\n\r\n")
+		_T("This dialog can be resized to full width and half the height of the screen.\r\n")
+		_T("The minimum size is by default the one in the dialog editor.\r\n")
+		_T("Size grip can be switched off.\r\n\r\n")
+		_T("Try to maximize and then to restore the dialog!\r\n")
+		_T("Isn't it cool?"));
 
 	// min/max size settings
 
