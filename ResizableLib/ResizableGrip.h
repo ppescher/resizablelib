@@ -27,13 +27,14 @@ private:
 	class CSizeGrip : public CScrollBar
 	{
 	public:
-		void SetTransparency(BOOL bActivate);
 		CSizeGrip()
 		{
 			m_bTransparent = FALSE;
 			m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
 			m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
 		}
+
+		void SetTransparency(BOOL bActivate);
 
 		BOOL IsRTL();			// right-to-left layout support
 
@@ -55,9 +56,10 @@ private:
 protected:
 	BOOL CreateSizeGrip();		// create a size grip, initially visible
 	BOOL IsSizeGripVisible();	// TRUE if grip is set to be visible
+	void SetSizeGripVisibility(BOOL bVisible);	// set default visibility
 	void UpdateSizeGrip();		// update the grip's visibility and position
-	void ShowSizeGrip(BOOL* pbStatus = NULL);	// show the size grip
-	void HideSizeGrip(BOOL* pbStatus = NULL);	// hide the size grip
+	void ShowSizeGrip(DWORD* pStatus, DWORD dwMask = 1);	// temp show the size grip
+	void HideSizeGrip(DWORD* pStatus, DWORD dwMask = 1);	// temp hide the size grip
 	BOOL SetSizeGripBkMode(int nBkMode);		// like CDC::SetBkMode
 
 	virtual CWnd* GetResizableWnd() = 0;

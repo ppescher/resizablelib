@@ -52,48 +52,36 @@ void CResizableGrip::UpdateSizeGrip()
 
 	// must stay below other children
 	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
-		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION);
-
-	// maximized windows cannot be resized
-	if (GetResizableWnd()->IsZoomed())
-		m_wndGrip.EnableWindow(FALSE);
-	else
-		m_wndGrip.EnableWindow(TRUE);
-
-	m_wndGrip.ShowWindow(IsSizeGripVisible() ? SW_SHOW : SW_HIDE);
+		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION
+		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
 
 // pbStatus points to a variable, maintained by the caller, that
-// holds its visibility status. Initialize the variable with TRUE
-// to allow to temporarily hide the grip, FALSE to allow to
-// temporarily show the grip.
-// NULL to force showing/hiding the grip
+// holds its visibility status. Initialize the variable with 1
+// to allow to temporarily hide the grip, 0 to allow to
+// temporarily show the grip (with respect to the dwMask bit).
 
 // NB: visibility is effective only after an update
 
-void CResizableGrip::ShowSizeGrip(BOOL* pbStatus /* = NULL */)
+void CResizableGrip::ShowSizeGrip(DWORD* pStatus, DWORD dwMask /*= 1*/)
 {
-	if (pbStatus == NULL)
-	{
-		m_nShowCount = 1;
-	}
-	else if ( !(*pbStatus) )
+	ASSERT(pStatus != NULL);
+
+	if (!(*pStatus & dwMask))
 	{
 		m_nShowCount++;
-		(*pbStatus) = TRUE;
+		(*pStatus) |= dwMask;
 	}
 }
 
-void CResizableGrip::HideSizeGrip(BOOL* pbStatus /* = NULL */)
+void CResizableGrip::HideSizeGrip(DWORD* pStatus, DWORD dwMask /*= 1*/)
 {
-	if (pbStatus == NULL)
-	{
-		m_nShowCount = 0;
-	}
-	else if (*pbStatus)
+	ASSERT(pStatus != NULL);
+
+	if (*pStatus & dwMask)
 	{
 		m_nShowCount--;
-		(*pbStatus) = FALSE;
+		(*pStatus) &= ~dwMask;
 	}
 }
 
@@ -103,12 +91,20 @@ BOOL CResizableGrip::IsSizeGripVisible()
 	return (m_nShowCount > 0);
 }
 
+void CResizableGrip::SetSizeGripVisibility(BOOL bVisible)
+{
+	if (bVisible)
+		m_nShowCount = 1;
+	else
+		m_nShowCount = 0;
+}
+
 BOOL CResizableGrip::CreateSizeGrip()
 {
 	// create grip
 	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
-	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP,
-		rect, GetResizableWnd(), 0);
+	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS
+		| SBS_SIZEGRIP, rect, GetResizableWnd(), 0);
 
 	if (bRet)
 	{
@@ -140,6 +136,11 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARA
 {
 	switch (message)
 	{
+	case WM_GETDLGCODE:
+		// fix to prevent the control to gain focus, using arrow keys
+		// (standard grip returns DLGC_WANTARROWS, like any standard scrollbar)
+		return DLGC_STATIC;
+
 	case WM_NCHITTEST:
 		// choose proper cursor shape
 		if (IsRTL())
@@ -149,6 +150,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARA
 		break;
 
 	case WM_DESTROY:
+		// perform clean up
 		if (m_bTransparent)
 			SetTransparency(FALSE);
 		break;
@@ -188,6 +190,9 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARA
 
 void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 {
+	// creates or deletes DCs and Bitmaps used for
+	// implementing a transparent size grip
+
 	if (bActivate && !m_bTransparent)
 	{
 		m_bTransparent = TRUE;
