@@ -1,25 +1,186 @@
-H1 { text-align: center; }
-CAPTION { font-weight: bold }
-A.qindex {}
-A.qindexRef {}
-A.el { text-decoration: none; font-weight: bold }
-A.elRef { font-weight: bold }
-A.code { text-decoration: none; font-weight: normal; color: #ff8c00 }
-A.codeRef { font-weight: normal; color: #ff8c00 }
-A:hover { text-decoration: none; background-color: #f0e68c }
-DL.el { margin-left: -1cm }
-DIV.fragment { width: 100%; border: none; background-color: #eeeee0 }
-DIV.ah { background-color: black; font-weight: bold; color: #ffffff; margin-bottom: 3px; margin-top: 3px }
-TD.md { background-color: #f0e68c; font-weight: bold; }
-TD.md CODE { color: #602020; }
-TD.mdname1 { background-color: #f0e68c; font-weight: bold; color: #602020; }
-TD.mdname { background-color: #f0e68c; font-weight: bold; color: #602020; width: 600px; }
-DIV.groupHeader { margin-left: 16px; margin-top: 12px; margin-bottom: 6px; font-weight: bold }
-DIV.groupText { margin-left: 16px; font-style: italic; font-size: smaller }
-BODY { background: white; color: black }
-EM.mdesc { font-size: smaller }
-TD.indexkey { 
-   background-color: #ff8c00; 
+H1
+{
+	margin: 3px 0px 3px 0px;
+	font: bold 11pt Verdana;
+	text-align: left;
+}
+H2
+{
+	margin: 6px 0px 6px 0px;
+	font: 8pt Verdana;
+	font-weight: bold;
+	text-align: left;
+}
+H3
+{
+	margin-top: 0px;
+	margin-bottom: 12px;
+	font: bold 9pt Verdana;
+	text-align: left;
+}
+CODE
+{
+	display: block;
+	padding: 6px 6px 6px 6px;
+	border: gray 1px solid;
+	background-color: #eeeeff;
+	color: #000063;
+}
+CAPTION
+{
+	font-weight: bold;
+}
+TABLE
+{
+	margin: 0px 0px 0px 0px;
+	font-size: 8pt;
+}
+A
+{
+	color: #0000FF;
+	text-decoration: underline;
+}
+A:visited
+{
+	color: #0000FF;
+	text-decoration: underline;
+}
+DIV.banner
+{
+	padding: 6px;
+	padding-bottom: 0px;
+	margin-bottom: 4px;
+	height: 40px;
+	background-color: #9ccfff;
+	text-align: left;
+	font-style: italic;
+	font-size: 8pt;
+}
+DIV.body
+{
+	width: 100%;
+	padding: 0px 6px;
+}
+DIV.qindex
+{
+	border-top: #9c9a9c 1px solid;
+	font-weight: bold;
+	font-size: 8pt;
+	padding-bottom: 6px;
+	width: 100%;
+	padding-top: 5px;
+	border-bottom: #9c9a9c 1px solid;
+	background-color: white;
+	text-align: center;
+	margin-bottom: 6px;
+}
+A.el
+{
+	color: #0000FF;
+	font-weight: bold;
+	font-style: normal;
+	font-variant: normal;
+	text-decoration: underline;
+}
+A.qindexHL
+{
+	background-color: #cdcdcd;
+}
+A.elRef
+{
+	font-weight: bold;
+}
+A.code
+{
+	font-weight: bold;
+	color: #0000FF;
+	text-decoration: none;
+}
+A.codeRef
+{
+	font-weight: normal;
+	color: #4444ee;
+}
+A:hover
+{
+	color: #3165FF;
+	text-decoration: underline;
+}
+DL.el
+{
+	margin-left: -1cm;
+}
+DIV.fragment
+{
+	border: gray 1px solid;
+	background-color: #eeeeff;
+	padding: 6px 6px 6px 6px;
+	margin: 6px 0px 6px 0px;
+	font-size: 8pt;
+	width: 100%;
+	font-family: ProFontWindows, 'Lucida Console', Courier, 'Courier New';
+}
+PRE
+{
+	margin: 0px 0px 0px 0px;
+}
+DIV.ah
+{
+	margin-top: 3px;
+	font-weight: bold;
+	margin-bottom: 3px;
+	color: #ffffff;
+	background-color: black;
+}
+TD.md
+{
+	font-weight: bold;
+	background-color: #eeeeff;
+	border: gray 1px solid;
+	padding: 6px 6px 6px 6px;
+}
+TD.md TD.md
+{
+	border: none;
+	padding: 0px 0px 0px 0px;
+}
+TD.md CODE
+{
+	border: none;
+	padding: 0px;
+	background-color: #eeeeff;
+	color: #602020;
+}
+TD.mdname1
+{
+	font-weight: bold;
+	color: #602020;
+}
+TD.mdname
+{
+	font-weight: bold;
+	color: #602020;
+}
+DIV.groupHeader
+{
+	margin-top: 12px;
+	font-weight: bold;
+	margin-bottom: 6px;
+	margin-left: 16px;
+}
+DIV.groupText 
+{ 
+	margin-left: 16px; font-style: italic;
+}
+BODY 
+{
+	margin: 0px;
+	background: white;
+	font: 8pt Verdana;
+}
+TD.indexkey
+{
+   background-color: #eeeeff; 
    font-weight: bold; 
    padding-right  : 10px; 
    padding-top    : 2px; 
@@ -30,8 +191,9 @@ TD.indexkey {
    margin-top     : 2px; 
    margin-bottom  : 2px  
 }
-TD.indexvalue { 
-   background-color: #ff8c00; 
+TD.indexvalue
+{
+   background-color: #eeeeff; 
    font-style: italic; 
    padding-right  : 10px; 
    padding-top    : 2px; 
@@ -42,10 +204,81 @@ TD.indexvalue {
    margin-top     : 2px; 
    margin-bottom  : 2px  
 }
-span.keyword       { color: #008000 }
-span.keywordtype   { color: #604020 }
-span.keywordflow   { color: #e08000 }
-span.comment       { color: #800000 }
-span.preprocessor  { color: #806020 }
-span.stringliteral { color: #002080 }
-span.charliteral   { color: #008080 }
+span.keyword
+{
+	color: #008000;
+}
+span.keywordtype
+{
+	color: #604020;
+}
+span.keywordflow
+{
+	color: #e08000;
+}
+span.comment
+{
+	color: #800000;
+}
+span.preprocessor
+{
+	color: #806020;
+}
+span.stringliteral
+{
+	color: #002080;
+}
+span.charliteral
+{
+	color: #008080;
+}
+TD.mdescLeft
+{
+	border-right: #e0e0e0 1px;
+	border-top: #e0e0e0 1px;
+	padding-left: 8px;
+	margin: 0px;
+	border-left: #e0e0e0 1px;
+	border-bottom: #e0e0e0 1px;
+	font-family: Verdana;
+}
+TD.mdescRight
+{
+	border-right: #e0e0e0 1px;
+	padding-right: 8px;
+	border-top: #e0e0e0 1px;
+	padding-left: 4px;
+	padding-bottom: 0px;
+	margin: 0px;
+	border-left: #e0e0e0 1px;
+	border-bottom: #e0e0e0 1px;
+	font-family: Verdana;
+}
+TD.memItemLeft
+{
+	border-right: #e0e0e0 1px;
+	padding-right: 0px;
+	border-top: #e0e0e0 1px solid;
+	padding-left: 8px;
+	font-size: 8pt;
+	font-weight: bold;
+	padding-bottom: 0px;
+	margin: 4px;
+	padding-top: 1px;
+	border-bottom: #e0e0e0 1px;
+	font-family: Verdana;
+}
+TD.memItemRight
+{
+	border-right: #e0e0e0 1px;
+	padding-right: 0px;
+	border-top: #e0e0e0 1px solid;
+	padding-left: 8px;
+	font-size: 8pt;
+	font-weight: bold;
+	padding-bottom: 0px;
+	margin: 4px;
+	padding-top: 1px;
+	border-bottom: #e0e0e0 1px;
+	font-family: Verdana;
+}
