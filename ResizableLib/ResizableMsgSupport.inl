@@ -16,7 +16,6 @@
 
 
 // registered message to communicate with the library
-// (defined so that in the same executable it is initialized only once)
 const UINT WMU_RESIZESUPPORT = ::RegisterWindowMessage(_T("WMU_RESIZESUPPORT"));
 
 // if the message is implemented the returned value must be non-zero
@@ -25,9 +24,7 @@ const UINT WMU_RESIZESUPPORT = ::RegisterWindowMessage(_T("WMU_RESIZESUPPORT"));
 // wParam is one of the following RSZSUP_* values, lParam as specified
 
 #define RSZSUP_QUERYPROPERTIES	101	// lParam = LPRESIZEPROPERTIES
-
 #define RSZSUP_LIKESCLIPPING	102	// lParam = LPCLIPPINGPROPERTY
-
 #define RSZSUP_NEEDSREFRESH		103	// lParam = LPREFRESHPROPERTY
 
 
