@@ -50,7 +50,7 @@ BOOL CMyPropertySheet::OnInitDialog()
 	SetMinTrackSize(CSize(GetMinWidth(), rc.Height()));
 
 	// enable save/restore, with active page
-	EnableSaveRestore(_T("MyPropertySheet"), TRUE);
+	EnableSaveRestore(_T("MyPropertySheet"), TRUE, TRUE);
 
 	return TRUE;
 }
