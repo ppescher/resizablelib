@@ -69,12 +69,10 @@ public:
 
 // Implementation
 public:
-	void RefreshLayout();
 	virtual ~CResizableSheet();
 
 // used internally
 private:
-	void PresetLayout();
 	void PrivateConstruct();
 	void SavePage();
 	void LoadPage();
@@ -83,6 +81,9 @@ private:
 
 // callable from derived classes
 protected:
+	void PresetLayout();
+	void RefreshLayout();
+
 	// section to use in app's profile
 	void EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE,
 		BOOL bWithPage = FALSE);

@@ -104,21 +104,8 @@ BOOL CResizableSheet::OnInitDialog()
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
 	
-	// set the initial size as the min track size
-	CRect rc;
-	GetWindowRect(&rc);
-	SetMinTrackSize(rc.Size());
-
-	if (GetStyle() & WS_CHILD)
-	{
-		GetClientRect(&rc);
-		GetTabControl()->MoveWindow(&rc);
-	}
 	// initialize layout
 	PresetLayout();
-
-	// prevent flickering
-	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 
 	return bResult;
 }
@@ -149,6 +136,17 @@ const int _propButtonsCount = sizeof(_propButtons)/sizeof(UINT);
 
 void CResizableSheet::PresetLayout()
 {
+	// set the initial size as the min track size
+	CRect rc;
+	GetWindowRect(&rc);
+	SetMinTrackSize(rc.Size());
+
+	if (GetStyle() & WS_CHILD)
+	{
+		GetClientRect(&rc);
+		GetTabControl()->MoveWindow(&rc);
+	}
+
 	if (IsWizard())	// wizard mode
 	{
 		// hide tab control
@@ -181,6 +179,9 @@ void CResizableSheet::PresetLayout()
 		if (NULL != GetDlgItem(_propButtons[i]))
 			AddAnchor(_propButtons[i], BOTTOM_RIGHT);
 	}
+
+	// prevent flickering
+	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 }
 
 BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
@@ -272,12 +273,14 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	if (IsWizard())	// wizard mode
 	{
 		// use pre-calculated margins
+		// WRONG!!! uses client coords
 		sizeExtra = m_sizePageTL - m_sizePageBR;
 	}
 	else	// tab mode
 	{
 		CTabCtrl* pTab = GetTabControl();
-		ASSERT(pTab != NULL);
+		if (!pTab)
+			return;
 
 		// get tab position after resizing and calc page rect
 		CRect rectPage, rectSheet;
@@ -287,10 +290,13 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			return; // no page yet
 
 		pTab->AdjustRect(FALSE, &rectPage);
-		rectPage.DeflateRect(&rectSheet);
+
+		GetWindowRect(&rectSheet);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSheet, 2);
 
 		// set margins
-		sizeExtra = rectPage.TopLeft() - rectPage.BottomRight();
+		sizeExtra = rectPage.TopLeft() - rectSheet.TopLeft() +
+			rectSheet.BottomRight() - rectPage.BottomRight();
 	}
 
 	int nCount = GetPageCount();
