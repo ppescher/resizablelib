@@ -157,6 +157,10 @@ SOURCE=.\res\Demo.ico
 
 SOURCE=.\res\Demo.rc2
 # End Source File
+# Begin Source File
+
+SOURCE=.\res\toolbar1.bmp
+# End Source File
 # End Group
 # Begin Source File
 

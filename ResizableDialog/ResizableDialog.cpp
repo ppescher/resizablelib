@@ -24,7 +24,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog
 
-CResizableDialog::CResizableDialog()
+inline void CResizableDialog::Construct()
 {
 	m_bInitDone = FALSE;
 
@@ -36,29 +36,30 @@ CResizableDialog::CResizableDialog()
 	
 	m_bEnableSaveRestore = FALSE;
 
-	m_szGripSize = CSize(GetSystemMetrics(SM_CXVSCROLL),
-		GetSystemMetrics(SM_CYHSCROLL));
+	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
+	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
+}
+
+CResizableDialog::CResizableDialog()
+{
+	Construct();
 }
 
 CResizableDialog::CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd)
 	: CDialog(nIDTemplate, pParentWnd)
 {
-	m_bInitDone = FALSE;
+	Construct();
+}
 
-	m_bUseMinTrack = TRUE;
-	m_bUseMaxTrack = FALSE;
-	m_bUseMaxRect = FALSE;
-
-	m_bShowGrip = TRUE;
-
-	m_bEnableSaveRestore = FALSE;
-
-	m_szGripSize = CSize(GetSystemMetrics(SM_CXVSCROLL),
-		GetSystemMetrics(SM_CYHSCROLL));
+CResizableDialog::CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd)
+	: CDialog(lpszTemplateName, pParentWnd)
+{
+	Construct();
 }
 
 CResizableDialog::~CResizableDialog()
 {
+	// free memory used by the layout
 	Layout *pl;
 
 	POSITION pos = m_plLayoutList.GetHeadPosition();
@@ -73,11 +74,11 @@ CResizableDialog::~CResizableDialog()
 
 BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	//{{AFX_MSG_MAP(CResizableDialog)
-	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
+	ON_WM_PAINT()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -111,6 +112,61 @@ void CResizableDialog::OnDestroy()
 	if (m_bEnableSaveRestore)
 		SaveWindowRect();
 }
+
+void CResizableDialog::OnPaint() 
+{
+	CPaintDC dc(this); // device context for painting
+	
+	if (m_bShowGrip && !IsZoomed())
+	{
+		// draw size-grip
+		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+	}
+}
+
+void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
+{
+	CWnd::OnSize(nType, cx, cy);
+	
+	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
+		return;		// arrangement not needed
+
+	if (m_bInitDone)
+		ArrangeLayout();
+}
+
+UINT CResizableDialog::OnNcHitTest(CPoint point) 
+{
+	CPoint pt = point;
+	ScreenToClient(&pt);
+
+	// if in size grip and in client area
+	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) &&
+		pt.x >= 0 && pt.y >= 0)
+		return HTBOTTOMRIGHT;
+	
+	return CDialog::OnNcHitTest(point);
+}
+
+void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+{
+	if (!m_bInitDone)
+		return;
+
+	if (m_bUseMinTrack)
+		lpMMI->ptMinTrackSize = m_ptMinTrackSize;
+
+	if (m_bUseMaxTrack)
+		lpMMI->ptMaxTrackSize = m_ptMaxTrackSize;
+
+	if (m_bUseMaxRect)
+	{
+		lpMMI->ptMaxPosition = m_ptMaxPos;
+		lpMMI->ptMaxSize = m_ptMaxSize;
+	}
+}
+
+// layout functions
 
 void CResizableDialog::AddAnchor(HWND wnd, CSize tl_type, CSize br_type)
 {
@@ -266,38 +322,6 @@ void CResizableDialog::ArrangeLayout()
 	EndDeferWindowPos(hdwp);
 }
 
-void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
-{
-	CWnd::OnSize(nType, cx, cy);
-	
-	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
-		return;		// arrangement not needed
-
-	ArrangeLayout();
-}
-
-void CResizableDialog::OnPaint() 
-{
-	CPaintDC dc(this);
-
-	if (m_bShowGrip && !IsZoomed())
-	{
-		// draw size-grip
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-	}
-}
-
-UINT CResizableDialog::OnNcHitTest(CPoint point) 
-{
-	CPoint pt = point;
-	ScreenToClient(&pt);
-
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt))
-		return HTBOTTOMRIGHT;
-	
-	return CDialog::OnNcHitTest(point);
-}
-
 void CResizableDialog::UpdateGripPos()
 {
 	// size-grip goes bottom right in the client area
@@ -308,38 +332,7 @@ void CResizableDialog::UpdateGripPos()
 	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
 }
 
-void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
-{
-	if (!m_bInitDone)
-		return;
-
-	if (m_bUseMinTrack)
-		lpMMI->ptMinTrackSize = m_ptMinTrackSize;
-
-	if (m_bUseMaxTrack)
-		lpMMI->ptMaxTrackSize = m_ptMaxTrackSize;
-
-	if (m_bUseMaxRect)
-	{
-		lpMMI->ptMaxPosition = m_ptMaxPos;
-		lpMMI->ptMaxSize = m_ptMaxSize;
-	}
-}
-
-void CResizableDialog::SetMaximizedRect(const CRect& rc)
-{
-	m_bUseMaxRect = TRUE;
-	m_ptMaxPos = rc.TopLeft();
-	
-	CSize sz = rc.Size();
-	m_ptMaxSize.x = sz.cx;
-	m_ptMaxSize.y = sz.cy;
-}
-
-void CResizableDialog::ResetMaximizedRect()
-{
-	m_bUseMaxRect = FALSE;
-}
+// protected members
 
 void CResizableDialog::ShowSizeGrip(BOOL bShow)
 {
@@ -348,6 +341,20 @@ void CResizableDialog::ShowSizeGrip(BOOL bShow)
 		m_bShowGrip = bShow;
 		InvalidateRect(&m_rcGripRect);
 	}
+}
+
+void CResizableDialog::SetMaximizedRect(const CRect& rc)
+{
+	m_bUseMaxRect = TRUE;
+
+	m_ptMaxPos = rc.TopLeft();
+	m_ptMaxSize.x = rc.Width();
+	m_ptMaxSize.y = rc.Height();
+}
+
+void CResizableDialog::ResetMaximizedRect()
+{
+	m_bUseMaxRect = FALSE;
 }
 
 void CResizableDialog::SetMinTrackSize(const CSize& size)
@@ -424,6 +431,7 @@ void CResizableDialog::LoadWindowRect()
 	
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(&wp);
 
 	RECT& rc = wp.rcNormalPosition;	// alias
 

@@ -33,10 +33,13 @@ public:
 
 // Implementation
 protected:
+	CToolBar m_tbToolbar;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSecondDialog)
 	virtual BOOL OnInitDialog();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnButton1();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

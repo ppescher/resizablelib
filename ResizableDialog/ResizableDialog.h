@@ -21,11 +21,16 @@
 
 // useful compatibility constants (the only one required is NOANCHOR)
 
+#if !defined(__SIZE_ANCHORS_)
+#define __SIZE_ANCHORS_
+
 const CSize
 	NOANCHOR(-1,-1),
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
+
+#endif // !defined(__SIZE_ANCHORS_)
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
@@ -37,10 +42,9 @@ class CResizableDialog : public CDialog
 public:
 	CResizableDialog();
 	CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL);
+	CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd = NULL);
 
 // Attributes
-public:
-
 private:
 	// flags
 	BOOL m_bShowGrip;
@@ -55,7 +59,7 @@ private:
 
 	BOOL m_bInitDone;			// if all internal vars initialized
 
-	CSize m_szGripSize;			// set at construction time
+	SIZE m_szGripSize;			// set at construction time
 
 	CRect m_rcGripRect;			// current pos of grip
 
@@ -113,13 +117,15 @@ public:
 
 // used internally
 private:
+	void Construct();
 	void LoadWindowRect();
 	void SaveWindowRect();
 	void ArrangeLayout();
 	void UpdateGripPos();
 
 // callable from derived classes
-protected:
+//protected:
+public:
 	void AddAnchor(HWND wnd, CSize tl_type,
 		CSize br_type = NOANCHOR);	// add anchors to a control
 	void AddAnchor(UINT ctrl_ID, CSize tl_type,
@@ -140,11 +146,11 @@ protected:
 protected:
 	//{{AFX_MSG(CResizableDialog)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnPaint();
 	afx_msg UINT OnNcHitTest(CPoint point);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
+	afx_msg void OnPaint();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
