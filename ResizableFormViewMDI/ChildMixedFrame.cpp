@@ -48,15 +48,18 @@ BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* p
 		if (!m_wndSplitter.CreateView(0, 0,
 			RUNTIME_CLASS(CEditView), CSize(0,100), pContext))
 		{
-			TRACE0("Failed to create splitter's second pane ");
+			TRACE0("Failed to create splitter's first pane ");
 			return FALSE;    // failed to create
 		}
 		if (!m_wndSplitter.CreateView(1, 0,
 			RUNTIME_CLASS(CDemoView), CSize(0,0), pContext))
 		{
-			TRACE0("Failed to create splitter's first pane ");
+			TRACE0("Failed to create splitter's second pane ");
 			return FALSE;    // failed to create
 		}
+
+		m_wndSplitter.SetRowInfo(0, 100, 30);
+		m_wndSplitter.SetRowInfo(1, 100, 30);
 
 		return TRUE;
 	}
