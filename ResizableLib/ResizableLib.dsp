@@ -407,7 +407,7 @@ SOURCE=.\ResizableWndState.h
 SOURCE=.\StdAfx.h
 # End Source File
 # End Group
-# Begin Group "Doc"
+# Begin Group "Documentation"
 
 # PROP Default_Filter ""
 # Begin Source File
