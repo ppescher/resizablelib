@@ -1,6 +1,18 @@
 // ResizableVersion.h: interface for the CResizableVersion class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2000-2004 by Paolo Messina
+// (http://www.geocities.com/ppescher - ppescher@hotmail.com)
+//
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
+/////////////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_RESIZABLEVERSION_H__F7B06FFD_5074_4165_A82F_B4DA2BC4AF95__INCLUDED_)
 #define AFX_RESIZABLEVERSION_H__F7B06FFD_5074_4165_A82F_B4DA2BC4AF95__INCLUDED_
