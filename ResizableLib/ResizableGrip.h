@@ -27,32 +27,44 @@ private:
 	class CSizeGrip : public CScrollBar
 	{
 	public:
-		CSizeGrip() {}
+		void SetTransparency(BOOL bActivate);
+		CSizeGrip()
+		{
+			m_bTransparent = FALSE;
+			m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
+			m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+		}
 
-		BOOL IsRTL();
-
-		CWnd* m_pResizableWnd;
+		BOOL IsRTL();			// right-to-left layout support
 
 		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+
+		SIZE m_size;			// holds grip size
+
+	protected:
+		BOOL m_bTransparent;	// transparency active
+
+		// memory DCs and bitmaps for transparent grip
+		CDC m_dcGrip, m_dcMask;
+		CBitmap m_bmGrip, m_bmMask;
 	};
 
-	CSizeGrip m_wndGrip;	// grip control
-	SIZE m_sizeGrip;		// holds grip size
-	int m_nShowCount;		// support for hiding the grip
+	CSizeGrip m_wndGrip;		// grip control
+	int m_nShowCount;			// support for hiding the grip
 
 protected:
-	BOOL CreateSizeGrip();	// create a size grip, initially visible
-	void UpdateSizeGrip();	// update the grip's visibility and position
+	BOOL CreateSizeGrip();		// create a size grip, initially visible
+	BOOL IsSizeGripVisible();	// TRUE if grip is set to be visible
+	void UpdateSizeGrip();		// update the grip's visibility and position
 	void ShowSizeGrip(BOOL* pbStatus = NULL);	// show the size grip
 	void HideSizeGrip(BOOL* pbStatus = NULL);	// hide the size grip
-	BOOL IsSizeGripVisible();	// TRUE if grip is set to be visible
+	BOOL SetSizeGripBkMode(int nBkMode);		// like CDC::SetBkMode
 
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
 	CResizableGrip();
 	virtual ~CResizableGrip();
-
 };
 
 #endif // !defined(AFX_RESIZABLEGRIP_H__INCLUDED_)

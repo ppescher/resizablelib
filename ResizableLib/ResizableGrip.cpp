@@ -29,8 +29,6 @@ static char THIS_FILE[]=__FILE__;
 
 CResizableGrip::CResizableGrip()
 {
-	m_sizeGrip.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_sizeGrip.cy = GetSystemMetrics(SM_CYHSCROLL);
 	m_nShowCount = 0;
 }
 
@@ -49,8 +47,8 @@ void CResizableGrip::UpdateSizeGrip()
 	RECT rect;
 	GetResizableWnd()->GetClientRect(&rect);
 
-	rect.left = rect.right - m_sizeGrip.cx;
-	rect.top = rect.bottom - m_sizeGrip.cy;
+	rect.left = rect.right - m_wndGrip.m_size.cx;
+	rect.top = rect.bottom - m_wndGrip.m_size.cy;
 
 	// must stay below other children
 	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
@@ -107,11 +105,10 @@ BOOL CResizableGrip::IsSizeGripVisible()
 
 BOOL CResizableGrip::CreateSizeGrip()
 {
-	CRect rect(0 , 0, m_sizeGrip.cx, m_sizeGrip.cy);
-
-	m_wndGrip.m_pResizableWnd = GetResizableWnd();
+	// create grip
+	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
 	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP,
-		rect, m_wndGrip.m_pResizableWnd, 0);
+		rect, GetResizableWnd(), 0);
 
 	if (bRet)
 	{
@@ -141,8 +138,6 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 
 LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	CWnd* pParentWnd = m_pResizableWnd->GetParent();
-
 	switch (message)
 	{
 	case WM_NCHITTEST:
@@ -153,23 +148,83 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARA
 			return HTBOTTOMRIGHT;
 		break;
 
-/*	case WM_MOVE:
+	case WM_DESTROY:
+		if (m_bTransparent)
+			SetTransparency(FALSE);
+		break;
 
-		if ((m_pResizableWnd->GetStyle() & WS_CHILD)
-			&& (pParentWnd != NULL))
+	case WM_PAINT:
+		if (m_bTransparent)
 		{
-			CRect rectClient, rectCalc;
-			pParentWnd->GetClientRect(rectClient);
-			pParentWnd->RepositionBars(0, 0xffff, AFX_IDW_PANE_FIRST,
-				reposQuery, rectCalc, rectClient);
-			CSize sizeOffset = rectClient.Size() - rectCalc.Size();
-			pParentWnd->GetWindowRect(rectCalc);
-			CSize sizeWnd = rectCalc.Size() + sizeOffset;
-			pParentWnd->SetWindowPos(NULL, 0, 0, sizeWnd.cx, sizeWnd.cy,
-				SWP_NOZORDER | SWP_NOREPOSITION | SWP_NOACTIVATE | SWP_NOMOVE);
+			CPaintDC dc(this);
+
+			// select bitmaps
+			CBitmap *pOldGrip, *pOldMask;
+
+			pOldGrip = m_dcGrip.SelectObject(&m_bmGrip);
+			pOldMask = m_dcMask.SelectObject(&m_bmMask);
+
+			// obtain original grip bitmap, make the mask and prepare masked bitmap
+			CScrollBar::WindowProc(WM_PAINT, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
+			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
+			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
+			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
+			
+			// draw transparently
+			dc.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
+			dc.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);
+
+			// unselect bitmaps
+			m_dcGrip.SelectObject(pOldGrip);
+			m_dcMask.SelectObject(pOldMask);
+
+			return 0;
 		}
-		break;*/
+		break;
 	}
 
 	return CScrollBar::WindowProc(message, wParam, lParam);
+}
+
+void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
+{
+	if (bActivate && !m_bTransparent)
+	{
+		m_bTransparent = TRUE;
+
+		CClientDC dc(this);
+
+		// create memory DCs and bitmaps
+		m_dcGrip.CreateCompatibleDC(&dc);
+		m_bmGrip.CreateCompatibleBitmap(&dc, m_size.cx, m_size.cy);
+
+		m_dcMask.CreateCompatibleDC(&dc);
+		m_bmMask.CreateBitmap(m_size.cx, m_size.cy, 1, 1, NULL);
+	}
+	else if (!bActivate && m_bTransparent)
+	{
+		m_bTransparent = FALSE;
+
+		// destroy memory DCs and bitmaps
+		m_dcGrip.DeleteDC();
+		m_bmGrip.DeleteObject();
+
+		m_dcMask.DeleteDC();
+		m_bmMask.DeleteObject();
+	}
+}
+
+BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
+{
+	if (::IsWindow(m_wndGrip.m_hWnd))
+	{
+		if (nBkMode == OPAQUE)
+			m_wndGrip.SetTransparency(FALSE);
+		else if (nBkMode == TRANSPARENT)
+			m_wndGrip.SetTransparency(TRUE);
+		else
+			return FALSE;
+		return TRUE;
+	}
+	return FALSE;
 }
