@@ -28,26 +28,18 @@ static char THIS_FILE[] = __FILE__;
 
 IMPLEMENT_DYNCREATE(CResizablePage, CPropertyPage)
 
-inline void CResizablePage::PrivateConstruct()
-{
-	m_bInitDone = FALSE;
-}
-
 CResizablePage::CResizablePage()
 {
-	PrivateConstruct();
 }
 
 CResizablePage::CResizablePage(UINT nIDTemplate, UINT nIDCaption)
 	: CPropertyPage(nIDTemplate, nIDCaption)
 {
-	PrivateConstruct();
 }
 
 CResizablePage::CResizablePage(LPCTSTR lpszTemplateName, UINT nIDCaption)
 	: CPropertyPage(lpszTemplateName, nIDCaption)
 {
-	PrivateConstruct();
 }
 
 CResizablePage::~CResizablePage()
@@ -66,27 +58,11 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizablePage message handlers
 
-
-BOOL CResizablePage::OnInitDialog() 
-{
-	CPropertyPage::OnInitDialog();
-	
-/*	// gets the initial size as the min track size
-	CRect rc;
-	GetWindowRect(&rc);
-*/
-	m_bInitDone = TRUE;
-
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
-}
-
 void CResizablePage::OnSize(UINT nType, int cx, int cy) 
 {
 	CWnd::OnSize(nType, cx, cy);
 	
-	if (m_bInitDone)
-		ArrangeLayout();
+	ArrangeLayout();
 }
 
 BOOL CResizablePage::OnEraseBkgnd(CDC* pDC) 
@@ -95,7 +71,8 @@ BOOL CResizablePage::OnEraseBkgnd(CDC* pDC)
 	EraseBackground(pDC);
 	return TRUE;
 
-//	ClipChildren(pDC);	// old-method (for safety)
+/*	ClipChildren(pDC);	// old-method (for safety)
 	
 	return CPropertyPage::OnEraseBkgnd(pDC);
+*/
 }

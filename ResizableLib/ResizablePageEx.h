@@ -40,11 +40,6 @@ public:
 // Attributes
 public:
 
-private:
-	// internal status
-
-	BOOL m_bInitDone;			// if all internal vars initialized
-
 // Operations
 public:
 
@@ -57,12 +52,9 @@ public:
 public:
 	virtual ~CResizablePageEx();
 
-// used internally
-private:
-	void PrivateConstruct();
-
 // callable from derived classes
 protected:
+	virtual BOOL NeedsRefresh(HWND hWnd);
 
 	virtual CWnd* GetResizableWnd()
 	{
@@ -72,9 +64,7 @@ protected:
 
 // Generated message map functions
 protected:
-	virtual BOOL NeedsRefresh(HWND hWnd);
 	//{{AFX_MSG(CResizablePageEx)
-	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG

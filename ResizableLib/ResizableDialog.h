@@ -48,7 +48,6 @@ private:
 
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
-	BOOL m_bInitDone;			// if all internal vars initialized
 
 // Operations
 public:
@@ -81,7 +80,6 @@ protected:
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CResizableDialog)
-	virtual BOOL OnInitDialog();
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();

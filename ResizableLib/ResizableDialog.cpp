@@ -28,8 +28,6 @@ static char THIS_FILE[] = __FILE__;
 
 inline void CResizableDialog::PrivateConstruct()
 {
-	m_bInitDone = FALSE;
-
 	m_bEnableSaveRestore = FALSE;
 }
 
@@ -85,28 +83,14 @@ int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
 
+	// set the initial size as the min track size
+	SetMinTrackSize(rect.Size());
+
+	// create and reposition the size-grip
 	if (!InitGrip())
 		return -1;
 
 	return 0;
-}
-
-BOOL CResizableDialog::OnInitDialog() 
-{
-	CDialog::OnInitDialog();
-
-	// gets the template size as the min track size
-	CRect rc;
-	GetWindowRect(&rc);
-	SetMinTrackSize(rc.Size());
-
-	// init
-
-	UpdateGripPos();
-
-	m_bInitDone = TRUE;
-
-	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
 void CResizableDialog::OnDestroy() 
@@ -127,20 +111,14 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
-	if (m_bInitDone)
-	{
-		// update size-grip
-		UpdateGripPos();
+	// update size-grip
+	UpdateGripPos();
 
-		ArrangeLayout();
-	}
+	ArrangeLayout();
 }
 
 void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
-	if (!m_bInitDone)
-		return;
-
 	MinMaxInfo(lpMMI);
 }
 
@@ -164,7 +142,8 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 	EraseBackground(pDC);
 	return TRUE;
 
-//	ClipChildren(pDC);	// old-method (for safety)
+/*	ClipChildren(pDC);	// old-method (for safety)
 
 	return CDialog::OnEraseBkgnd(pDC);
+*/
 }

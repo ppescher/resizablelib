@@ -30,8 +30,6 @@ IMPLEMENT_DYNAMIC(CResizableSheet, CPropertySheet)
 
 inline void CResizableSheet::PrivateConstruct()
 {
-	m_bInitDone = FALSE;
-
 	m_bEnableSaveRestore = FALSE;
 	m_bSavePage = FALSE;
 }
@@ -103,16 +101,11 @@ BOOL CResizableSheet::OnInitDialog()
 	GetWindowRect(&rc);
 	SetMinTrackSize(rc.Size());
 
-	// init
-
-	UpdateGripPos();
-
+	// initialize layout
 	PresetLayout();
 
 	// prevent flickering
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
-
-	m_bInitDone = TRUE;
 
 	return bResult;
 }
@@ -223,13 +216,10 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
-	if (m_bInitDone)
-	{
-		// update size-grip
-		UpdateGripPos();
+	// update size-grip
+	UpdateGripPos();
 
-		ArrangeLayout();
-	}
+	ArrangeLayout();
 }
 
 BOOL CResizableSheet::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pResult*/)
@@ -247,16 +237,14 @@ BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC)
 	EraseBackground(pDC);
 	return TRUE;
 
-//	ClipChildren(pDC);	// old-method (for safety)
+/*	ClipChildren(pDC);	// old-method (for safety)
 
 	return CPropertySheet::OnEraseBkgnd(pDC);
+*/
 }
 
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
-	if (!m_bInitDone)
-		return;
-
 	MinMaxInfo(lpMMI);
 }
 
