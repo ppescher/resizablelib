@@ -101,6 +101,9 @@ void CResizableDialog::OnDestroy()
 	
 	if (m_bEnableSaveRestore)
 		SaveWindowRect();
+
+	// remove old windows
+	m_arrLayout.RemoveAll();
 }
 
 void CResizableDialog::OnPaint() 
@@ -287,8 +290,16 @@ void CResizableDialog::ArrangeLayout()
 					obj.need_refresh = TRUE;
 				}
 			}
+
+			// set flags 
+			DWORD flags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
+			if (newrc.TopLeft() == objrc.TopLeft())
+				flags |= SWP_NOMOVE;
+			if (newrc.Size() == objrc.Size())
+				flags |= SWP_NOSIZE;
+			
 			DeferWindowPos(hdwp, obj.hwnd, NULL, newrc.left, newrc.top,
-				newrc.Width(), newrc.Height(), SWP_NOZORDER | SWP_NOACTIVATE);
+				newrc.Width(), newrc.Height(), flags);
 		}
 	}
 	// go re-arrange child windows
