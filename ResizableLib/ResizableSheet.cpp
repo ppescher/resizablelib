@@ -109,6 +109,11 @@ BOOL CResizableSheet::OnInitDialog()
 	GetWindowRect(&rc);
 	SetMinTrackSize(rc.Size());
 
+	if (GetStyle() & WS_CHILD)
+	{
+		GetClientRect(&rc);
+		GetTabControl()->MoveWindow(&rc);
+	}
 	// initialize layout
 	PresetLayout();
 
@@ -262,6 +267,35 @@ BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC)
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	MinMaxInfo(lpMMI);
+
+	CSize sizeExtra;
+	if (IsWizard())	// wizard mode
+	{
+		// use pre-calculated margins
+		sizeExtra = m_sizePageTL - m_sizePageBR;
+	}
+	else	// tab mode
+	{
+		CTabCtrl* pTab = GetTabControl();
+		ASSERT(pTab != NULL);
+
+		// get tab position after resizing and calc page rect
+		CRect rectPage, rectSheet;
+		GetTotalClientRect(&rectSheet);
+
+		if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
+			return; // no page yet
+
+		pTab->AdjustRect(FALSE, &rectPage);
+		rectPage.DeflateRect(&rectSheet);
+
+		// set margins
+		sizeExtra = rectPage.TopLeft() - rectPage.BottomRight();
+	}
+
+	int nCount = GetPageCount();
+	for (int idx = 0; idx < nCount; ++idx)
+		ChainMinMaxInfo(lpMMI, *GetPage(idx), sizeExtra);
 }
 
 // protected members

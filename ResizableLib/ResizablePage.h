@@ -22,12 +22,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "ResizableLayout.h"
-
+#include "ResizableMinMax.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizablePage window
 
-class CResizablePage : public CPropertyPage, public CResizableLayout
+class CResizablePage : public CPropertyPage, public CResizableLayout,
+						public CResizableMinMax
 {
 	DECLARE_DYNCREATE(CResizablePage)
 
@@ -66,6 +67,8 @@ protected:
 	//{{AFX_MSG(CResizablePage)
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
