@@ -56,10 +56,10 @@ public:
 // callable from derived classes
 protected:
 
-	virtual CWnd* GetResizableWnd()
+	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return this;
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 // Generated message map functions

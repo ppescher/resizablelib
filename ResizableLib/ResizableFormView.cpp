@@ -125,7 +125,7 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 	ArrangeLayout();
 }
 
-void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
+void CResizableFormView::GetTotalClientRect(LPRECT lpRect) const
 {
 	GetClientRect(lpRect);
 

@@ -56,12 +56,12 @@ public:
 protected:
 	// override to specify refresh for custom or unsupported windows
 	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
-		const CRect &rectOld, const CRect &rectNew);
+		const CRect &rectOld, const CRect &rectNew) const;
 
-	virtual CWnd* GetResizableWnd()
+	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return this;
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 // Generated message map functions

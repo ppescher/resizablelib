@@ -69,7 +69,7 @@ protected:
 	BOOL SetSizeGripBkMode(int nBkMode);		// like CDC::SetBkMode
 	void SetSizeGripShape(BOOL bTriangular);
 
-	virtual CWnd* GetResizableWnd() = 0;
+	virtual CWnd* GetResizableWnd() const = 0;
 
 public:
 	CResizableGrip();

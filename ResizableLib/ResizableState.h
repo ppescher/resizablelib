@@ -28,7 +28,7 @@ protected:
 	BOOL LoadWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
 	BOOL SaveWindowRect(LPCTSTR pszSection, BOOL bRectOnly);
 
-	virtual CWnd* GetResizableWnd() = 0;
+	virtual CWnd* GetResizableWnd() const = 0;
 
 public:
 	CResizableState();

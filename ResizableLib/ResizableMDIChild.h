@@ -51,10 +51,10 @@ protected:
 
 	BOOL EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE);
 
-	virtual CWnd* GetResizableWnd()
+	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return this;
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 private:

@@ -77,7 +77,7 @@ BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC)
 }
 
 BOOL CResizablePageEx::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
-									const CRect& rectOld, const CRect& rectNew)
+									const CRect& rectOld, const CRect& rectNew) const
 {
 	if (m_psp.dwFlags | PSP_HIDEHEADER)
 		return TRUE;

@@ -74,10 +74,10 @@ protected:
 	// section to use in app's profile
 	void EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly = FALSE);
 
-	virtual CWnd* GetResizableWnd()
+	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return this;
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 // Generated message map functions
