@@ -41,6 +41,7 @@ public:
 
 protected:
 	void MinMaxInfo(LPMINMAXINFO lpMMI);
+	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, CWnd* pWnd);
 
 	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
 	void ResetMaximizedRect();					// reset to default maximized rect

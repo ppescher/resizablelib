@@ -54,6 +54,38 @@ void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI)
 	}
 }
 
+void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI,
+									   CWnd* pParentWnd, CWnd* pWnd)
+{
+	// get the extra size from child to parent
+	CRect rectClient, rectWnd;
+	if ((pParentWnd->GetStyle() & WS_CHILD) && pParentWnd->IsZoomed())
+		pParentWnd->GetClientRect(rectWnd);
+	else
+		pParentWnd->GetWindowRect(rectWnd);
+	pParentWnd->RepositionBars(0, 0xFFFF,
+		AFX_IDW_PANE_FIRST, CWnd::reposQuery, rectClient);
+	CSize sizeExtra = rectWnd.Size() - rectClient.Size();
+
+	// ask the view for track size
+	MINMAXINFO mmiChild = *lpMMI;
+	pWnd->SendMessage(WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
+	mmiChild.ptMaxTrackSize = sizeExtra + mmiChild.ptMaxTrackSize;
+	mmiChild.ptMinTrackSize = sizeExtra + mmiChild.ptMinTrackSize;
+
+	// min size is the largest
+	lpMMI->ptMinTrackSize.x = __max(lpMMI->ptMinTrackSize.x,
+		mmiChild.ptMinTrackSize.x);
+	lpMMI->ptMinTrackSize.y = __max(lpMMI->ptMinTrackSize.y,
+		mmiChild.ptMinTrackSize.y);
+
+	// max size is the shortest
+	lpMMI->ptMaxTrackSize.x = __min(lpMMI->ptMaxTrackSize.x,
+		mmiChild.ptMaxTrackSize.x);
+	lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
+		mmiChild.ptMaxTrackSize.y);
+}
+
 void CResizableMinMax::SetMaximizedRect(const CRect& rc)
 {
 	m_bUseMaxRect = TRUE;
