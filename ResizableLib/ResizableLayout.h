@@ -30,26 +30,21 @@
 
 // useful compatibility constants (the only one required is NOANCHOR)
 
-#if !defined(__SIZE_ANCHORS_)
-#define __SIZE_ANCHORS_
-
-const CSize
-	NOANCHOR(-1,-1),
+const CSize NOANCHOR(-1,-1),
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
 
-#endif // !defined(__SIZE_ANCHORS_)
+#define HWND_CALLBACK	HWND_BROADCAST
 
 
 class CResizableLayout
 {
-private:
-
-	class Layout
+	class LayoutInfo
 	{
 	public:
-		HWND hwnd;
+		HWND hWnd;
+		UINT nCallbackID;
 
 		BOOL adj_hscroll;
 		BOOL need_refresh;
@@ -63,17 +58,17 @@ private:
 		CSize br_margin;
 	
 	public:
-		Layout()
-			: hwnd(NULL), adj_hscroll(FALSE), need_refresh(FALSE),
+		LayoutInfo() : hWnd(NULL), nCallbackID(0),
+			adj_hscroll(FALSE), need_refresh(FALSE),
 			tl_type(0,0), tl_margin(0,0),
 			br_type(0,0), br_margin(0,0)
-		{
-		};
+		{ }
 
-		Layout(HWND hw, SIZE tl_t, SIZE tl_m, 
+		LayoutInfo(HWND hw, SIZE tl_t, SIZE tl_m, 
 			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
 		{
-			hwnd = hw;
+			hWnd = hw;
+			nCallbackID = 0;
 
 			adj_hscroll = hscroll;
 			need_refresh = refresh;
@@ -83,18 +78,22 @@ private:
 			
 			br_type = br_t;
 			br_margin = br_m;
-		};
+		}
 	};
 
-	CArray<Layout, Layout&> m_arrLayout;	// list of repositionable controls
+	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;	// list of repositionable controls
 
 	static BOOL CALLBACK EnumAndClipChildWindow(HWND hWnd, LPARAM lParam);
 
 protected:
-	void ClipChildren(CDC *pDC);
+	// exclude child windows from the clipping region
+	void ClipChildren(CDC *pDC, BOOL bOnlyAnchored = TRUE);
+	
+	// override for scrollable or expanding parent windows
+	virtual void GetTotalClientRect(LPRECT lpRect);
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND wnd, CSize tl_type, CSize br_type = NOANCHOR);
+	void AddAnchor(HWND hWnd, CSize tl_type, CSize br_type = NOANCHOR);
 
 	// add anchors to a control, given its ID
 	void AddAnchor(UINT ctrl_ID, CSize tl_type, CSize br_type = NOANCHOR)
@@ -103,8 +102,14 @@ protected:
 			tl_type, br_type);
 	};
 
+	// add a callback (control ID or HWND is unknown or can change)
+	void AddAnchorCallback(UINT nCallbackID);
+
 	// adjust children's layout, when parent's size changes
 	void ArrangeLayout();
+
+	// override to provide dynamic control's layout info
+	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
 
 	// reset layout content
 	void RemoveAllAnchors()
@@ -122,7 +127,6 @@ public:
 		// just for safety
 		RemoveAllAnchors();
 	};
-
 };
 
 #endif // !defined(AFX_RESIZABLELAYOUT_H__A7664CF3_1F96_4904_830F_8FB70A99F129__INCLUDED_)

@@ -1,5 +1,5 @@
-#if !defined(AFX_RESIZABLESHEET_H__INCLUDED_)
-#define AFX_RESIZABLESHEET_H__INCLUDED_
+#if !defined(AFX_RESIZABLESHEETEX_H__INCLUDED_)
+#define AFX_RESIZABLESHEETEX_H__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,20 +30,22 @@
 #include "ResizableState.h"
 
 /////////////////////////////////////////////////////////////////////////////
-// ResizableSheet.h : header file
+// ResizableSheetEx.h : header file
 //
 
-class CResizableSheet : public CPropertySheet, public CResizableLayout,
+class CResizableSheetEx : public CPropertySheetEx, public CResizableLayout,
 						public CResizableGrip, public CResizableMinMax,
 						public CResizableState
 {
-	DECLARE_DYNAMIC(CResizableSheet)
+	DECLARE_DYNAMIC(CResizableSheetEx)
 
 // Construction
 public:
-	CResizableSheet();
-	CResizableSheet(UINT nIDCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
-	CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
+	CResizableSheetEx();
+	CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
+	CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
 
 // Attributes
 private:
@@ -64,7 +66,7 @@ public:
 
 // Overrides
 	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CResizableSheet)
+	//{{AFX_VIRTUAL(CResizableSheetEx)
 	public:
 	virtual BOOL OnInitDialog();
 	protected:
@@ -72,7 +74,7 @@ public:
 
 // Implementation
 public:
-	virtual ~CResizableSheet();
+	virtual ~CResizableSheetEx();
 
 // used internally
 private:
@@ -82,6 +84,7 @@ private:
 	void LoadPage();
 
 	BOOL IsWizard() { return (m_psh.dwFlags & PSH_WIZARD); }
+	BOOL IsWizard97() { return (m_psh.dwFlags & PSH_WIZARD97); }
 
 // callable from derived classes
 protected:
@@ -100,7 +103,7 @@ protected:
 // Generated message map functions
 protected:
 	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
-	//{{AFX_MSG(CResizableSheet)
+	//{{AFX_MSG(CResizableSheetEx)
 	afx_msg void OnPaint();
 	afx_msg UINT OnNcHitTest(CPoint point);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
@@ -115,4 +118,4 @@ protected:
 
 /////////////////////////////////////////////////////////////////////////////
 
-#endif	// AFX_RESIZABLESHEET_H__INCLUDED_
+#endif	// AFX_RESIZABLESHEETEX_H__INCLUDED_

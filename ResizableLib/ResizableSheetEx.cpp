@@ -1,4 +1,4 @@
-// ResizableSheet.cpp : implementation file
+// ResizableSheetEx.cpp : implementation file
 //
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -20,7 +20,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "ResizableSheet.h"
+#include "ResizableSheetEx.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,11 +29,11 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CResizableSheet
+// CResizableSheetEx
 
-IMPLEMENT_DYNAMIC(CResizableSheet, CPropertySheet)
+IMPLEMENT_DYNAMIC(CResizableSheetEx, CPropertySheetEx)
 
-inline void CResizableSheet::Construct()
+inline void CResizableSheetEx::Construct()
 {
 	m_bInitDone = FALSE;
 
@@ -42,29 +42,36 @@ inline void CResizableSheet::Construct()
 }
 
 
-CResizableSheet::CResizableSheet()
+CResizableSheetEx::CResizableSheetEx()
 {
 	Construct();
 }
 
-CResizableSheet::CResizableSheet(UINT nIDCaption, CWnd *pParentWnd, UINT iSelectPage)
-	 : CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
+CResizableSheetEx::CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd,
+	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
+	HBITMAP hbmHeader)
+: CPropertySheetEx(nIDCaption, pParentWnd, iSelectPage,
+				  hbmWatermark, hpalWatermark, hbmHeader)
 {
 	Construct();
 }
 
-CResizableSheet::CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd, UINT iSelectPage)
-	 : CPropertySheet(pszCaption, pParentWnd, iSelectPage)
+CResizableSheetEx::CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd,
+	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
+	HBITMAP hbmHeader)
+: CPropertySheetEx(pszCaption, pParentWnd, iSelectPage,
+					  hbmWatermark, hpalWatermark, hbmHeader)
 {
 	Construct();
 }
 
-CResizableSheet::~CResizableSheet()
+
+CResizableSheetEx::~CResizableSheetEx()
 {
 }
 
-BEGIN_MESSAGE_MAP(CResizableSheet, CPropertySheet)
-	//{{AFX_MSG_MAP(CResizableSheet)
+BEGIN_MESSAGE_MAP(CResizableSheetEx, CPropertySheetEx)
+	//{{AFX_MSG_MAP(CResizableSheetEx)
 	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_GETMINMAXINFO()
@@ -78,11 +85,11 @@ BEGIN_MESSAGE_MAP(CResizableSheet, CPropertySheet)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CResizableSheet message handlers
+// CResizableSheetEx message handlers
 
-int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+int CResizableSheetEx::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CPropertySheet::OnCreate(lpCreateStruct) == -1)
+	if (CPropertySheetEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
 	
 	// change window style to be resizable
@@ -92,9 +99,9 @@ int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
-BOOL CResizableSheet::OnInitDialog() 
+BOOL CResizableSheetEx::OnInitDialog() 
 {
-	BOOL bResult = CPropertySheet::OnInitDialog();
+	BOOL bResult = CPropertySheetEx::OnInitDialog();
 	
 	// set the initial size as the min track size
 	CRect rc;
@@ -115,9 +122,9 @@ BOOL CResizableSheet::OnInitDialog()
 	return bResult;
 }
 
-void CResizableSheet::OnDestroy() 
+void CResizableSheetEx::OnDestroy() 
 {
-	CPropertySheet::OnDestroy();
+	CPropertySheetEx::OnDestroy();
 
 	if (m_bEnableSaveRestore)
 	{
@@ -134,16 +141,20 @@ static UINT _propButtons[] =
 };
 
 // horizontal line in wizard mode
-#define ID_WIZLINE	ID_WIZFINISH+1
+#define ID_WIZLINE		ID_WIZFINISH+1
+#define ID_WIZLINEHDR	ID_WIZFINISH+2
 
-void CResizableSheet::PresetLayout()
+void CResizableSheetEx::PresetLayout()
 {
-	if (IsWizard())	// wizard mode
+	if (IsWizard() || IsWizard97())	// wizard mode
 	{
 		// hide tab control
 		GetTabControl()->ShowWindow(SW_HIDE);
 
 		AddAnchor(ID_WIZLINE, BOTTOM_LEFT, BOTTOM_RIGHT);
+
+		if (IsWizard97())	// add header line for wizard97 dialogs
+			AddAnchor(ID_WIZLINEHDR, TOP_LEFT, TOP_RIGHT);
 	}
 	else	// tab mode
 	{
@@ -172,7 +183,7 @@ void CResizableSheet::PresetLayout()
 	}
 }
 
-BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
+BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 {
 	if (layout.nCallbackID != 1)	// we only added 1 callback
 		return CResizableLayout::ArrangeLayoutCallback(layout);
@@ -186,6 +197,22 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 		// use pre-calculated margins
 		layout.tl_margin = m_sizePageTL;
 		layout.br_margin = m_sizePageBR;
+	}
+	else if (IsWizard97())	// wizard 97
+	{
+		// use pre-calculated margins
+		layout.tl_margin = m_sizePageTL;
+		layout.br_margin = m_sizePageBR;
+
+		if (!(GetActivePage()->m_psp.dwFlags & PSP_HIDEHEADER))
+		{
+			// add header vertical offset
+			CRect rectLine;
+			GetDlgItem(ID_WIZLINEHDR)->GetWindowRect(&rectLine);
+			ScreenToClient(&rectLine);
+
+			layout.tl_margin.cy += rectLine.bottom;
+		}
 	}
 	else	// tab mode
 	{
@@ -210,7 +237,7 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 	return TRUE;
 }
 
-void CResizableSheet::OnSize(UINT nType, int cx, int cy) 
+void CResizableSheetEx::OnSize(UINT nType, int cx, int cy) 
 {
 	CWnd::OnSize(nType, cx, cy);
 	
@@ -228,7 +255,7 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 
 // only gets called in wizard mode
 // (when back or next button pressed)
-void CResizableSheet::OnPageChanged()
+void CResizableSheetEx::OnPageChanged()
 {
 	// call default handler to allow page change
 	Default();
@@ -237,33 +264,37 @@ void CResizableSheet::OnPageChanged()
 	ArrangeLayout();
 }
 
-BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
 	//ClipChildren(pDC);
 	// don't work! - WS_CLIPCHILDREN used instead (in OnCreate)
 	// don't add controls that need parent to draw background
 
-	return CPropertySheet::OnEraseBkgnd(pDC);
+	return CPropertySheetEx::OnEraseBkgnd(pDC);
 }
 
-void CResizableSheet::OnPaint() 
+void CResizableSheetEx::OnPaint() 
 {
-	CPaintDC dc(this);
+	// let the window handle WM_PAINT msg
+	// to draw header bitmap
+	Default();
 
+	// then draw the grip
+	CClientDC dc(this);
 	DrawGrip(dc);
 }
 
-UINT CResizableSheet::OnNcHitTest(CPoint point) 
+UINT CResizableSheetEx::OnNcHitTest(CPoint point) 
 {
 	// test if in size grip
 	UINT ht = HitTest(point);
 	if (ht != HTNOWHERE)
 		return ht;
 	
-	return CPropertySheet::OnNcHitTest(point);
+	return CPropertySheetEx::OnNcHitTest(point);
 }
 
-void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
 {
 	if (!m_bInitDone)
 		return;
@@ -273,7 +304,7 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 // protected members
 
-int CResizableSheet::GetMinWidth()
+int CResizableSheetEx::GetMinWidth()
 {
 	CWnd* pWnd = NULL;
 	CRect rectWnd, rectSheet;
@@ -294,7 +325,7 @@ int CResizableSheet::GetMinWidth()
 		ScreenToClient(&rectWnd);
 		int left = rectSheet.right - rectWnd.left;
 		int right = rectSheet.right - rectWnd.right;
-
+		
 		if (left > max)
 			max = left;
 		if (right < min)
@@ -308,10 +339,9 @@ int CResizableSheet::GetMinWidth()
 	return max + min + 2*border;
 }
 
-
 // NOTE: this must be called after all the other settings
 //       to have the window and its controls displayed properly
-void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BOOL bWithPage)
+void CResizableSheetEx::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BOOL bWithPage)
 {
 	m_sSection = pszSection;
 	m_bSavePage = bWithPage;
@@ -332,7 +362,7 @@ void CResizableSheet::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BOOL
 
 #define ACTIVEPAGE 	_T("ActivePage")
 
-void CResizableSheet::SavePage()
+void CResizableSheetEx::SavePage()
 {
 	if (!m_bSavePage)
 		return;
@@ -351,7 +381,7 @@ void CResizableSheet::SavePage()
 	AfxGetApp()->WriteProfileInt(m_sSection, ACTIVEPAGE, page);
 }
 
-void CResizableSheet::LoadPage()
+void CResizableSheetEx::LoadPage()
 {
 	// restore active page, zero (the first) if not found
 	int page = AfxGetApp()->GetProfileInt(m_sSection, ACTIVEPAGE, 0);

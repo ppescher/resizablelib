@@ -89,6 +89,10 @@ SOURCE=.\ResizableDialog.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableFormView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableGrip.cpp
 # End Source File
 # Begin Source File
@@ -105,7 +109,15 @@ SOURCE=.\ResizablePage.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizablePageEx.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableSheet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableSheetEx.cpp
 # End Source File
 # Begin Source File
 
@@ -126,6 +138,10 @@ SOURCE=.\ResizableDialog.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableFormView.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableGrip.h
 # End Source File
 # Begin Source File
@@ -142,7 +158,15 @@ SOURCE=.\ResizablePage.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizablePageEx.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableSheet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableSheetEx.h
 # End Source File
 # Begin Source File
 
