@@ -85,7 +85,12 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
 		sizeTypeBR, sizeMarginBR, sClassName);
 
-	POSITION pos = m_listLayout.AddTail(layout);
+	POSITION pos;
+	// must not be already there!
+	// (this is probably due to a duplicate call to AddAnchor)
+	ASSERT(!m_mapLayout.Lookup(hWnd, pos));
+
+	pos = m_listLayout.AddTail(layout);
 	m_mapLayout.SetAt(hWnd, pos);
 }
 
@@ -376,9 +381,26 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 	// skip windows that wants background repainted
 	if (layout.sWndClass == TOOLBARCLASSNAME && (style & TBSTYLE_TRANSPARENT))
 		return FALSE;
-	if (layout.sWndClass == "Button" && (style & BS_TYPEMASK) == BS_GROUPBOX)
-		return FALSE;
-	if (layout.sWndClass == "Static")
+	else if (layout.sWndClass == WC_BUTTON)
+	{
+		CRect rect;
+		switch (style & BS_TYPEMASK)
+		{
+		case BS_GROUPBOX:
+			return FALSE;
+
+		case BS_OWNERDRAW:
+			// ownerdraw buttons must return correct hittest code
+			// to notify their transparency to the system and this library
+			::GetWindowRect(layout.hWnd, &rect);
+			if ( HTTRANSPARENT == ::SendMessage(layout.hWnd,
+				WM_NCHITTEST, 0, MAKELPARAM(rect.left, rect.top)) )
+				return FALSE;
+			break;
+		}
+		return TRUE;
+	}
+	else if (layout.sWndClass == WC_STATIC)
 	{
 		switch (style & SS_TYPEMASK)
 		{
