@@ -151,11 +151,23 @@ SOURCE=.\ResizableFormView.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableGrip.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\ResizableLayout.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMDIChild.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMDIFrame.cpp
 # End Source File
 # Begin Source File
 
@@ -210,11 +222,23 @@ SOURCE=.\ResizableFormView.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableFrame.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableGrip.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\ResizableLayout.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMDIChild.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMDIFrame.h
 # End Source File
 # Begin Source File
 
