@@ -225,9 +225,12 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		break;
 
 	case WM_PAINT:
+	case WM_PRINTCLIENT:
 		if (m_bTransparent)
 		{
-			CPaintDC dc(this);
+			PAINTSTRUCT ps;
+			CDC* pDC = (message == WM_PAINT && wParam == 0) ?
+				BeginPaint(&ps) : CDC::FromHandle((HDC)wParam);
 
 			// select bitmaps
 			CBitmap *pOldGrip, *pOldMask;
@@ -236,19 +239,21 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			pOldMask = m_dcMask.SelectObject(&m_bmMask);
 
 			// obtain original grip bitmap, make the mask and prepare masked bitmap
-			CScrollBar::WindowProc(WM_PAINT, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
+			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
 			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
 			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
 			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
 			
 			// draw transparently
-			dc.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
-			dc.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);
+			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
+			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);
 
 			// unselect bitmaps
 			m_dcGrip.SelectObject(pOldGrip);
 			m_dcMask.SelectObject(pOldMask);
 
+			if (message == WM_PAINT && wParam == 0)
+				EndPaint(&ps);
 			return 0;
 		}
 		break;
