@@ -23,10 +23,16 @@
 // consider to share your work on CodeProject.
 //  
 /////////////////////////////////////////////////////////////////////////////
+
+#include "ResizableGrip.h"
+#include "ResizableMinMax.h"
+
+/////////////////////////////////////////////////////////////////////////////
 // ResizableSheet.h : header file
 //
 
-class CResizableSheet : public CPropertySheet
+class CResizableSheet : public CPropertySheet, public CResizableGrip,
+						public CResizableMinMax
 {
 	DECLARE_DYNAMIC(CResizableSheet)
 
@@ -39,10 +45,6 @@ public:
 // Attributes
 private:
 	// flags
-	BOOL m_bShowGrip;
-	BOOL m_bUseMaxTrack;
-	BOOL m_bUseMinTrack;
-	BOOL m_bUseMaxRect;
 	BOOL m_bEnableSaveRestore;
 	BOOL m_bSavePage;
 
@@ -51,15 +53,6 @@ private:
 	CString m_sEntry;			// entry for save/restore
 
 	BOOL m_bInitDone;			// if all internal vars initialized
-
-	SIZE m_szGripSize;			// set at construction time
-
-	CRect m_rcGripRect;			// current pos of grip
-
-	POINT m_ptMinTrackSize;		// min tracking size
-	POINT m_ptMaxTrackSize;		// max tracking size
-	POINT m_ptMaxPos;			// maximized position
-	POINT m_ptMaxSize;			// maximized size
 
 	// layout variables
 	SIZE m_szLayoutPage;
@@ -88,21 +81,19 @@ private:
 	void LoadWindowRect();
 	void SaveWindowRect();
 	void ArrangeLayout();
-	void UpdateGripPos();
 
 // callable from derived classes
 protected:
-	void ShowSizeGrip(BOOL bShow);				// show or hide the size grip
-	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
-	void ResetMaximizedRect();					// reset to default maximized rect
-	void SetMinTrackSize(const CSize& size);	// set minimum tracking size
-	void ResetMinTrackSize();					// reset to default minimum tracking size
-	void SetMaxTrackSize(const CSize& size);	// set maximum tracking size
-	void ResetMaxTrackSize();					// reset to default maximum tracking size
 	void EnableSaveRestore(LPCTSTR pszSection,
 		LPCTSTR pszEntry, BOOL bWithPage = FALSE);	// section and entry in app's profile
 	int GetMinWidth();	// minimum width to display all buttons
 
+
+	virtual CWnd* GetLayoutParent()
+	{
+		// make the layout know its parent window
+		return this;
+	};
 
 // Generated message map functions
 protected:

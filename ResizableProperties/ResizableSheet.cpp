@@ -37,17 +37,8 @@ inline void CResizableSheet::Construct()
 {
 	m_bInitDone = FALSE;
 
-	m_bUseMinTrack = TRUE;
-	m_bUseMaxTrack = FALSE;
-	m_bUseMaxRect = FALSE;
-
-	m_bShowGrip = TRUE;
-	
 	m_bEnableSaveRestore = FALSE;
 	m_bSavePage = FALSE;
-
-	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
 }
 
 
@@ -103,12 +94,12 @@ BOOL CResizableSheet::OnInitDialog()
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
 	
+	// set the initial size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
+	SetMinTrackSize(rc.Size());
 
-	// set the initial size as the min track size
-	m_ptMinTrackSize.x = rc.Width();
-	m_ptMinTrackSize.y = rc.Height();
+	// init
 
 	UpdateGripPos();
 
@@ -301,11 +292,6 @@ void CResizableSheet::ArrangeLayout()
 			0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
-	// update size-grip
-	InvalidateRect(&m_rcGripRect);
-	UpdateGripPos();
-	InvalidateRect(&m_rcGripRect);
-
 	// go re-arrange child windows
 	EndDeferWindowPos(hdwp);
 }
@@ -318,7 +304,12 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 		return;		// arrangement not needed
 
 	if (m_bInitDone)
+	{
+		// update size-grip
+		UpdateGripPos();
+
 		ArrangeLayout();
+	}
 }
 
 // only gets called in wizard mode
@@ -336,32 +327,17 @@ void CResizableSheet::OnPaint()
 {
 	CPaintDC dc(this);
 
-	if (m_bShowGrip && !IsZoomed())
-	{
-		// draw size-grip
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-	}
+	DrawGrip(dc);
 }
 
 UINT CResizableSheet::OnNcHitTest(CPoint point) 
 {
-	CPoint pt = point;
-	ScreenToClient(&pt);
-
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt))
-		return HTBOTTOMRIGHT;
+	// test if in size grip
+	UINT ht = HitTest(point);
+	if (ht != HTNOWHERE)
+		return ht;
 	
 	return CPropertySheet::OnNcHitTest(point);
-}
-
-void CResizableSheet::UpdateGripPos()
-{
-	// size-grip goes bottom right in the client area
-
-	GetClientRect(&m_rcGripRect);
-
-	m_rcGripRect.left = m_rcGripRect.right - m_szGripSize.cx;
-	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
 }
 
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
@@ -369,70 +345,10 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	if (!m_bInitDone)
 		return;
 
-	if (m_bUseMinTrack)
-		lpMMI->ptMinTrackSize = m_ptMinTrackSize;
-
-	if (m_bUseMaxTrack)
-		lpMMI->ptMaxTrackSize = m_ptMaxTrackSize;
-
-	if (m_bUseMaxRect)
-	{
-		lpMMI->ptMaxPosition = m_ptMaxPos;
-		lpMMI->ptMaxSize = m_ptMaxSize;
-	}
+	MinMaxInfo(lpMMI);
 }
 
 // protected members
-
-void CResizableSheet::SetMaximizedRect(const CRect& rc)
-{
-	m_bUseMaxRect = TRUE;
-	m_ptMaxPos = rc.TopLeft();
-	
-	CSize sz = rc.Size();
-	m_ptMaxSize.x = sz.cx;
-	m_ptMaxSize.y = sz.cy;
-}
-
-void CResizableSheet::ResetMaximizedRect()
-{
-	m_bUseMaxRect = FALSE;
-}
-
-void CResizableSheet::ShowSizeGrip(BOOL bShow)
-{
-	if (m_bShowGrip != bShow)
-	{
-		m_bShowGrip = bShow;
-		InvalidateRect(&m_rcGripRect);
-	}
-}
-
-void CResizableSheet::SetMinTrackSize(const CSize& size)
-{
-	m_bUseMinTrack = TRUE;
-
-	m_ptMinTrackSize.x = size.cx;
-	m_ptMinTrackSize.y = size.cy;
-}
-
-void CResizableSheet::ResetMinTrackSize()
-{
-	m_bUseMinTrack = FALSE;
-}
-
-void CResizableSheet::SetMaxTrackSize(const CSize& size)
-{
-	m_bUseMaxTrack = TRUE;
-
-	m_ptMaxTrackSize.x = size.cx;
-	m_ptMaxTrackSize.y = size.cy;
-}
-
-void CResizableSheet::ResetMaxTrackSize()
-{
-	m_bUseMaxTrack = FALSE;
-}
 
 // NOTE: this must be called after all the other settings
 //       to have the dialog and its controls displayed properly

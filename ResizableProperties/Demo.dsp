@@ -112,7 +112,15 @@ SOURCE=.\MyPropertySheet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableGrip.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableLayout.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMinMax.cpp
 # End Source File
 # Begin Source File
 
@@ -149,7 +157,15 @@ SOURCE=.\MyPropertySheet.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResizableGrip.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ResizableLayout.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResizableMinMax.h
 # End Source File
 # Begin Source File
 
