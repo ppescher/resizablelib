@@ -25,7 +25,7 @@
 #endif // _MSC_VER > 1000
 
 // special type for layout anchors
-struct ANCHOR : public SIZE
+struct ANCHOR
 {
 	ANCHOR() { }
 
@@ -34,6 +34,9 @@ struct ANCHOR : public SIZE
 		cx = x;
 		cy = y;
 	}
+
+	int cx;
+	int cy;
 };
 
 const ANCHOR
@@ -54,11 +57,11 @@ protected:
 		TCHAR sWndClass[MAX_PATH];
 
 		// upper-left corner
-		ANCHOR sizeTypeTL;
+		ANCHOR anchorTypeTL;
 		SIZE sizeMarginTL;
 		
 		// bottom-right corner
-		ANCHOR sizeTypeBR;
+		ANCHOR anchorTypeBR;
 		SIZE sizeMarginBR;
 
 		// custom window support
@@ -69,11 +72,11 @@ protected:
 		LayoutInfo() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
 		{ }
 
-		LayoutInfo(HWND hwnd, ANCHOR tl_t, SIZE tl_m, 
-			ANCHOR br_t, SIZE br_m)
+		LayoutInfo(HWND hwnd, ANCHOR tl_type, SIZE tl_margin, 
+			ANCHOR br_type, SIZE br_margin)
 			: hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
-			sizeTypeTL(tl_t), sizeMarginTL(tl_m),
-			sizeTypeBR(br_t), sizeMarginBR(br_m)
+			anchorTypeTL(tl_type), sizeMarginTL(tl_margin),
+			anchorTypeBR(br_type), sizeMarginBR(br_margin)
 		{
 			sWndClass[0] = 0;
 		}
@@ -117,26 +120,26 @@ protected:
 	virtual void GetTotalClientRect(LPRECT lpRect) const;
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR);
+	void AddAnchor(HWND hWnd, ANCHOR anchorTypeTL, ANCHOR anchorTypeBR);
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, ANCHOR sizeTypeTL)
+	void AddAnchor(HWND hWnd, ANCHOR anchorTypeTL)
 	{
-		AddAnchor(hWnd, sizeTypeTL, sizeTypeTL);
+		AddAnchor(hWnd, anchorTypeTL, anchorTypeTL);
 	}
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT nID, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR)
+	void AddAnchor(UINT nID, ANCHOR anchorTypeTL, ANCHOR anchorTypeBR)
 	{
 		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
-			sizeTypeTL, sizeTypeBR);
+			anchorTypeTL, anchorTypeBR);
 	}
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT nID, ANCHOR sizeTypeTL)
+	void AddAnchor(UINT nID, ANCHOR anchorTypeTL)
 	{
 		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
-			sizeTypeTL, sizeTypeTL);
+			anchorTypeTL, anchorTypeTL);
 	}
 
 	// add a callback (control ID or HWND is unknown or may change)

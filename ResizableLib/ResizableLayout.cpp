@@ -35,7 +35,7 @@ static char THIS_FILE[]=__FILE__;
 // symbol's name suggests. So now we're forced to use another symbol!
 #define _BS_TYPEMASK 0x0000000FL
 
-void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR)
+void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTypeTL, ANCHOR anchorTypeBR)
 {
 	CWnd* pParent = GetResizableWnd();
 
@@ -60,17 +60,17 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR sizeTypeTL, ANCHOR sizeTypeBR
 
 	// calculate margin for the top-left corner
 
-	sizeMarginTL.cx = rectChild.left - rectParent.Width() * sizeTypeTL.cx / 100;
-	sizeMarginTL.cy = rectChild.top - rectParent.Height() * sizeTypeTL.cy / 100;
+	sizeMarginTL.cx = rectChild.left - rectParent.Width() * anchorTypeTL.cx / 100;
+	sizeMarginTL.cy = rectChild.top - rectParent.Height() * anchorTypeTL.cy / 100;
 	
 	// calculate margin for the bottom-right corner
 
-	sizeMarginBR.cx = rectChild.right - rectParent.Width() * sizeTypeBR.cx / 100;
-	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * sizeTypeBR.cy / 100;
+	sizeMarginBR.cx = rectChild.right - rectParent.Width() * anchorTypeBR.cx / 100;
+	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * anchorTypeBR.cy / 100;
 
 	// prepare the structure
-	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
-		sizeTypeBR, sizeMarginBR);
+	LayoutInfo layout(hWnd, anchorTypeTL, sizeMarginTL,
+		anchorTypeBR, sizeMarginBR);
 
 	// get control's window class
 	GetClassName(hWnd, layout.sWndClass, MAX_PATH);
@@ -351,6 +351,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 			bRefresh = TRUE;
 			break;
 		}
+		return bRefresh;
 	}
 
 	// window classes that don't redraw client area correctly
@@ -359,7 +360,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	if (0 == lstrcmp(layout.sWndClass, WC_LISTBOX))
 		bHScroll = TRUE;
 
-	// fix for horizontally scrollable windows
+	// fix for horizontally scrollable windows, if wider
 	if (bHScroll && (nDiffWidth > 0))
 	{
 		// get max scroll position
@@ -369,7 +370,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 		if (::GetScrollInfo(layout.hWnd, SB_HORZ, &info))
 		{
 			// subtract the page size
-			info.nMax -= __max(info.nPage-1,0);
+			info.nMax -= __max(info.nPage - 1, 0);
 		}
 
 		// resizing will cause the text to scroll on the right
@@ -465,12 +466,12 @@ void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& 
 	CRect rectNew;
 
 	// calculate new top-left corner
-	rectNew.left = layout.sizeMarginTL.cx + rectParent.Width() * layout.sizeTypeTL.cx / 100;
-	rectNew.top = layout.sizeMarginTL.cy + rectParent.Height() * layout.sizeTypeTL.cy / 100;
+	rectNew.left = layout.sizeMarginTL.cx + rectParent.Width() * layout.anchorTypeTL.cx / 100;
+	rectNew.top = layout.sizeMarginTL.cy + rectParent.Height() * layout.anchorTypeTL.cy / 100;
 	
 	// calculate new bottom-right corner
-	rectNew.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.sizeTypeBR.cx / 100;
-	rectNew.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.sizeTypeBR.cy / 100;
+	rectNew.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.anchorTypeBR.cx / 100;
+	rectNew.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.anchorTypeBR.cy / 100;
 
 	// adjust position, if client area has been scrolled
 	rectNew.OffsetRect(rectParent.TopLeft());
@@ -504,14 +505,14 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
 	CSize size = sizeChild + layout.sizeMarginTL - layout.sizeMarginBR;
 
 	// percent of parent size occupied by this control
-	CSize percent(layout.sizeTypeBR.cx - layout.sizeTypeTL.cx,
-		layout.sizeTypeBR.cy - layout.sizeTypeTL.cy);
+	CSize percent(layout.anchorTypeBR.cx - layout.anchorTypeTL.cx,
+		layout.anchorTypeBR.cy - layout.anchorTypeTL.cy);
 
 	// calculate total margins
-	rectMargins.left = size.cx * layout.sizeTypeTL.cx / percent.cx + layout.sizeMarginTL.cx;
-	rectMargins.top = size.cy * layout.sizeTypeTL.cy / percent.cy + layout.sizeMarginTL.cy;
-	rectMargins.right = size.cx * (100 - layout.sizeTypeBR.cx) / percent.cx - layout.sizeMarginBR.cx;
-	rectMargins.bottom = size.cy * (100 - layout.sizeTypeBR.cy) / percent.cy - layout.sizeMarginBR.cy;
+	rectMargins.left = size.cx * layout.anchorTypeTL.cx / percent.cx + layout.sizeMarginTL.cx;
+	rectMargins.top = size.cy * layout.anchorTypeTL.cy / percent.cy + layout.sizeMarginTL.cy;
+	rectMargins.right = size.cx * (100 - layout.anchorTypeBR.cx) / percent.cx - layout.sizeMarginBR.cx;
+	rectMargins.bottom = size.cy * (100 - layout.anchorTypeBR.cy) / percent.cy - layout.sizeMarginBR.cy;
 
 	return TRUE;
 }
