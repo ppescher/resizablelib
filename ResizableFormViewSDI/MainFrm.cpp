@@ -67,6 +67,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndToolBar);
 
+	// save/restore window position and size
+	EnableSaveRestore(_T("Demo SDI Wnd"));
+
 	return 0;
 }
 
@@ -96,10 +99,3 @@ void CMainFrame::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame message handlers
 
-void CMainFrame::ActivateFrame(int nCmdShow) 
-{
-	if ( EnableSaveRestore(_T("Demo SDI Wnd")) )
-		return; // successful read, don't call base class
-
-	CResizableFrame::ActivateFrame(nCmdShow);
-}

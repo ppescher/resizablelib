@@ -53,25 +53,13 @@ BOOL CDemoView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CDemoView::OnInitialUpdate()
 {
-	// must add controls to the layout
-	// before OnInitialUpdate's base implementation
-	AddAnchor(IDC_LIST1, TOP_LEFT, BOTTOM_RIGHT);
-	AddAnchor(IDC_GROUP1, TOP_LEFT, BOTTOM_LEFT);
-	AddAnchor(IDC_RADIO1, TOP_LEFT);
-	AddAnchor(IDC_RADIO2, MIDDLE_LEFT);
-	AddAnchor(IDC_RADIO3, BOTTOM_LEFT);
+	// complete initialization
+	CResizableFormView::OnInitialUpdate();
 
 	// use template size as min track size
 	CRect rect(CPoint(0, 0), GetTotalSize());
 	CalcWindowRect(rect, CWnd::adjustOutside);
 	SetMinTrackSize(rect.Size());
-
-	// complete initialization
-	CResizableFormView::OnInitialUpdate();
-
-	// these two lines are optional
-	GetParentFrame()->RecalcLayout();
-	ResizeParentToFit();
 
 //	SetScaleToFitSize(GetTotalSize()); // scrollbars won't appear
 }
@@ -99,3 +87,18 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 
 /////////////////////////////////////////////////////////////////////////////
 // CDemoView message handlers
+
+BOOL CDemoView::OnInitDialog() 
+{
+	CResizableFormView::OnInitDialog();
+	
+	// add controls to the layout here
+	AddAnchor(IDC_LIST1, TOP_LEFT, BOTTOM_RIGHT);
+	AddAnchor(IDC_GROUP1, TOP_LEFT, BOTTOM_LEFT);
+	AddAnchor(IDC_RADIO1, TOP_LEFT);
+	AddAnchor(IDC_RADIO2, MIDDLE_LEFT);
+	AddAnchor(IDC_RADIO3, BOTTOM_LEFT);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	              // EXCEPTION: OCX Property Pages should return FALSE
+}
