@@ -44,6 +44,9 @@ public:
 
 // Attributes
 private:
+	// support for temporarily hiding the grip
+	DWORD m_dwGripTempState;
+
 	// flags
 	BOOL m_bEnableSaveRestore;
 	BOOL m_bRectOnly;

@@ -32,6 +32,7 @@ inline void CResizableSheet::PrivateConstruct()
 {
 	m_bEnableSaveRestore = FALSE;
 	m_bSavePage = FALSE;
+	m_dwGripTempState = 1;
 }
 
 
@@ -89,7 +90,7 @@ int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// create and init the size-grip
 	if (!CreateSizeGrip())
 		return -1;
-	ShowSizeGrip(); // show by default
+	SetSizeGripVisibility(TRUE); // show by default
 
 	return 0;
 }
@@ -218,9 +219,13 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
-	// update size-grip
-	UpdateSizeGrip();
+	if (nType == SIZE_MAXIMIZED)
+		HideSizeGrip(&m_dwGripTempState);
+	else
+		ShowSizeGrip(&m_dwGripTempState);
 
+	// update grip and layout
+	UpdateSizeGrip();
 	ArrangeLayout();
 }
 
