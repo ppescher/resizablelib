@@ -21,14 +21,14 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "ResizableMinMax.h"
-#include "ResizableState.h"
+#include "ResizableWndState.h"
 #include "ResizableLayout.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableMDIFrame frame
 
 class CResizableMDIFrame : public CMDIFrameWnd, public CResizableMinMax,
-						public CResizableState, public CResizableLayout
+						public CResizableWndState, public CResizableLayout
 {
 	DECLARE_DYNCREATE(CResizableMDIFrame)
 protected:

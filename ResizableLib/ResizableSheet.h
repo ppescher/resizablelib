@@ -22,7 +22,7 @@
 #include "ResizableLayout.h"
 #include "ResizableGrip.h"
 #include "ResizableMinMax.h"
-#include "ResizableState.h"
+#include "ResizableSheetState.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // ResizableSheet.h : header file
@@ -30,7 +30,7 @@
 
 class CResizableSheet : public CPropertySheet, public CResizableLayout,
 						public CResizableGrip, public CResizableMinMax,
-						public CResizableState
+						public CResizableSheetState
 {
 	DECLARE_DYNAMIC(CResizableSheet)
 
@@ -77,8 +77,6 @@ public:
 // used internally
 private:
 	void PrivateConstruct();
-	void SavePage();
-	void LoadPage();
 
 	BOOL IsWizard() const;
 

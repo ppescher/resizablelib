@@ -164,7 +164,8 @@ void CResizableSheetEx::OnDestroy()
 	if (m_bEnableSaveRestore)
 	{
 		SaveWindowRect(m_sSection, m_bRectOnly);
-		SavePage();
+		if (m_bSavePage)
+			SavePage(m_sSection);
 	}
 
 	RemoveAllAnchors();
@@ -496,44 +497,9 @@ void CResizableSheetEx::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly, BO
 
 	// restore immediately
 	LoadWindowRect(pszSection, bRectOnly);
-	LoadPage();
-}
-
-// private memebers
-
-// used to save/restore active page
-// either in the registry or a private .INI file
-// depending on your application settings
-
-#define ACTIVEPAGE 	_T("ActivePage")
-
-void CResizableSheetEx::SavePage()
-{
-	if (!m_bSavePage)
-		return;
-
-	// saves active page index, zero (the first) if problems
-	// cannot use GetActivePage, because it always fails
-
-	CTabCtrl *pTab = GetTabControl();
-	int page = 0;
-
-	if (pTab != NULL) 
-		page = pTab->GetCurSel();
-	if (page < 0)
-		page = 0;
-
-	AfxGetApp()->WriteProfileInt(m_sSection, ACTIVEPAGE, page);
-}
-
-void CResizableSheetEx::LoadPage()
-{
-	// restore active page, zero (the first) if not found
-	int page = AfxGetApp()->GetProfileInt(m_sSection, ACTIVEPAGE, 0);
-	
-	if (m_bSavePage)
+	if (bWithPage)
 	{
-		SetActivePage(page);
+		LoadPage(pszSection);
 		ArrangeLayout();	// needs refresh
 	}
 }
