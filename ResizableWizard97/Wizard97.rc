@@ -119,11 +119,11 @@ BEGIN
     LTEXT           "Select the appropriate option below:",IDC_STATIC,7,7,
                     114,8
     CONTROL         "Microsoft Windows NT Workstation",IDC_RADIO1,"Button",
-                    BS_AUTORADIOBUTTON,21,24,232,10
-    LTEXT           "Choose this option for greatest system performance and to maximize data security and internet capabilities",
-                    IDC_STATIC1,30,38,223,26
+                    BS_AUTORADIOBUTTON | WS_GROUP,21,24,232,10
     CONTROL         "Microsoft Windows 95",IDC_RADIO2,"Button",
                     BS_AUTORADIOBUTTON,21,69,232,10
+    LTEXT           "Choose this option for greatest system performance and to maximize data security and internet capabilities",
+                    IDC_STATIC1,30,38,223,26
     LTEXT           "Choose this option if you are setting up a computer that has less than 16 megabytes of RAM, or if you are setting up a laptop (portable) computer.",
                     IDC_STATIC2,30,82,223,26
 END
