@@ -1,9 +1,21 @@
 // ResizableMinMax.h: interface for the CResizableMinMax class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (C) 2000-2001 by Paolo Messina
+// (http://www.geocities.com/ppescher - ppescher@yahoo.com)
+//
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
+/////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RESIZABLEMINMAX_H__B3D85A78_15A8_4A2D_897B_94C7A9CDDDFD__INCLUDED_)
-#define AFX_RESIZABLEMINMAX_H__B3D85A78_15A8_4A2D_897B_94C7A9CDDDFD__INCLUDED_
+#if !defined(AFX_RESIZABLEMINMAX_H__INCLUDED_)
+#define AFX_RESIZABLEMINMAX_H__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -38,4 +50,4 @@ protected:
 	void ResetMaxTrackSize();					// reset to default maximum tracking size
 };
 
-#endif // !defined(AFX_RESIZABLEMINMAX_H__B3D85A78_15A8_4A2D_897B_94C7A9CDDDFD__INCLUDED_)
+#endif // !defined(AFX_RESIZABLEMINMAX_H__INCLUDED_)

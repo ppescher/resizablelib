@@ -177,5 +177,21 @@ SOURCE=.\ResizableState.h
 SOURCE=.\StdAfx.h
 # End Source File
 # End Group
+# Begin Group "Doc"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\Docs\DoDoxygen.bat
+# End Source File
+# Begin Source File
+
+SOURCE=.\Docs\doxyfile.txt
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=".\Artistic-License.txt"
+# End Source File
 # End Target
 # End Project

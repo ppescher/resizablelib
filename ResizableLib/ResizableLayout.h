@@ -2,25 +2,20 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2000 by Paolo Messina
-// (ppescher@yahoo.com)
+// Copyright (C) 2000-2001 by Paolo Messina
+// (http://www.geocities.com/ppescher - ppescher@yahoo.com)
 //
-// Free for non-commercial and commercial use,
-// provided that the original author's name
-// and copyright is quoted somewhere in the
-// final executable and in the program's help
-// or documentation.
-// You may change the code to your needs,
-// provided that credits to the original
-// author are given in the modified files.
-// Also a copy of your enhancements would
-// be nice, but it's not required. Please,
-// consider to share your work on CodeProject.
-//  
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RESIZABLELAYOUT_H__A7664CF3_1F96_4904_830F_8FB70A99F129__INCLUDED_)
-#define AFX_RESIZABLELAYOUT_H__A7664CF3_1F96_4904_830F_8FB70A99F129__INCLUDED_
+#if !defined(AFX_RESIZABLELAYOUT_H__INCLUDED_)
+#define AFX_RESIZABLELAYOUT_H__INCLUDED_
 
 #include <afxtempl.h>
 
@@ -133,4 +128,4 @@ public:
 	}
 };
 
-#endif // !defined(AFX_RESIZABLELAYOUT_H__A7664CF3_1F96_4904_830F_8FB70A99F129__INCLUDED_)
+#endif // !defined(AFX_RESIZABLELAYOUT_H__INCLUDED_)
