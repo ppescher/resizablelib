@@ -64,7 +64,7 @@ void CResizableComboLBox::InitializeControl()
 	ModifyStyle(0, m_dwAddToStyle, SWP_FRAMECHANGED);
 
 	// init hscroll
-	UpdateHorizontalExtent();
+	InitHorizontalExtent();
 
 	if (GetStyle() & WS_HSCROLL)
 		m_sizeAfterSizing.cy += GetSystemMetrics(SM_CYHSCROLL);
@@ -207,6 +207,14 @@ void CResizableComboLBox::OnCaptureChanged(CWnd *pWnd)
 	CWnd::OnCaptureChanged(pWnd);
 }
 
+void CResizableComboLBox::EndSizing()
+{
+	m_bSizing = FALSE;
+	CRect rect;
+	GetWindowRect(&rect);
+	m_sizeAfterSizing = rect.Size();
+}
+
 void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
 {
 	if (!m_bSizing)
@@ -220,9 +228,19 @@ void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 	CWnd::OnWindowPosChanging(lpwndpos);
 }
 
+void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* /*lpwndpos*/) 
+{
+	// default implementation sends a WM_SIZE message
+	// that can change the size again to force integral height
+
+	// since we do that manually during resize, we should also
+	// update the horizontal scrollbar 
+	SendMessage(WM_HSCROLL, SB_ENDSCROLL, 0);
+}
+
 void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 {
-	TRACE(">H w(%d)\n", lpwndpos->cy);
+	//TRACE(">H w(%d)\n", lpwndpos->cy);
 	// to adjust horizontally, use window rect
 
 	// min width can't be less than combo's
@@ -251,10 +269,10 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 	if (sizeClient.cy < m_sizeMin.cy)
 		sizeClient.cy = m_sizeMin.cy;
 
-	TRACE(">H c(%d)\n", sizeClient.cy);
+	//TRACE(">H c(%d)\n", sizeClient.cy);
 	// adjust height, if needed
 	sizeClient.cy = MakeIntegralHeight(sizeClient.cy);
-	TRACE(">H c(%d)\n", sizeClient.cy);
+	//TRACE(">H c(%d)\n", sizeClient.cy);
 
 	// back to window rect
 	rect = CRect(0, 0, 1, sizeClient.cy);
@@ -264,19 +282,19 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 	if (dwStyle & WS_HSCROLL)
 		lpwndpos->cy += GetSystemMetrics(SM_CYHSCROLL);
 
-	TRACE("H c(%d) w(%d)\n", sizeClient.cy, lpwndpos->cy);
+	//TRACE("H c(%d) w(%d)\n", sizeClient.cy, lpwndpos->cy);
 }
 
 int CResizableComboLBox::MakeIntegralHeight(const int height)
 {
 	int inth = height;	// integral height (result)
-
-	DWORD dwStyle = GetStyle();
-	if (dwStyle & LBS_NOINTEGRALHEIGHT)
-		return inth;
-
 	int availh = height;	// available height
 	int n = m_pOwnerCombo->GetCount();
+
+	DWORD dwStyle = GetStyle();
+
+	if (dwStyle & LBS_NOINTEGRALHEIGHT || n == 0)
+		return inth;
 	
 	if (dwStyle & LBS_OWNERDRAWVARIABLE)
 	{
@@ -335,7 +353,7 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 	return inth;
 }
 
-void CResizableComboLBox::UpdateHorizontalExtent()
+void CResizableComboLBox::InitHorizontalExtent()
 {
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(GetFont());
@@ -346,31 +364,31 @@ void CResizableComboLBox::UpdateHorizontalExtent()
 	int n = m_pOwnerCombo->GetCount();
 	for (int i=0; i<n; i++)
 	{
-		int cx = dc.GetTextExtent(str).cx;
 		m_pOwnerCombo->GetLBText(i, str);
+		int cx = dc.GetTextExtent(str).cx;
 		if (cx > m_iExtent)
 			m_iExtent = cx;
 	}
-	m_iExtent += LOWORD(GetDialogBaseUnits())/2;
-	m_pOwnerCombo->SetHorizontalExtent(m_iExtent);
+
+	m_pOwnerCombo->SetHorizontalExtent(m_iExtent
+		+ LOWORD(GetDialogBaseUnits()));
 
 	dc.SelectObject(pOldFont);
 }
 
-void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* /*lpwndpos*/) 
+void CResizableComboLBox::UpdateHorizontalExtent(LPCTSTR szText)
 {
-	// default implementation sends a WM_SIZE message
-	// that can change the size again to force integral height
+	CClientDC dc(this);
+	CFont* pOldFont = dc.SelectObject(GetFont());
 
-	// since we do that manually during resize, we should also
-	// update the horizontal scrollbar 
-	SendMessage(WM_HSCROLL, SB_ENDSCROLL, 0);
-}
+	int cx = dc.GetTextExtent(szText, lstrlen(szText)).cx;
+	if (cx > m_iExtent)
+	{
+		m_iExtent = cx;
 
-void CResizableComboLBox::EndSizing()
-{
-	m_bSizing = FALSE;
-	CRect rect;
-	GetWindowRect(&rect);
-	m_sizeAfterSizing = rect.Size();
+		m_pOwnerCombo->SetHorizontalExtent(m_iExtent
+			+ LOWORD(GetDialogBaseUnits()));
+	}
+
+	dc.SelectObject(pOldFont);
 }

@@ -54,13 +54,14 @@ protected:
 
 	int MakeIntegralHeight(const int height);
 	void ApplyLimitsToPos(WINDOWPOS* lpwndpos);
+	void EndSizing();
+	void InitHorizontalExtent();
 
 	BOOL IsRTL() { return (GetExStyle() & WS_EX_LAYOUTRTL); }
 
 	// Generated message map functions
 protected:
-	void EndSizing();
-	void UpdateHorizontalExtent();
+	void UpdateHorizontalExtent(LPCTSTR szText);
 	//{{AFX_MSG(CResizableComboLBox)
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
