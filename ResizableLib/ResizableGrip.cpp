@@ -65,8 +65,6 @@ void CResizableGrip::ShowSizeGrip(BOOL bShow)
 	m_wndGrip.ShowWindow(bShow ? SW_SHOW : SW_HIDE);
 }
 
-#define RSZ_GRIP_OBJ	_T("ResizableGrip")
-
 BOOL CResizableGrip::InitGrip()
 {
 	CRect rect(0 , 0, m_sizeGrip.cx, m_sizeGrip.cy);
@@ -77,21 +75,16 @@ BOOL CResizableGrip::InitGrip()
 	if (bRet)
 	{
 		// set a triangular window region
-		CRgn rgnGrip, rgn;
-		rgn.CreateRectRgn(0,0,1,1);
-		rgnGrip.CreateRectRgnIndirect(&rect);
-	
-		for (int y=0; y<m_sizeGrip.cy; y++)
+		rect.OffsetRect(-rect.TopLeft());
+		POINT aPoints[] =
 		{
-			rgn.SetRectRgn(0, y, m_sizeGrip.cx-y, y+1);
-			rgnGrip.CombineRgn(&rgnGrip, &rgn, RGN_DIFF);
-		}
+			{ rect.left, rect.bottom },
+			{ rect.right, rect.bottom },
+			{ rect.right, rect.top }
+		};
+		CRgn rgnGrip;
+		rgnGrip.CreatePolygonRgn(aPoints, 3, WINDING);
 		m_wndGrip.SetWindowRgn((HRGN)rgnGrip.Detach(), FALSE);
-
-		// subclass control
-		::SetProp(m_wndGrip, RSZ_GRIP_OBJ,
-			(HANDLE)::GetWindowLong(m_wndGrip, GWL_WNDPROC));
-		::SetWindowLong(m_wndGrip, GWL_WNDPROC, (LONG)GripWindowProc);
 
 		// update pos
 		UpdateGripPos();
@@ -101,34 +94,16 @@ BOOL CResizableGrip::InitGrip()
 	return bRet;
 }
 
-BOOL CResizableGrip::IsRTL(HWND hwnd)
+LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	DWORD dwExStyle = ::GetWindowLong(hwnd, GWL_EXSTYLE);
-	return (dwExStyle & WS_EX_LAYOUTRTL);
-}
-
-LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	WNDPROC oldWndProc = (WNDPROC)::GetProp(hwnd, RSZ_GRIP_OBJ);
-
-	switch (msg)
+	if (message == WM_NCHITTEST)
 	{
-	case WM_NCHITTEST:
-
 		// choose proper cursor shape
-		if (IsRTL(hwnd))
+		if (IsRTL())
 			return HTBOTTOMLEFT;
 		else
 			return HTBOTTOMRIGHT;
-
-	case WM_DESTROY:
-		
-		// unsubclass
-		::RemoveProp(hwnd, RSZ_GRIP_OBJ);
-		::SetWindowLong(hwnd, GWL_WNDPROC, (LONG)oldWndProc);
-
-		break;
 	}
 
-	return ::CallWindowProc(oldWndProc, hwnd, msg, wParam, lParam);
+	return CScrollBar::WindowProc(message, wParam, lParam);
 }

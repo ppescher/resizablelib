@@ -24,14 +24,19 @@
 class CResizableGrip  
 {
 private:
+	class CSizeGrip : public CScrollBar
+	{
+	public:
+		CSizeGrip() {}
+
+		BOOL IsRTL()
+		{ return GetExStyle() & WS_EX_LAYOUTRTL; }
+
+		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	};
+
+	CSizeGrip m_wndGrip;	// grip control
 	SIZE m_sizeGrip;		// holds grip size
-
-	CScrollBar m_wndGrip;	// grip control
-
-private:
-	static BOOL IsRTL(HWND hwnd);
-
-	static LRESULT CALLBACK GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 protected:
 	BOOL InitGrip();
