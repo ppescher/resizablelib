@@ -69,7 +69,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 	// and child control's rect
 	CRect rectChild;
 	::GetWindowRect(hWnd, &rectChild);
-	pParent->ScreenToClient(&rectChild);
+	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
 
 	// go calculate margins
 	CSize sizeMarginTL, sizeMarginBR;
@@ -122,10 +122,10 @@ void CResizableLayout::ArrangeLayout()
 	GetTotalClientRect(&rectParent);
 
 	// init some vars
-	int i, count = m_arrLayout.GetSize();
+	int count = m_arrLayout.GetSize();
 	HDWP hdwp = BeginDeferWindowPos(count);
 
-	for (i=0; i<count; ++i)
+	for (int i=0; i<count; i++)
 	{
 		LayoutInfo layout = m_arrLayout[i];
 		
@@ -149,7 +149,7 @@ void CResizableLayout::ArrangeLayout()
 		CWnd* pWnd = CWnd::FromHandle(layout.hWnd); // temporary solution
 
 		pWnd->GetWindowRect(&rectChild);
-		pParent->ScreenToClient(&rectChild);
+		::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
 		
 		// calculate new top-left corner
 
@@ -198,18 +198,20 @@ void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CDC* pDC)
 	// obtain window position
 	CRect rect;
 	::GetWindowRect(hWnd, &rect);
-	GetResizableWnd()->ScreenToClient(&rect);
+	::MapWindowPoints(NULL, GetResizableWnd()->m_hWnd, (LPPOINT)&rect, 2);
 	pDC->DPtoLP(&rect);
 
 	// use window region if any
 	CRgn rgn;
 	rgn.CreateRectRgn(0,0,0,0);
-	if (COMPLEXREGION == ::GetWindowRgn(hWnd, rgn))
+	switch (::GetWindowRgn(hWnd, rgn))
 	{
+	case COMPLEXREGION:
+	case SIMPLEREGION:
 		rgn.OffsetRgn(rect.TopLeft());
-	}
-	else
-	{
+		break;
+
+	default:
 		rgn.SetRectRgn(&rect);
 	}
 
@@ -222,6 +224,22 @@ void CResizableLayout::EnumAndClipChildWindow(HWND hWnd, CDC* pDC)
 
 void CResizableLayout::ClipChildren(CDC *pDC)
 {
+	// System's default clipping area is screen's size,
+	// not enough for max track size:
+	// if screen is 1024 x 768 and resizing border is 4 pixels,
+	// maximized size is 1024+4*2=1032 x 768+4*2=776,
+	// but max track size is 4 pixels bigger 1036 x 780 (don't ask me why!)
+	// So, if you resize the window to maximum size, the last 4 pixels
+	// are clipped out by the default clipping region, that gets created
+	// as soon as you call clipping functions (my guess).
+
+	// reset clipping region to the whole client area
+	CRect rect;
+	GetResizableWnd()->GetClientRect(&rect);
+	CRgn rgn;
+	rgn.CreateRectRgnIndirect(&rect);
+	pDC->SelectClipRgn(&rgn);
+
 	// only clips anchored controls
 	for (int i=0; i<m_arrLayout.GetSize(); ++i)
 	{

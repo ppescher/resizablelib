@@ -162,7 +162,7 @@ void CResizableSheet::PresetLayout()
 	GetTotalClientRect(&rectSheet);
 
 	GetActivePage()->GetWindowRect(&rectPage);
-	ScreenToClient(&rectPage);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
 
 	// pre-calculate margins
 	m_sizePageTL = rectPage.TopLeft() - rectSheet.TopLeft();
@@ -199,7 +199,7 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 		CTabCtrl* pTab = GetTabControl();
 		pTab->GetWindowRect(&rectPage);
 		pTab->AdjustRect(FALSE, &rectPage);
-		ScreenToClient(&rectPage);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
 
 		// use tab control
 		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
@@ -274,7 +274,7 @@ int CResizableSheet::GetMinWidth()
 		// left position is relative to the right border
 		// of the parent window (negative value)
 		pWnd->GetWindowRect(&rectWnd);
-		ScreenToClient(&rectWnd);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
 		int left = rectSheet.right - rectWnd.left;
 		int right = rectSheet.right - rectWnd.right;
 
