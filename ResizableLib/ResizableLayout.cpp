@@ -2,7 +2,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2000-2001 by Paolo Messina
+// Copyright (C) 2000-2002 by Paolo Messina
 // (http://www.geocities.com/ppescher - ppescher@yahoo.com)
 //
 // The contents of this file are subject to the Artistic License (the "License").
@@ -108,6 +108,15 @@ BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*lay
 
 void CResizableLayout::ArrangeLayout()
 {
+	CWnd* pParent = GetResizableWnd();
+	BOOL bParentVisible = pParent->IsWindowVisible();
+
+	if (bParentVisible)
+	{
+		//pParent->LockWindowUpdate();
+		pParent->SetRedraw(FALSE);
+	}
+
 	// common vars
 	UINT uFlags;
 	LayoutInfo layout;
@@ -163,6 +172,13 @@ void CResizableLayout::ArrangeLayout()
 		}
 	}
 	::EndDeferWindowPos(hdwp);
+
+	if (bParentVisible)
+	{
+		//pParent->UnlockWindowUpdate();
+		pParent->SetRedraw(TRUE);
+		pParent->Invalidate(TRUE);
+	}
 }
 
 void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layout,
@@ -285,10 +301,11 @@ void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
 BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 									const CRect& rectOld, const CRect& rectNew)
 {
-	BOOL bSameWidth = (rectNew.Width() == rectOld.Width());
-	BOOL bSameHeight = (rectNew.Height() == rectOld.Height());
+	int nDiffWidth = (rectNew.Width() - rectOld.Width());
+	int nDiffHeight = (rectNew.Height() - rectOld.Height());
 
-	if (bSameWidth && bSameHeight)
+	// is the same size?
+	if (nDiffWidth == 0 && nDiffHeight == 0)
 		return FALSE;
 
 	// optimistic, no need to refresh
@@ -305,19 +322,19 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 		case SS_CENTER:
 		case SS_RIGHT:
 			// word-wrapped text
-			bRefresh = bRefresh || !bSameWidth;
+			bRefresh = bRefresh || (nDiffWidth != 0);
 			// vertically centered text
 			if (style & SS_CENTERIMAGE)
-				bRefresh = bRefresh || !bSameHeight;
+				bRefresh = bRefresh || (nDiffHeight != 0);
 			break;
 
 		case SS_LEFTNOWORDWRAP:
 			// text with ellipsis
 			if (style & SS_ELLIPSISMASK)
-				bRefresh = bRefresh || !bSameWidth;
+				bRefresh = bRefresh || (nDiffWidth != 0);
 			// vertically centered text
 			if (style & SS_CENTERIMAGE)
-				bRefresh = bRefresh || !bSameHeight;
+				bRefresh = bRefresh || (nDiffHeight != 0);
 			break;
 
 		case SS_ENHMETAFILE:
@@ -341,7 +358,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 		bHScroll = TRUE;
 
 	// fix for horizontally scrollable windows
-	if (!bSameWidth && bHScroll)
+	if (bHScroll && (nDiffWidth > 0))
 	{
 		// get max scroll position
 		SCROLLINFO info;
@@ -352,12 +369,10 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 			// subtract the page size
 			info.nMax -= __max(info.nPage-1,0);
 		}
-		// increment in width
-		int nDiff = rectNew.Width() - rectOld.Width();
 
 		// resizing will cause the text to scroll on the right
 		// because the scrollbar is going beyond the right limit
-		if ((info.nMax > 0) && (nDiff > 0) && (info.nPos + nDiff > info.nMax))
+		if ((info.nMax > 0) && (info.nPos + nDiffWidth > info.nMax))
 		{
 			// needs repainting, due to horiz scrolling
 			bRefresh = TRUE;

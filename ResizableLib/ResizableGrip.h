@@ -2,7 +2,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (C) 2000-2001 by Paolo Messina
+// Copyright (C) 2000-2002 by Paolo Messina
 // (http://www.geocities.com/ppescher - ppescher@yahoo.com)
 //
 // The contents of this file are subject to the Artistic License (the "License").
@@ -29,8 +29,7 @@ private:
 	public:
 		CSizeGrip() {}
 
-		BOOL IsRTL()
-		{ return GetExStyle() & WS_EX_LAYOUTRTL; }
+		BOOL IsRTL();
 
 		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	};
