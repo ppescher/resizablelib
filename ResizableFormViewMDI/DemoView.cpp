@@ -60,8 +60,19 @@ void CDemoView::OnInitialUpdate()
 	AddAnchor(IDC_STATIC1, CSize(40,0), BOTTOM_RIGHT);
 	AddAnchor(IDC_ICON1, CSize(40,0), CSize(70,0));
 
+	// use template size as min track size
+	CRect rect(CPoint(0, 0), GetTotalSize());
+	CalcWindowRect(rect, CWnd::adjustOutside);
+	SetMinTrackSize(rect.Size());
+
+	// complete initialization
 	CResizableFormView::OnInitialUpdate();
+
+	// these two lines are optional
+	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
+
+//	SetScaleToFitSize(GetTotalSize()); // scrollbars won't appear
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -91,11 +102,13 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 void CDemoView::OnButton2() 
 {
 	FormViewToDialog();
+	UpdateSizeGrip();
 }
 
 void CDemoView::OnButton1() 
 {
 	DialogToFormView();
+	UpdateSizeGrip();
 }
 
 void CDemoView::FormViewToDialog()
@@ -107,10 +120,10 @@ void CDemoView::FormViewToDialog()
 	DWORD style = pParent->GetStyle() & ~WS_THICKFRAME | WS_DLGFRAME;
 	::AdjustWindowRect(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())));
 	// change style and size
-	ModifyStyleEx(WS_EX_CLIENTEDGE, 0);
 	pParent->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME);
 	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
+	ModifyStyleEx(WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
 }
 
 void CDemoView::DialogToFormView()
@@ -123,8 +136,8 @@ void CDemoView::DialogToFormView()
 	::AdjustWindowRectEx(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())),
 		WS_EX_CLIENTEDGE);
 	// change style and size
-	ModifyStyleEx(0, WS_EX_CLIENTEDGE);
 	pParent->ModifyStyle(WS_DLGFRAME, WS_THICKFRAME|WS_CAPTION);
 	pParent->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
+	ModifyStyleEx(0, WS_EX_CLIENTEDGE, SWP_FRAMECHANGED);
 }

@@ -15,9 +15,9 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame
 
-IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWnd)
+IMPLEMENT_DYNCREATE(CChildFrame, CResizableMDIChild)
 
-BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
+BEGIN_MESSAGE_MAP(CChildFrame, CResizableMDIChild)
 	//{{AFX_MSG_MAP(CChildFrame)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -35,7 +35,7 @@ CChildFrame::~CChildFrame()
 
 BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	if( !CMDIChildWnd::PreCreateWindow(cs) )
+	if( !CResizableMDIChild::PreCreateWindow(cs) )
 		return FALSE;
 
 	return TRUE;
@@ -49,12 +49,12 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CChildFrame::AssertValid() const
 {
-	CMDIChildWnd::AssertValid();
+	CResizableMDIChild::AssertValid();
 }
 
 void CChildFrame::Dump(CDumpContext& dc) const
 {
-	CMDIChildWnd::Dump(dc);
+	CResizableMDIChild::Dump(dc);
 }
 
 #endif //_DEBUG

@@ -81,7 +81,11 @@ BOOL CSecondDialog::OnInitDialog()
 	//AddAnchor(AFX_IDW_TOOLBAR, BOTTOM_LEFT);
 	AddAnchor(m_wndToolBar.GetSafeHwnd(), BOTTOM_LEFT);
 
+	// allow any size
 	ResetMinTrackSize();
+
+	// enable transparent grip
+	SetSizeGripBkMode(TRANSPARENT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }

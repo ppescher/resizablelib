@@ -50,8 +50,6 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:
-
 // Generated message map functions
 protected:
 	//{{AFX_MSG(CDemoView)

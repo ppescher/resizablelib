@@ -9,8 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "ResizableMDIChild.h"
 
-class CChildFrame : public CMDIChildWnd
+class CChildFrame : public CResizableMDIChild
 {
 	DECLARE_DYNCREATE(CChildFrame)
 public:
@@ -25,6 +26,7 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CChildFrame)
+	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	//}}AFX_VIRTUAL
 

@@ -9,7 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CMainFrame : public CFrameWnd
+#include "ResizableFrame.h"
+
+class CMainFrame : public CResizableFrame
 {
 	
 protected: // create from serialization only
@@ -25,7 +27,9 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)
+	public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual void RecalcLayout(BOOL bNotify = TRUE);
 	//}}AFX_VIRTUAL
 
 // Implementation

@@ -32,6 +32,9 @@ public:
 
 // Implementation
 protected:
+	// support for temporarily hiding the grip
+	DWORD m_dwGripTempState;
+
 	HICON m_hIcon;
 
 	// Generated message map functions

@@ -9,7 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CMainFrame : public CMDIFrameWnd
+#include "ResizableMDIFrame.h"
+
+class CMainFrame : public CResizableMDIFrame
 {
 	DECLARE_DYNAMIC(CMainFrame)
 public:
