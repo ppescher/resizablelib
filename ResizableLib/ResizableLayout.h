@@ -40,8 +40,7 @@ protected:
 		HWND hWnd;
 		UINT nCallbackID;
 
-		BOOL bAdjHScroll;
-		BOOL bNeedRefresh;
+		CString sWndClass;
 
 		// upper-left corner
 		SIZE sizeTypeTL;
@@ -52,42 +51,35 @@ protected:
 		SIZE sizeMarginBR;
 	
 	public:
-		LayoutInfo()
-		{ ZeroMemory(this, sizeof(LayoutInfo)); }
+		LayoutInfo() : hWnd(NULL), nCallbackID(0)
+		{ }
 
 		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
-			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
-		{
-			hWnd = hwnd;
-			nCallbackID = 0;
-
-			bAdjHScroll = hscroll;
-			bNeedRefresh = refresh;
-
-			sizeTypeTL = tl_t;
-			sizeMarginTL = tl_m;
-			
-			sizeTypeBR = br_t;
-			sizeMarginBR = br_m;
-		}
+			SIZE br_t, SIZE br_m, CString classname)
+			: hWnd(hwnd), nCallbackID(0), sWndClass(classname),
+			sizeTypeTL(tl_t), sizeMarginTL(tl_m),
+			sizeTypeBR(br_t), sizeMarginBR(br_m)
+		{ }
 	};
 
 private:
 	// list of repositionable controls
-	CMap<HWND, HWND, LayoutInfo, LayoutInfo&> m_mapLayout;
+	CMap<HWND, HWND, POSITION, POSITION> m_mapLayout;
+	CList<LayoutInfo, LayoutInfo&> m_listLayout;
 	CList<LayoutInfo, LayoutInfo&> m_listLayoutCB;
 
-	void ClipChildWindow(HWND hWnd, CRgn* pRegion);
+	void ClipChildWindow(const CResizableLayout::LayoutInfo &layout, CRgn* pRegion);
 
-	void CalcNewChildPosition(const CRect &rectParent,
-		LayoutInfo &layout, CRect &rectChild, UINT& uFlags);
+	void CalcNewChildPosition(const CResizableLayout::LayoutInfo &layout,
+		const CRect &rectParent, CRect &rectChild, UINT& uFlags);
 
 protected:
 	// override to specify clipping for custom or unsupported windows
-	virtual BOOL LikesClipping(HWND hWnd);
+	virtual BOOL LikesClipping(const CResizableLayout::LayoutInfo &layout);
 
 	// override to specify refresh for custom or unsupported windows
-	virtual BOOL NeedsRefresh(HWND hWnd);
+	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
+		const CRect &rectOld, const CRect &rectNew);
 
 	// paint the background on the given DC (for XP theme's compatibility)
 	void EraseBackground(CDC* pDC);
@@ -118,11 +110,11 @@ protected:
 	BOOL GetAnchorPosition(HWND hWnd, const CRect &rectParent,
 		CRect &rectChild, UINT& uFlags)
 	{
-		LayoutInfo layout;
-		if (!m_mapLayout.Lookup(hWnd, layout))
+		POSITION pos;
+		if (!m_mapLayout.Lookup(hWnd, pos))
 			return FALSE;
 
-		CalcNewChildPosition(rectParent, layout, rectChild, uFlags);
+		CalcNewChildPosition(m_listLayout.GetAt(pos), rectParent, rectChild, uFlags);
 		return TRUE;
 	}
 
@@ -135,21 +127,27 @@ protected:
 	}
 
 	// remove an anchored control from the layout, given its HWND
-	void RemoveAnchor(HWND hWnd)
+	BOOL RemoveAnchor(HWND hWnd)
 	{
-		m_mapLayout.RemoveKey(hWnd);
+		POSITION pos;
+		if (!m_mapLayout.Lookup(hWnd, pos))
+			return FALSE;
+
+		m_listLayout.RemoveAt(pos);
+		return m_mapLayout.RemoveKey(hWnd);
 	}
 
 	// remove an anchored control from the layout, given its HWND
-	void RemoveAnchor(UINT nID)
+	BOOL RemoveAnchor(UINT nID)
 	{
-		RemoveAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID));
+		return RemoveAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID));
 	}
 
 	// reset layout content
 	void RemoveAllAnchors()
 	{
 		m_mapLayout.RemoveAll();
+		m_listLayout.RemoveAll();
 		m_listLayoutCB.RemoveAll();
 	}
 
@@ -157,7 +155,7 @@ protected:
 	void ArrangeLayout();
 
 	// override to provide dynamic control's layout info
-	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
+	virtual BOOL ArrangeLayoutCallback(CResizableLayout::LayoutInfo& layout);
 
 	// override to provide the parent window
 	virtual CWnd* GetResizableWnd() = 0;
