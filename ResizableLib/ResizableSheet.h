@@ -62,8 +62,8 @@ public:
 	//{{AFX_VIRTUAL(CResizableSheet)
 	public:
 	virtual BOOL OnInitDialog();
-	protected:
 	//}}AFX_VIRTUAL
+	protected:
 
 // Implementation
 public:
@@ -102,7 +102,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
-	afx_msg void OnPageChanged();
+	afx_msg BOOL OnPageChanging(NMHDR* pNotifyStruct, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 };
 

@@ -73,8 +73,7 @@ BEGIN_MESSAGE_MAP(CResizableSheetEx, CPropertySheetEx)
 	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
-	ON_BN_CLICKED(ID_WIZBACK, OnPageChanged)
-	ON_BN_CLICKED(ID_WIZNEXT, OnPageChanged)
+	ON_NOTIFY_REFLECT_EX(PSN_SETACTIVE, OnPageChanging)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -260,15 +259,13 @@ void CResizableSheetEx::OnSize(UINT nType, int cx, int cy)
 	}
 }
 
-// only gets called in wizard mode
-// (when back or next button pressed)
-void CResizableSheetEx::OnPageChanged()
+BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pResult*/)
 {
-	// call default handler to allow page change
-	Default();
-
 	// update new wizard page
-	ArrangeLayout();
+	// active page changes after this notification
+	PostMessage(WM_SIZE);
+
+	return FALSE;	// continue routing
 }
 
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
