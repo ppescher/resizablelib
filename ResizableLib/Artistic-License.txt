@@ -88,11 +88,17 @@ Definitions:
 7. C or perl subroutines supplied by you and linked into this Package shall 
    not be considered part of this Package.
 
-8. The name of the Copyright Holder may not be used to endorse or promote 
+8. Aggregation of this Package with a commercial distribution is always
+   permitted provided that the use of this Package is embedded; that is, when
+   no overt attempt is made to make this Package's interfaces visible to the
+   end user of the commercial distribution. Such use shall not be construed
+   as a distribution of this Package.
+
+9. The name of the Copyright Holder may not be used to endorse or promote 
    products derived from this software without specific prior written 
    permission.
 
-9. THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED 
+10.THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED 
    WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF 
    MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
