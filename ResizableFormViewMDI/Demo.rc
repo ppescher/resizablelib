@@ -250,8 +250,8 @@ IDD_DEMO_FORM DIALOGEX 0, 0, 200, 130
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Static",IDC_STATIC,"Static",SS_SIMPLE | WS_GROUP,7,7,63,
-                    8
+    CONTROL         "Static label",IDC_STATIC2,"Static",SS_SIMPLE | WS_GROUP,
+                    7,7,63,8
     EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
                     WS_VSCROLL
     PUSHBUTTON      "&Freeze to Dialog!",IDC_BUTTON2,7,94,73,14
