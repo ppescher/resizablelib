@@ -88,7 +88,11 @@ private:
 
 	CArray<Layout, Layout&> m_arrLayout;	// list of repositionable controls
 
+	static BOOL CALLBACK EnumAndClipChildWindow(HWND hWnd, LPARAM lParam);
+
 protected:
+	void ClipChildren(CDC *pDC);
+
 	// add anchors to a control, given its HWND
 	void AddAnchor(HWND wnd, CSize tl_type, CSize br_type = NOANCHOR);
 

@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	ON_WM_DESTROY()
 	ON_WM_PAINT()
 	ON_WM_CREATE()
+	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -81,7 +82,7 @@ int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// automatically set resizable style
-	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME, SWP_FRAMECHANGED);
+	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME /*| WS_CLIPCHILDREN*/, SWP_FRAMECHANGED);
 
 	return 0;
 }
@@ -131,10 +132,10 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 
 	if (m_bInitDone)
 	{
+		ArrangeLayout();
+
 		// update size-grip
 		UpdateGripPos();
-
-		ArrangeLayout();
 	}
 }
 
@@ -167,4 +168,12 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 
 	// restore immediately
 	LoadWindowRect(pszSection, bRectOnly);
+}
+
+
+BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC) 
+{
+	ClipChildren(pDC);
+
+	return CDialog::OnEraseBkgnd(pDC);
 }

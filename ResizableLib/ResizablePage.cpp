@@ -63,6 +63,7 @@ CResizablePage::~CResizablePage()
 BEGIN_MESSAGE_MAP(CResizablePage, CPropertyPage)
 	//{{AFX_MSG_MAP(CResizablePage)
 	ON_WM_SIZE()
+	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -91,4 +92,11 @@ void CResizablePage::OnSize(UINT nType, int cx, int cy)
 	
 	if (m_bInitDone)
 		ArrangeLayout();
+}
+
+BOOL CResizablePage::OnEraseBkgnd(CDC* pDC) 
+{
+	ClipChildren(pDC);
+	
+	return CPropertyPage::OnEraseBkgnd(pDC);
 }

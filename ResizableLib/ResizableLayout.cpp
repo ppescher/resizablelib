@@ -190,3 +190,36 @@ void CResizableLayout::ArrangeLayout()
 	}
 }
 
+
+BOOL CResizableLayout::EnumAndClipChildWindow(HWND hWnd, LPARAM lParam)
+{
+	CString st;
+	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	st.ReleaseBuffer();
+	st.MakeUpper();
+
+	DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+
+	if ((st == "BUTTON" && (style & 0x0FL) == BS_GROUPBOX)
+		|| (st == "STATIC"))
+	{
+		return TRUE;
+	}
+
+	// clipping
+	CDC* pDC = (CDC*)lParam;
+	CWnd* pParent = pDC->GetWindow();
+
+	RECT rect;
+	::GetWindowRect(hWnd, &rect);
+	pParent->ScreenToClient(&rect);
+	pDC->ExcludeClipRect(&rect);
+
+	return TRUE;
+}
+
+void CResizableLayout::ClipChildren(CDC *pDC)
+{
+	EnumChildWindows(GetResizableWnd()->GetSafeHwnd(),
+		EnumAndClipChildWindow, (LPARAM)pDC);
+}
