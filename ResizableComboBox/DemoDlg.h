@@ -23,7 +23,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDemoDlg)
 	enum { IDD = IDD_TESTCOMBOBOX_DIALOG };
-	CResizableComboBox	m_ctrlCombo1;
+	CListBox	m_ctrlList1;
+	CResizableComboBox /*CComboBox*/	m_ctrlCombo1;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides

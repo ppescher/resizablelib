@@ -10,7 +10,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CResizableComboLBox window
 
-class CResizableComboLBox : public CListBox
+class CResizableComboLBox : public CWnd
 {
 	friend class CResizableComboBox;
 
@@ -29,7 +29,6 @@ public:
 	//{{AFX_VIRTUAL(CResizableComboLBox)
 	protected:
 	virtual void PreSubclassWindow();
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -42,6 +41,7 @@ private:
 	CSize m_sizeAfterSizing;	// screen coords
 	UINT m_nHitTest;			// current resize operation
 	BOOL m_bSizing;
+	int m_iExtent;
 
 	void InitializeControl();
 
@@ -59,14 +59,16 @@ protected:
 
 	// Generated message map functions
 protected:
+	void EndSizing();
+	void UpdateHorizontalExtent();
 	//{{AFX_MSG(CResizableComboLBox)
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg UINT OnNcHitTest(CPoint point);
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
+	afx_msg void OnWindowPosChanged(WINDOWPOS FAR* lpwndpos);
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()

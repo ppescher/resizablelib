@@ -27,6 +27,7 @@ void CDemoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CResizableDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDemoDlg)
+	DDX_Control(pDX, IDC_LIST1, m_ctrlList1);
 	DDX_Control(pDX, IDC_COMBO1, m_ctrlCombo1);
 	//}}AFX_DATA_MAP
 }
@@ -52,14 +53,18 @@ BOOL CDemoDlg::OnInitDialog()
 	AddAnchor(IDCANCEL, TOP_RIGHT);
 	AddAnchor(IDC_COMBO1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
-	
+	AddAnchor(IDC_LIST1, TOP_RIGHT, BOTTOM_RIGHT);
+
+	m_ctrlList1.AddString("a very very very loooong item text");
+	m_ctrlList1.SetHorizontalExtent(400);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 
 int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
+//	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
 	
 	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;

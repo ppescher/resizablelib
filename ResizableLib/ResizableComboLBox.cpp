@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 CResizableComboLBox::CResizableComboLBox()
 {
-	m_dwAddToStyle = WS_THICKFRAME|WS_HSCROLL;
+	m_dwAddToStyle = WS_THICKFRAME;
 	m_dwAddToStyleEx = 0;//WS_EX_CLIENTEDGE;
 	m_bClipMaxHeight = TRUE;
 	m_bSizing = FALSE;
@@ -27,15 +27,15 @@ CResizableComboLBox::~CResizableComboLBox()
 }
 
 
-BEGIN_MESSAGE_MAP(CResizableComboLBox, CListBox)
+BEGIN_MESSAGE_MAP(CResizableComboLBox, CWnd)
 	//{{AFX_MSG_MAP(CResizableComboLBox)
-	ON_WM_MOUSEMOVE()
+	ON_WM_CAPTURECHANGED()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
-	ON_WM_GETMINMAXINFO()
+	ON_WM_MOUSEMOVE()
 	ON_WM_NCHITTEST()
-	ON_WM_CAPTURECHANGED()
 	ON_WM_WINDOWPOSCHANGING()
+	ON_WM_WINDOWPOSCHANGED()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -44,46 +44,39 @@ END_MESSAGE_MAP()
 
 void CResizableComboLBox::PreSubclassWindow() 
 {
-	CListBox::PreSubclassWindow();
+	CWnd::PreSubclassWindow();
 
 	InitializeControl();
 }
 
 void CResizableComboLBox::InitializeControl()
 {
-	CRect rect, rectNew;
-	GetWindowRect(&rectNew);
-
-	// calc new height (with new style)
-	GetClientRect(&rect);
-	DWORD dwStyle = GetStyle() | m_dwAddToStyle;
-	DWORD dwStyleEx = GetExStyle() | m_dwAddToStyleEx;
-	AdjustWindowRectEx(&rect, dwStyle, FALSE, dwStyleEx);
-	if (dwStyle & WS_HSCROLL)
-		rect.bottom += GetSystemMetrics(SM_CYHSCROLL);
-	// calc new rect
-	rectNew.bottom = rectNew.top + rect.Height();
-	// save as current size
-	m_sizeAfterSizing = rectNew.Size();
-	// save as initial dimensions
-	m_sizeMin = m_sizeAfterSizing;
+	CRect rect;
+	m_pOwnerCombo->GetWindowRect(&rect);
+	m_sizeAfterSizing.cx = rect.Width();
+	m_sizeAfterSizing.cy = -rect.Height();
+	m_pOwnerCombo->GetDroppedControlRect(&rect);
+	m_sizeAfterSizing.cy += rect.Height();
+	m_sizeMin.cy = m_sizeAfterSizing.cy-2;
 
 	// change window's style
-	// (must be done here for integral height to work)
 	ModifyStyleEx(0, m_dwAddToStyleEx);
 	ModifyStyle(0, m_dwAddToStyle, SWP_FRAMECHANGED);
 
-	// set the initial size (actually only height has changed)
-	SetWindowPos(NULL, 0, 0, m_sizeMin.cx, m_sizeMin.cy,
-		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOREPOSITION);
-	// fix height later (needed if hscroll present)
-	PostMessage(WM_SIZE, 0, 0);
+	// init hscroll
+	UpdateHorizontalExtent();
+
+	if (GetStyle() & WS_HSCROLL)
+		m_sizeAfterSizing.cy += GetSystemMetrics(SM_CYHSCROLL);
+
+	SetWindowPos(NULL, 0, 0, m_sizeAfterSizing.cx, m_sizeAfterSizing.cy,
+		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOMOVE);
 }
 
 void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point) 
 {
 	CPoint pt = point;
-	MapWindowPoints(NULL, &pt, 1);
+	MapWindowPoints(NULL, &pt, 1);	// to screen coord
 
 	if (!m_bSizing)
 	{
@@ -91,7 +84,7 @@ void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point)
 		LRESULT ht = SendMessage(WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
 		SendMessage(WM_SETCURSOR, (WPARAM)m_hWnd, MAKELPARAM(ht, WM_MOUSEMOVE));
 
-		CListBox::OnMouseMove(nFlags, point);
+		CWnd::OnMouseMove(nFlags, point);
 		return;
 	}
 
@@ -129,7 +122,7 @@ void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point)
 void CResizableComboLBox::OnLButtonDown(UINT nFlags, CPoint point) 
 {
 	CPoint pt = point;
-	MapWindowPoints(NULL, &pt, 1);
+	MapWindowPoints(NULL, &pt, 1);	// to screen coord
 
 	LRESULT ht = SendMessage(WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y));
 
@@ -143,28 +136,14 @@ void CResizableComboLBox::OnLButtonDown(UINT nFlags, CPoint point)
 		m_ptBeforeSizing = pt;
 	}
 	else
-		CListBox::OnLButtonDown(nFlags, point);
+		CWnd::OnLButtonDown(nFlags, point);
 }
 
 void CResizableComboLBox::OnLButtonUp(UINT nFlags, CPoint point) 
 {
-	CListBox::OnLButtonUp(nFlags, point);
+	CWnd::OnLButtonUp(nFlags, point);
 
-	m_bSizing = FALSE;
-	CRect rect;
-	GetWindowRect(&rect);
-	m_sizeAfterSizing = rect.Size();
-}
-
-void CResizableComboLBox::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
-{
-	CListBox::OnGetMinMaxInfo(lpMMI);
-
-	// min width can't be less than combo's
-	CRect rect;
-	m_pOwnerCombo->GetWindowRect(&rect);
-	lpMMI->ptMinTrackSize.x = rect.Width();
-	lpMMI->ptMinTrackSize.y = m_sizeMin.cy;
+	EndSizing();
 }
 
 UINT CResizableComboLBox::OnNcHitTest(CPoint point) 
@@ -174,7 +153,7 @@ UINT CResizableComboLBox::OnNcHitTest(CPoint point)
 	MapWindowPoints(NULL, &rcClient);
 
 	// ask for default hit-test value
-	UINT ht = CListBox::OnNcHitTest(point);
+	UINT ht = CWnd::OnNcHitTest(point);
 
 	// disable improper resizing (based on layout setting)
 	switch (ht)
@@ -201,7 +180,7 @@ UINT CResizableComboLBox::OnNcHitTest(CPoint point)
 	case HTBOTTOMRIGHT:
 		if (IsRTL() && point.y > rcClient.bottom)
 			ht = HTBOTTOM;
-		else if (!!IsRTL())
+		else if (IsRTL())
 			ht = HTBORDER;
 		break;
 
@@ -223,12 +202,9 @@ UINT CResizableComboLBox::OnNcHitTest(CPoint point)
 
 void CResizableComboLBox::OnCaptureChanged(CWnd *pWnd) 
 {
-	m_bSizing = FALSE;
-	CRect rect;
-	GetWindowRect(&rect);
-	m_sizeAfterSizing = rect.Size();
+	EndSizing();
 
-	CListBox::OnCaptureChanged(pWnd);
+	CWnd::OnCaptureChanged(pWnd);
 }
 
 void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
@@ -236,42 +212,59 @@ void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 	if (!m_bSizing)
 	{
 		// restore the size when the drop-down list becomes visible
-
+		lpwndpos->cx = m_sizeAfterSizing.cx;
 		lpwndpos->cy = m_sizeAfterSizing.cy;
-		
-		int diff = m_sizeAfterSizing.cx - lpwndpos->cx;
-		if (diff > 0)	// only if greater than combo's width
-		{
-			if (IsRTL())
-				lpwndpos->x -= diff;
-			lpwndpos->cx += diff;
-		}
 	}
 	ApplyLimitsToPos(lpwndpos);
-	return;
 
-	CListBox::OnWindowPosChanging(lpwndpos);
+	CWnd::OnWindowPosChanging(lpwndpos);
 }
 
 void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 {
-	MINMAXINFO mmi;
-	ZeroMemory(&mmi, sizeof(MINMAXINFO));
-	SendMessage(WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-	if (lpwndpos->cx < mmi.ptMinTrackSize.x)
-	{
-		if (IsRTL())
-		{
-			CPoint pt(0,0);
-			m_pOwnerCombo->MapWindowPoints(NULL, &pt, 1);
-			lpwndpos->x = pt.x - mmi.ptMinTrackSize.x;
-		}
-		lpwndpos->cx = mmi.ptMinTrackSize.x;
-	}
-	if (lpwndpos->cy < mmi.ptMinTrackSize.y)
-		lpwndpos->cy = mmi.ptMinTrackSize.y;
+	TRACE(">H w(%d)\n", lpwndpos->cy);
+	// to adjust horizontally, use window rect
 
-	lpwndpos->cy = MakeIntegralHeight(lpwndpos->cy);
+	// min width can't be less than combo's
+	CRect rect;
+	m_pOwnerCombo->GetWindowRect(&rect);
+	m_sizeMin.cx = rect.Width();
+
+	// apply horizontal limits
+	if (lpwndpos->cx < m_sizeMin.cx)
+		lpwndpos->cx = m_sizeMin.cx;
+
+	// fix horizontal alignment
+	rect = CRect(0, 0, lpwndpos->cx, lpwndpos->cy);
+	m_pOwnerCombo->MapWindowPoints(NULL, &rect);
+	lpwndpos->x = rect.left;
+
+	// to adjust vertically, use client rect
+
+	// get client rect
+	rect = CRect(CPoint(lpwndpos->x, lpwndpos->y),
+		CSize(lpwndpos->cx, lpwndpos->cy));
+	SendMessage(WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
+	CSize sizeClient = rect.Size();
+
+	// apply vertical limits
+	if (sizeClient.cy < m_sizeMin.cy)
+		sizeClient.cy = m_sizeMin.cy;
+
+	TRACE(">H c(%d)\n", sizeClient.cy);
+	// adjust height, if needed
+	sizeClient.cy = MakeIntegralHeight(sizeClient.cy);
+	TRACE(">H c(%d)\n", sizeClient.cy);
+
+	// back to window rect
+	rect = CRect(0, 0, 1, sizeClient.cy);
+	DWORD dwStyle = GetStyle();
+	::AdjustWindowRectEx(&rect, dwStyle, FALSE, GetExStyle());
+	lpwndpos->cy = rect.Height();
+	if (dwStyle & WS_HSCROLL)
+		lpwndpos->cy += GetSystemMetrics(SM_CYHSCROLL);
+
+	TRACE("H c(%d) w(%d)\n", sizeClient.cy, lpwndpos->cy);
 }
 
 int CResizableComboLBox::MakeIntegralHeight(const int height)
@@ -282,23 +275,17 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 	if (dwStyle & LBS_NOINTEGRALHEIGHT)
 		return inth;
 
-	CRect rcWnd, rcClient;
-	GetWindowRect(&rcWnd);
-	GetClientRect(&rcClient);
-
-	int border = rcWnd.Height() - rcClient.Height();
-
-	int availh = height - border;	// available height
-	int n = GetCount();
+	int availh = height;	// available height
+	int n = m_pOwnerCombo->GetCount();
 	
 	if (dwStyle & LBS_OWNERDRAWVARIABLE)
 	{
 		inth = 0;	// try to reach availh by integral steps
 
 		// use items below the first visible
-		for (int i=GetTopIndex(); availh>0 && i<n; i++)
+		for (int i=m_pOwnerCombo->GetTopIndex(); availh>0 && i<n; i++)
 		{
-			int h = GetItemHeight(i);
+			int h = m_pOwnerCombo->GetItemHeight(i);
 			if (h == LB_ERR)
 				break;
 
@@ -306,9 +293,9 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 			availh -= h;
 		}
 		// to fill the remaining height, use items above
-		for (i=GetTopIndex()-1; availh>0 && i>=0; i--)
+		for (i=m_pOwnerCombo->GetTopIndex()-1; availh>0 && i>=0; i--)
 		{
-			int h = GetItemHeight(i);
+			int h = m_pOwnerCombo->GetItemHeight(i);
 			if (h == LB_ERR)
 				break;
 
@@ -316,12 +303,12 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 			availh -= h;
 		}
 		// scroll into view
-		SetTopIndex(i);
+		m_pOwnerCombo->SetTopIndex(i);
 
 		if (!m_bClipMaxHeight) // it can be higher than all the items
 		{
 			// to fill the remaining height, use last item
-			int h = GetItemHeight(n-1);
+			int h = m_pOwnerCombo->GetItemHeight(n-1);
 			if (h != LB_ERR)
 			{
 				inth += availh - availh % h;
@@ -331,7 +318,7 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 	else
 	{
 		// every item has the same height (take the first)
-		int h = GetItemHeight(0);
+		int h = m_pOwnerCombo->GetItemHeight(0);
 		if (h != LB_ERR && n != LB_ERR)
 		{
 			int rows = availh / h;
@@ -340,28 +327,50 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 				rows = n;
 			inth = rows * h;
 			// scroll into view
-			if (n - rows < GetTopIndex())
-				SetTopIndex(n-rows);
+			if (n - rows < m_pOwnerCombo->GetTopIndex())
+				m_pOwnerCombo->SetTopIndex(n-rows);
 		}
 	}
 
-	return border + inth;
+	return inth;
 }
 
-LRESULT CResizableComboLBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+void CResizableComboLBox::UpdateHorizontalExtent()
 {
-//	TRACE("Msg: 0x%04X (%d)\n", message, message);
-	switch (message)
+	CClientDC dc(this);
+	CFont* pOldFont = dc.SelectObject(GetFont());
+
+	CString str;
+	
+	m_iExtent = 0;
+	int n = m_pOwnerCombo->GetCount();
+	for (int i=0; i<n; i++)
 	{
-	case WM_SIZE:
-		if (wParam == 0 && lParam == 0)
-		{
-			// set the initial size
-			SetWindowPos(NULL, 0, 0, m_sizeMin.cx, m_sizeMin.cy,
-				SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOREPOSITION);
-		}
-		return ::DefWindowProc(m_hWnd, message, wParam, lParam);
+		int cx = dc.GetTextExtent(str).cx;
+		m_pOwnerCombo->GetLBText(i, str);
+		if (cx > m_iExtent)
+			m_iExtent = cx;
 	}
-	return CListBox::WindowProc(message, wParam, lParam);
+	m_iExtent += LOWORD(GetDialogBaseUnits())/2;
+	m_pOwnerCombo->SetHorizontalExtent(m_iExtent);
+
+	dc.SelectObject(pOldFont);
 }
 
+void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* /*lpwndpos*/) 
+{
+	// default implementation sends a WM_SIZE message
+	// that can change the size again to force integral height
+
+	// since we do that manually during resize, we should also
+	// update the horizontal scrollbar 
+	SendMessage(WM_HSCROLL, SB_ENDSCROLL, 0);
+}
+
+void CResizableComboLBox::EndSizing()
+{
+	m_bSizing = FALSE;
+	CRect rect;
+	GetWindowRect(&rect);
+	m_sizeAfterSizing = rect.Size();
+}
