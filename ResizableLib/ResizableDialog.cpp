@@ -73,22 +73,29 @@ int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CDialog::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	// keep client area
-	CRect rect;
-	GetClientRect(&rect);
-	// set resizable style
-	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
-	// adjust size to reflect new style
-	::AdjustWindowRectEx(&rect, GetStyle(),
-		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-	SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
-		SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
+	// child dialogs don't want resizable border or size grip,
+	// nor they can handle the min/max size constraints
+	BOOL bChild = GetStyle() & WS_CHILD;
 
-	// set the initial size as the min track size
-	SetMinTrackSize(rect.Size());
+	if (!bChild)
+	{
+		// keep client area
+		CRect rect;
+		GetClientRect(&rect);
+		// set resizable style
+		ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
+		// adjust size to reflect new style
+		::AdjustWindowRectEx(&rect, GetStyle(),
+			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+		SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
+			SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
+
+		// set the initial size as the min track size
+		SetMinTrackSize(rect.Size());
+	}
 
 	// create and init the size-grip
-	if (!CreateSizeGrip())
+	if (!CreateSizeGrip(!bChild))
 		return -1;
 
 	return 0;
