@@ -32,11 +32,18 @@ public:
 	//{{AFX_VIRTUAL(CResizableComboBox)
 	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 
 // Implementation
 public:
 	virtual ~CResizableComboBox();
+
+protected:
+	int m_iExtent;
+
+	void InitHorizontalExtent();
+	void UpdateHorizontalExtent(LPCTSTR szText);
 
 // Generated message map functions
 protected:

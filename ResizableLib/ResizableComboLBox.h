@@ -41,7 +41,6 @@ private:
 	CSize m_sizeAfterSizing;	// screen coords
 	UINT m_nHitTest;			// current resize operation
 	BOOL m_bSizing;
-	int m_iExtent;
 
 	void InitializeControl();
 
@@ -55,13 +54,11 @@ protected:
 	int MakeIntegralHeight(const int height);
 	void ApplyLimitsToPos(WINDOWPOS* lpwndpos);
 	void EndSizing();
-	void InitHorizontalExtent();
 
 	BOOL IsRTL();
 
 	// Generated message map functions
 protected:
-	void UpdateHorizontalExtent(LPCTSTR szText);
 	//{{AFX_MSG(CResizableComboLBox)
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);

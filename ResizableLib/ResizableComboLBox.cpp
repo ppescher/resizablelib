@@ -68,9 +68,7 @@ void CResizableComboLBox::InitializeControl()
 	ModifyStyleEx(0, m_dwAddToStyleEx);
 	ModifyStyle(0, m_dwAddToStyle, SWP_FRAMECHANGED);
 
-	// init hscroll
-	InitHorizontalExtent();
-
+	// count hscroll if present
 	if (GetStyle() & WS_HSCROLL)
 		m_sizeAfterSizing.cy += GetSystemMetrics(SM_CYHSCROLL);
 
@@ -356,44 +354,4 @@ int CResizableComboLBox::MakeIntegralHeight(const int height)
 	}
 
 	return inth;
-}
-
-void CResizableComboLBox::InitHorizontalExtent()
-{
-	CClientDC dc(this);
-	CFont* pOldFont = dc.SelectObject(GetFont());
-
-	CString str;
-	
-	m_iExtent = 0;
-	int n = m_pOwnerCombo->GetCount();
-	for (int i=0; i<n; i++)
-	{
-		m_pOwnerCombo->GetLBText(i, str);
-		int cx = dc.GetTextExtent(str).cx;
-		if (cx > m_iExtent)
-			m_iExtent = cx;
-	}
-
-	m_pOwnerCombo->SetHorizontalExtent(m_iExtent
-		+ LOWORD(GetDialogBaseUnits()));
-
-	dc.SelectObject(pOldFont);
-}
-
-void CResizableComboLBox::UpdateHorizontalExtent(LPCTSTR szText)
-{
-	CClientDC dc(this);
-	CFont* pOldFont = dc.SelectObject(GetFont());
-
-	int cx = dc.GetTextExtent(szText, lstrlen(szText)).cx;
-	if (cx > m_iExtent)
-	{
-		m_iExtent = cx;
-
-		m_pOwnerCombo->SetHorizontalExtent(m_iExtent
-			+ LOWORD(GetDialogBaseUnits()));
-	}
-
-	dc.SelectObject(pOldFont);
 }
