@@ -54,22 +54,26 @@ void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI)
 	}
 }
 
-void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI,
-									   CWnd* pParentWnd, CWnd* pWnd)
+void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd)
 {
 	// get the extra size from child to parent
 	CRect rectClient, rectWnd;
-	if ((pParentWnd->GetStyle() & WS_CHILD) && pParentWnd->IsZoomed())
-		pParentWnd->GetClientRect(rectWnd);
+	if ((pParentFrame->GetStyle() & WS_CHILD) && pParentFrame->IsZoomed())
+		pParentFrame->GetClientRect(rectWnd);
 	else
-		pParentWnd->GetWindowRect(rectWnd);
-	pParentWnd->RepositionBars(0, 0xFFFF,
+		pParentFrame->GetWindowRect(rectWnd);
+	pParentFrame->RepositionBars(0, 0xFFFF,
 		AFX_IDW_PANE_FIRST, CWnd::reposQuery, rectClient);
 	CSize sizeExtra = rectWnd.Size() - rectClient.Size();
 
-	// ask the view for track size
+	ChainMinMaxInfo(lpMMI, pWnd->GetSafeHwnd(), sizeExtra);
+}
+
+void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize sizeExtra)
+{
+	// ask the child window for track size
 	MINMAXINFO mmiChild = *lpMMI;
-	pWnd->SendMessage(WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
+	::SendMessage(hWndChild, WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
 	mmiChild.ptMaxTrackSize = sizeExtra + mmiChild.ptMaxTrackSize;
 	mmiChild.ptMinTrackSize = sizeExtra + mmiChild.ptMinTrackSize;
 

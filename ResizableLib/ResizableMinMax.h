@@ -41,7 +41,15 @@ public:
 
 protected:
 	void MinMaxInfo(LPMINMAXINFO lpMMI);
-	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, CWnd* pWnd);
+	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd);
+
+	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize sizeExtra);
+	
+	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, UINT nID, CSize sizeExtra)
+	{
+		ChainMinMaxInfo(lpMMI,
+			::GetDlgItem(pParentWnd->GetSafeHwnd(), nID), sizeExtra);
+	}
 
 	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
 	void ResetMaximizedRect();					// reset to default maximized rect
