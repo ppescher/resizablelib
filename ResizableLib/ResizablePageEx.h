@@ -54,7 +54,9 @@ public:
 
 // callable from derived classes
 protected:
-	virtual BOOL NeedsRefresh(HWND hWnd);
+	// override to specify refresh for custom or unsupported windows
+	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
+		const CRect &rectOld, const CRect &rectNew);
 
 	virtual CWnd* GetResizableWnd()
 	{
