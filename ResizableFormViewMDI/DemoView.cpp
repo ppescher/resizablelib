@@ -174,6 +174,7 @@ BOOL CDemoView::OnInitDialog()
 	CResizableFormView::OnInitDialog();
 	
 	// preset layout
+	AddAnchor(IDC_STATIC2, TOP_LEFT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, ANCHOR(40,100));
 	AddAnchor(IDC_BUTTON1, BOTTOM_LEFT, ANCHOR(40,100));
 	AddAnchor(IDC_BUTTON2, BOTTOM_LEFT, ANCHOR(40,100));
