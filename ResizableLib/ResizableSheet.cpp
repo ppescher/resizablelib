@@ -33,8 +33,13 @@ inline void CResizableSheet::PrivateConstruct()
 	m_bEnableSaveRestore = FALSE;
 	m_bSavePage = FALSE;
 	m_dwGripTempState = 1;
+	m_bLayoutDone = FALSE;
 }
 
+inline BOOL CResizableSheet::IsWizard() const
+{
+	return (m_psh.dwFlags & PSH_WIZARD);
+}
 
 CResizableSheet::CResizableSheet()
 {
@@ -62,8 +67,8 @@ BEGIN_MESSAGE_MAP(CResizableSheet, CPropertySheet)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
+	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 	ON_NOTIFY_REFLECT_EX(PSN_SETACTIVE, OnPageChanging)
 END_MESSAGE_MAP()
@@ -71,41 +76,36 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSheet message handlers
 
-int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableSheet::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (CPropertySheet::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	BOOL bIsChild = GetStyle() & WS_CHILD;
-	if (!bIsChild)
-	{
-		// keep client area
-		CRect rect;
-		GetClientRect(&rect);
+	if (!CPropertySheet::OnNcCreate(lpCreateStruct))
+		return FALSE;
 
-		// set resizable style
-		ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
-
-		// adjust size to reflect new style
-		::AdjustWindowRectEx(&rect, GetStyle(),
-			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-		SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(), SWP_FRAMECHANGED|
-			SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
-	}
+	// child dialogs don't want resizable border or size grip,
+	// nor they can handle the min/max size constraints
+	BOOL bChild = lpCreateStruct->style & WS_CHILD;
 
 	// create and init the size-grip
-	if (!CreateSizeGrip(!bIsChild))
-		return -1;
+	if (!CreateSizeGrip(!bChild))
+		return FALSE;
 
-	return 0;
+	MakeResizable(lpCreateStruct);
+	
+	return TRUE;
 }
 
 BOOL CResizableSheet::OnInitDialog() 
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
-	
+
+	// set the initial size as the min track size
+	CRect rc;
+	GetWindowRect(&rc);
+	SetMinTrackSize(rc.Size());
+
 	// initialize layout
 	PresetLayout();
+	m_bLayoutDone = TRUE;
 
 	return bResult;
 }
@@ -184,7 +184,7 @@ void CResizableSheet::PresetLayout()
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 }
 
-BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout) const
+BOOL CResizableSheet::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 {
 	if (layout.nCallbackID != 1)	// we only added 1 callback
 		return CResizableLayout::ArrangeLayoutCallback(layout);
@@ -436,4 +436,17 @@ void CResizableSheet::LoadPage()
 void CResizableSheet::RefreshLayout()
 {
 	SendMessage(WM_SIZE);
+}
+
+LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
+		return CPropertySheet::WindowProc(message, wParam, lParam);
+
+	// specifying valid rects needs controls already anchored
+	LRESULT lResult = 0;
+	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	lResult = CPropertySheet::WindowProc(message, wParam, lParam);
+	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+	return lResult;
 }

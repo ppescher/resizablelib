@@ -52,6 +52,7 @@ private:
 
 	// layout vars
 	CSize m_sizePageTL, m_sizePageBR;
+	BOOL m_bLayoutDone;
 
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
@@ -64,6 +65,8 @@ public:
 	//{{AFX_VIRTUAL(CResizableSheet)
 	public:
 	virtual BOOL OnInitDialog();
+	protected:
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 	protected:
 
@@ -77,7 +80,7 @@ private:
 	void SavePage();
 	void LoadPage();
 
-	BOOL IsWizard() const { return (m_psh.dwFlags & PSH_WIZARD); }
+	BOOL IsWizard() const;
 
 // callable from derived classes
 protected:
@@ -99,13 +102,13 @@ protected:
 // Generated message map functions
 protected:
 	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
-	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout) const;
+	virtual BOOL ArrangeLayoutCallback(LAYOUTINFO& layout) const;
 	//{{AFX_MSG(CResizableSheet)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	afx_msg BOOL OnPageChanging(NMHDR* pNotifyStruct, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
