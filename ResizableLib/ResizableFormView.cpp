@@ -30,7 +30,6 @@ IMPLEMENT_DYNAMIC(CResizableFormView, CFormView)
 
 inline void CResizableFormView::PrivateConstruct()
 {
-//	m_bInitDone = FALSE;
 	m_dwGripTempState = GHR_SCROLLBAR | GHR_ALIGNMENT | GHR_MAXIMIZED;
 }
 
@@ -83,9 +82,9 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	CWnd* pParent = GetParent();
+	CWnd* pParent = GetParentFrame();
 
-	// hide zise grip when parent is maximized
+	// hide size grip when parent is maximized
 	if (pParent->IsZoomed())
 		HideSizeGrip(&m_dwGripTempState, GHR_MAXIMIZED);
 	else
@@ -98,18 +97,28 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 	else
 		ShowSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
 
-	// hide size grip when the parent window is not resizable
+	// hide size grip when the parent frame window is not resizable
 	// or the form is not bottom-right aligned (e.g. there's a statusbar)
 	DWORD dwStyle = pParent->GetStyle();
-	CRect rectParent, rectChild;
-	GetWindowRect(rectChild);
-	::MapWindowPoints(NULL, pParent->GetSafeHwnd(), (LPPOINT)&rectChild, 2);
-	pParent->GetClientRect(rectParent);
-	if (!(dwStyle & WS_THICKFRAME)
-		|| (rectChild.BottomRight() != rectParent.BottomRight()))
-		HideSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
-	else
+	CRect rect, rectChild;
+	GetWindowRect(rect);
+
+	BOOL bCanResize = TRUE; // whether the grip can size the frame
+	for (HWND hWndChild = ::GetWindow(m_hWnd, GW_HWNDFIRST); hWndChild != NULL;
+		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT))
+	{
+		::GetWindowRect(hWndChild, rectChild);
+		// TODO: check RTL layouts!
+		if (rectChild.right > rect.right || rectChild.bottom > rect.bottom)
+		{
+			bCanResize = FALSE;
+			break;
+		}
+	}
+	if ((dwStyle & WS_THICKFRAME) && bCanResize)
 		ShowSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
+	else
+		HideSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
 
 	// update grip and layout
 	UpdateSizeGrip();
