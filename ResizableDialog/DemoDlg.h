@@ -39,6 +39,7 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnRadio1();
 	afx_msg void OnRadio2();
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

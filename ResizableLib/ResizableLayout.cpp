@@ -32,7 +32,7 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-void CResizableLayout::AddAnchor(HWND hWnd, CSize tl_type, CSize br_type)
+void CResizableLayout::AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR)
 {
 	CWnd* pParent = GetResizableWnd();
 
@@ -41,10 +41,9 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize tl_type, CSize br_type)
 	// must be child of parent window
 	ASSERT(::IsChild(pParent->GetSafeHwnd(), hWnd));
 	// top-left anchor must be valid
-	ASSERT(tl_type != NOANCHOR);
+	ASSERT(sizeTypeTL != NOANCHOR);
 
 	// get control's window class
-	
 	CString st;
 	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
@@ -66,32 +65,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize tl_type, CSize br_type)
 		hscroll = TRUE;
 
 	// window classes that need refresh when resized
-	BOOL refresh = FALSE;
-	if (st == "STATIC")
-	{
-		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
-
-		switch (style & SS_TYPEMASK)
-		{
-		case SS_LEFT:
-		case SS_CENTER:
-		case SS_RIGHT:
-			// word-wrapped text needs refresh
-			refresh = TRUE;
-		}
-
-		// centered images or text need refresh
-		if (style & SS_CENTERIMAGE)
-			refresh = TRUE;
-
-		// simple text or icon never needs refresh
-		switch (style & SS_TYPEMASK)
-		{
-		case SS_SIMPLE:
-		case SS_ICON:
-			refresh = FALSE;
-		}
-	}
+	BOOL refresh = NeedsRefresh(hWnd);
 
 	// get parent window's rect
 	CRect rectParent;
@@ -102,24 +76,24 @@ void CResizableLayout::AddAnchor(HWND hWnd, CSize tl_type, CSize br_type)
 	pParent->ScreenToClient(&rectChild);
 
 	// go calculate margins
-	CSize tl_margin, br_margin;
+	CSize sizeMarginTL, sizeMarginBR;
 
-	if (br_type == NOANCHOR)
-		br_type = tl_type;
+	if (sizeTypeBR == NOANCHOR)
+		sizeTypeBR = sizeTypeTL;
 	
 	// calculate margin for the top-left corner
 
-	tl_margin.cx = rectChild.left - rectParent.Width() * tl_type.cx / 100;
-	tl_margin.cy = rectChild.top - rectParent.Height() * tl_type.cy / 100;
+	sizeMarginTL.cx = rectChild.left - rectParent.Width() * sizeTypeTL.cx / 100;
+	sizeMarginTL.cy = rectChild.top - rectParent.Height() * sizeTypeTL.cy / 100;
 	
 	// calculate margin for the bottom-right corner
 
-	br_margin.cx = rectChild.right - rectParent.Width() * br_type.cx / 100;
-	br_margin.cy = rectChild.bottom - rectParent.Height() * br_type.cy / 100;
+	sizeMarginBR.cx = rectChild.right - rectParent.Width() * sizeTypeBR.cx / 100;
+	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * sizeTypeBR.cy / 100;
 
 	// add to the list
-	LayoutInfo layout(hWnd, tl_type, tl_margin,
-		br_type, br_margin, hscroll, refresh);
+	LayoutInfo layout(hWnd, sizeTypeTL, sizeMarginTL,
+		sizeTypeBR, sizeMarginBR, hscroll, refresh);
 	// always add to head (before callbacks)
 	m_arrLayout.InsertAt(0, layout);
 }
@@ -135,7 +109,7 @@ void CResizableLayout::AddAnchorCallback(UINT nCallbackID)
 	m_arrLayout.Add(layout);
 }
 
-BOOL CResizableLayout::ArrangeLayoutCallback(LayoutInfo &layout)
+BOOL CResizableLayout::ArrangeLayoutCallback(LayoutInfo& /*layout*/)
 {
 	ASSERT(FALSE);
 	// must be overridden, if callback is used
@@ -152,6 +126,7 @@ void CResizableLayout::ArrangeLayout()
 	GetTotalClientRect(&rectParent);
 
 	// init some vars
+	BOOL bCallbackPassed = FALSE;
 	int i, count = m_arrLayout.GetSize();
 	HDWP hdwp = BeginDeferWindowPos(count);
 
@@ -161,12 +136,16 @@ void CResizableLayout::ArrangeLayout()
 		
 		if (layout.hWnd == NULL)	// callback
 		{
-			// update previous controls
-			EndDeferWindowPos(hdwp);
-			hdwp = BeginDeferWindowPos(count-i+1);
-// --> NEED OPTIMIZATION ^
-			// callbacks should be added at the end, so that
-			// you don't have multiple screen updates (max 2 times)
+			if (!bCallbackPassed)	// first time only
+			{
+				bCallbackPassed = TRUE;
+				// update previous controls
+				EndDeferWindowPos(hdwp);
+				// start again for callback controls
+				hdwp = BeginDeferWindowPos(count-i);
+			}
+			// callbacks are added at the end, so that
+			// you don't have multiple screen updates
 
 			if (!ArrangeLayoutCallback(layout))	// request data
 				continue;
@@ -180,31 +159,33 @@ void CResizableLayout::ArrangeLayout()
 		
 		// calculate new top-left corner
 
-		newrc.left = layout.tl_margin.cx + rectParent.Width() * layout.tl_type.cx / 100;
-		newrc.top = layout.tl_margin.cy + rectParent.Height() * layout.tl_type.cy / 100;
+		newrc.left = layout.sizeMarginTL.cx + rectParent.Width() * layout.sizeTypeTL.cx / 100;
+		newrc.top = layout.sizeMarginTL.cy + rectParent.Height() * layout.sizeTypeTL.cy / 100;
 		
 		// calculate new bottom-right corner
 
-		newrc.right = layout.br_margin.cx + rectParent.Width() * layout.br_type.cx / 100;
-		newrc.bottom = layout.br_margin.cy + rectParent.Height() * layout.br_type.cy / 100;
+		newrc.right = layout.sizeMarginBR.cx + rectParent.Width() * layout.sizeTypeBR.cx / 100;
+		newrc.bottom = layout.sizeMarginBR.cy + rectParent.Height() * layout.sizeTypeBR.cy / 100;
 
 		if (!newrc.EqualRect(&rectChild))
 		{
-			if (layout.adj_hscroll)
+			if (layout.bAdjHScroll)
 			{
 				// needs repainting, due to horiz scrolling
 				int diff = newrc.Width() - rectChild.Width();
 				int max = pWnd->GetScrollLimit(SB_HORZ);
 			
-				layout.need_refresh = FALSE;
+				layout.bNeedRefresh = FALSE;
 				if (max > 0 && pWnd->GetScrollPos(SB_HORZ) > max - diff)
 				{
-					layout.need_refresh = TRUE;
+					layout.bNeedRefresh = TRUE;
 				}
 			}
 
 			// set flags 
 			DWORD flags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
+			//if (layout.bNeedRefresh)
+			//	flags |= SWP_NOCOPYBITS;
 			if (newrc.TopLeft() == rectChild.TopLeft())
 				flags |= SWP_NOMOVE;
 			if (newrc.Size() == rectChild.Size())
@@ -222,17 +203,116 @@ void CResizableLayout::ArrangeLayout()
 	{
 		LayoutInfo& layout = m_arrLayout[i];
 	
-		if (layout.need_refresh)
+		if (layout.bNeedRefresh)
 		{
-			::InvalidateRect(layout.hWnd, NULL, TRUE);
-			::UpdateWindow(layout.hWnd);
+			::RedrawWindow(layout.hWnd, NULL, NULL, RDW_INVALIDATE|RDW_NOFRAME);
+		//	::InvalidateRect(layout.hWnd, NULL, TRUE);
+		//	::UpdateWindow(layout.hWnd);
 		}
 	}
 }
 
-
 BOOL CResizableLayout::EnumAndClipChildWindow(HWND hWnd, LPARAM lParam)
 {
+	CResizableLayout* pThis = (CResizableLayout*)lParam;
+
+	// only direct children
+	if (::GetParent(hWnd) != pThis->GetResizableWnd()->GetSafeHwnd())
+		return TRUE;
+
+	if (!::IsWindowVisible(hWnd))
+		return TRUE;	// skip invisible windows
+
+	// go clipping?
+	if (!pThis->LikesClipping(hWnd))
+		return TRUE;
+
+	// obtain window position
+	CRect rect;
+	::GetWindowRect(hWnd, &rect);
+	pThis->GetResizableWnd()->ScreenToClient(&rect);
+
+	// use window region if any
+	CRgn rgn;
+	rgn.CreateRectRgn(0,0,0,0);
+	if (COMPLEXREGION == ::GetWindowRgn(hWnd, rgn))
+	{
+		rgn.OffsetRgn(rect.TopLeft());
+		pThis->m_pClipDC->SelectClipRgn(&rgn, RGN_DIFF);
+	}
+	else
+	{
+		pThis->m_pClipDC->ExcludeClipRect(&rect);
+	}
+
+	return TRUE;
+}
+
+void CResizableLayout::ClipChildren(CDC *pDC, BOOL bOnlyAnchored)
+{
+	m_pClipDC = pDC;
+
+	if (bOnlyAnchored)
+	{
+		for (int i=0; i<m_arrLayout.GetSize(); ++i)
+			if (m_arrLayout[i].hWnd != NULL)
+				EnumAndClipChildWindow(m_arrLayout[i].hWnd, (LPARAM)this);
+	}
+	else
+		EnumChildWindows(GetResizableWnd()->GetSafeHwnd(),
+			EnumAndClipChildWindow, (LPARAM)this);
+
+	m_pClipDC = NULL; // just to be sure
+}
+
+void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
+{
+	GetResizableWnd()->GetClientRect(lpRect);
+}
+
+BOOL CResizableLayout::NeedsRefresh(HWND hWnd)
+{
+	// get window class
+	CString st;
+	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	st.ReleaseBuffer();
+	st.MakeUpper();
+
+	// window classes that need refresh when resized
+	BOOL refresh = FALSE;
+	if (st == "STATIC")
+	{
+		DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+
+		switch (style & SS_TYPEMASK)
+		{
+		case SS_LEFT:
+		case SS_CENTER:
+		case SS_RIGHT:
+		case SS_ENHMETAFILE:
+			// word-wrapped text needs refresh
+			refresh = TRUE;
+			break;
+
+		case SS_ICON:
+		case SS_SIMPLE:
+		case SS_ETCHEDHORZ:
+		case SS_ETCHEDVERT:
+			break;
+
+		default:
+			// centered images or text need refresh
+			if (style & SS_CENTERIMAGE)
+				refresh = TRUE;
+		}
+	}
+
+	return refresh;
+}
+
+BOOL CResizableLayout::LikesClipping(HWND hWnd)
+{
+	// check child type
 	CString st;
 	GetClassName(hWnd, st.GetBufferSetLength(MAX_PATH), MAX_PATH);
 	st.ReleaseBuffer();
@@ -240,49 +320,27 @@ BOOL CResizableLayout::EnumAndClipChildWindow(HWND hWnd, LPARAM lParam)
 
 	DWORD style = GetWindowLong(hWnd, GWL_STYLE);
 
+	// skip windows that wants background repainted
 	if (st == "BUTTON" && (style & 0x0FL) == BS_GROUPBOX)
-		return TRUE;
+		return FALSE;
 	if (st == "STATIC")
+	{
 		switch (style & SS_TYPEMASK)
 		{
 		case SS_BLACKRECT:
 		case SS_GRAYRECT:
 		case SS_WHITERECT:
+		case SS_ETCHEDHORZ:
+		case SS_ETCHEDVERT:
 			break;
 		case SS_ICON:
 		case SS_ENHMETAFILE:
 			if (style & SS_CENTERIMAGE)
-				return TRUE;
+				return FALSE;
 			break;
 		default:
-			return TRUE;
+			return FALSE;
 		}
-
-	// clipping
-	CDC* pDC = (CDC*)lParam;
-	CWnd* pParent = pDC->GetWindow();
-
-	RECT rect;
-	::GetWindowRect(hWnd, &rect);
-	pParent->ScreenToClient(&rect);
-	pDC->ExcludeClipRect(&rect);
-
-	return TRUE;
-}
-
-void CResizableLayout::ClipChildren(CDC *pDC, BOOL bOnlyAnchored)
-{
-	if (bOnlyAnchored)
-	{
-		for (int i=0; i<m_arrLayout.GetSize(); ++i)
-			EnumAndClipChildWindow(m_arrLayout[i].hWnd, (LPARAM)pDC);
 	}
-	else
-		EnumChildWindows(GetResizableWnd()->GetSafeHwnd(),
-			EnumAndClipChildWindow, (LPARAM)pDC);
-}
-
-void CResizableLayout::GetTotalClientRect(LPRECT lpRect)
-{
-	GetResizableWnd()->GetClientRect(lpRect);
+	return TRUE;
 }

@@ -43,14 +43,14 @@ CResizablePageEx::CResizablePageEx()
 	Construct();
 }
 
-CResizablePageEx::CResizablePageEx(UINT nIDTemplate, UINT nIDCaption)
-	: CPropertyPageEx(nIDTemplate, nIDCaption)
+CResizablePageEx::CResizablePageEx(UINT nIDTemplate, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle)
+	: CPropertyPageEx(nIDTemplate, nIDCaption, nIDHeaderTitle, nIDHeaderSubTitle)
 {
 	Construct();
 }
 
-CResizablePageEx::CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption)
-	: CPropertyPageEx(lpszTemplateName, nIDCaption)
+CResizablePageEx::CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption, UINT nIDHeaderTitle, UINT nIDHeaderSubTitle)
+	: CPropertyPageEx(lpszTemplateName, nIDCaption, nIDHeaderTitle, nIDHeaderSubTitle)
 {
 	Construct();
 }
@@ -99,4 +99,12 @@ BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC)
 	ClipChildren(pDC);
 	
 	return CPropertyPageEx::OnEraseBkgnd(pDC);
+}
+
+BOOL CResizablePageEx::NeedsRefresh(HWND hWnd)
+{
+	if (m_psp.dwFlags | PSP_HIDEHEADER)
+		return TRUE;
+
+	return CResizableLayout::NeedsRefresh(hWnd);
 }

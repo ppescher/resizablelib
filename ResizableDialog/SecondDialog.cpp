@@ -37,6 +37,9 @@ BEGIN_MESSAGE_MAP(CSecondDialog, CResizableDialog)
 	//{{AFX_MSG_MAP(CSecondDialog)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_BUTTON1, OnButton1)
+	ON_COMMAND(ID_BUTTON2, OnButton2)
+	ON_COMMAND(ID_BUTTON3, OnButton3)
+	ON_COMMAND(ID_BUTTON4, OnButton4)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -70,7 +73,7 @@ BOOL CSecondDialog::OnInitDialog()
 
 	// these should be equivalent, as long as you leave the
 	// default control ID for the toolbar in the Create() call
-	// AddAnchor(m_tbToolbar.GetSafeHwnd(), TOP_RIGHT);
+	// AddAnchor(m_tbToolbar.GetSafeHwnd(), BOTTOM_LEFT);
 	AddAnchor(AFX_IDW_TOOLBAR, BOTTOM_LEFT);
 
 	ResetMinTrackSize();
@@ -97,11 +100,33 @@ int CSecondDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CSecondDialog::OnButton1() 
 {
-	// just for test purpose
-	AfxMessageBox(_T("Hello no.1"), MB_OK, 0);
+	// set background color
+	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(250,200,200));
+	Invalidate();
 
 	// NOTE: for details on how you could put a toolbar in a dialog
 	// box and use ON_UPDATE_COMMAND_UI, see KB article Q141751
 	// "SAMPLE: Adding Control Bars to Dialog Boxes in MFC"
 	// with the sample project DLGCBR32 and some hints
+}
+
+void CSecondDialog::OnButton2() 
+{
+	// set background color
+	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(200,200,250));
+	Invalidate();
+}
+
+void CSecondDialog::OnButton3() 
+{
+	// set background color
+	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(190,250,190));
+	Invalidate();
+}
+
+void CSecondDialog::OnButton4() 
+{
+	// set background color
+	((CDemoApp*)AfxGetApp())->SetDialogBkColor(RGB(250,250,180));
+	Invalidate();
 }

@@ -72,8 +72,6 @@ CResizableSheetEx::~CResizableSheetEx()
 
 BEGIN_MESSAGE_MAP(CResizableSheetEx, CPropertySheetEx)
 	//{{AFX_MSG_MAP(CResizableSheetEx)
-	ON_WM_PAINT()
-	ON_WM_NCHITTEST()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
@@ -93,8 +91,10 @@ int CResizableSheetEx::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	// change window style to be resizable
-	// propertysheet's children erase background themselves
-	ModifyStyle(DS_MODALFRAME, WS_THICKFRAME | WS_CLIPCHILDREN, SWP_FRAMECHANGED);
+	ModifyStyle(DS_MODALFRAME, WS_THICKFRAME, SWP_FRAMECHANGED);
+
+	if (!InitGrip())
+		return -1;
 
 	return 0;
 }
@@ -119,18 +119,22 @@ BOOL CResizableSheetEx::OnInitDialog()
 
 	m_bInitDone = TRUE;
 
+	ArrangeLayout();
+
 	return bResult;
 }
 
 void CResizableSheetEx::OnDestroy() 
 {
-	CPropertySheetEx::OnDestroy();
-
 	if (m_bEnableSaveRestore)
 	{
 		SaveWindowRect(m_sSection, m_bRectOnly);
 		SavePage();
 	}
+
+	RemoveAllAnchors();
+
+	CPropertySheetEx::OnDestroy();
 }
 
 // maps an index to a button ID and vice-versa
@@ -195,14 +199,14 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 	if (IsWizard())	// wizard mode
 	{
 		// use pre-calculated margins
-		layout.tl_margin = m_sizePageTL;
-		layout.br_margin = m_sizePageBR;
+		layout.sizeMarginTL = m_sizePageTL;
+		layout.sizeMarginBR = m_sizePageBR;
 	}
 	else if (IsWizard97())	// wizard 97
 	{
 		// use pre-calculated margins
-		layout.tl_margin = m_sizePageTL;
-		layout.br_margin = m_sizePageBR;
+		layout.sizeMarginTL = m_sizePageTL;
+		layout.sizeMarginBR = m_sizePageBR;
 
 		if (!(GetActivePage()->m_psp.dwFlags & PSP_HIDEHEADER))
 		{
@@ -211,7 +215,7 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 			GetDlgItem(ID_WIZLINEHDR)->GetWindowRect(&rectLine);
 			ScreenToClient(&rectLine);
 
-			layout.tl_margin.cy += rectLine.bottom;
+			layout.sizeMarginTL.cy = rectLine.bottom;
 		}
 	}
 	else	// tab mode
@@ -225,13 +229,13 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LayoutInfo &layout)
 		ScreenToClient(&rectPage);
 
 		// use tab control
-		layout.tl_margin = rectPage.TopLeft() - rectSheet.TopLeft();
-		layout.br_margin = rectPage.BottomRight() - rectSheet.BottomRight();
+		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
+		layout.sizeMarginBR = rectPage.BottomRight() - rectSheet.BottomRight();
 	}
 
 	// set anchor types
-	layout.tl_type = TOP_LEFT;
-	layout.br_type = BOTTOM_RIGHT;
+	layout.sizeTypeTL = TOP_LEFT;
+	layout.sizeTypeBR = BOTTOM_RIGHT;
 
 	// use this layout info
 	return TRUE;
@@ -246,10 +250,10 @@ void CResizableSheetEx::OnSize(UINT nType, int cx, int cy)
 
 	if (m_bInitDone)
 	{
-		ArrangeLayout();
-
 		// update size-grip
 		UpdateGripPos();
+
+		ArrangeLayout();
 	}
 }
 
@@ -266,32 +270,9 @@ void CResizableSheetEx::OnPageChanged()
 
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
-	//ClipChildren(pDC);
-	// don't work! - WS_CLIPCHILDREN used instead (in OnCreate)
-	// don't add controls that need parent to draw background
+	ClipChildren(pDC);
 
 	return CPropertySheetEx::OnEraseBkgnd(pDC);
-}
-
-void CResizableSheetEx::OnPaint() 
-{
-	// let the window handle WM_PAINT msg
-	// to draw header bitmap
-	Default();
-
-	// then draw the grip
-	CClientDC dc(this);
-	DrawGrip(dc);
-}
-
-UINT CResizableSheetEx::OnNcHitTest(CPoint point) 
-{
-	// test if in size grip
-	UINT ht = HitTest(point);
-	if (ht != HTNOWHERE)
-		return ht;
-	
-	return CPropertySheetEx::OnNcHitTest(point);
 }
 
 void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 

@@ -40,6 +40,9 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnButton1();
+	afx_msg void OnButton2();
+	afx_msg void OnButton3();
+	afx_msg void OnButton4();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

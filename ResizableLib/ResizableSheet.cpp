@@ -65,8 +65,6 @@ CResizableSheet::~CResizableSheet()
 
 BEGIN_MESSAGE_MAP(CResizableSheet, CPropertySheet)
 	//{{AFX_MSG_MAP(CResizableSheet)
-	ON_WM_PAINT()
-	ON_WM_NCHITTEST()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
@@ -86,8 +84,10 @@ int CResizableSheet::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	
 	// change window style to be resizable
-	// propertysheet's children erase background themselves
-	ModifyStyle(DS_MODALFRAME, WS_THICKFRAME | WS_CLIPCHILDREN, SWP_FRAMECHANGED);
+	ModifyStyle(DS_MODALFRAME, WS_THICKFRAME, SWP_FRAMECHANGED);
+
+	if (!InitGrip())
+		return -1;
 
 	return 0;
 }
@@ -117,13 +117,15 @@ BOOL CResizableSheet::OnInitDialog()
 
 void CResizableSheet::OnDestroy() 
 {
-	CPropertySheet::OnDestroy();
-
 	if (m_bEnableSaveRestore)
 	{
 		SaveWindowRect(m_sSection, m_bRectOnly);
 		SavePage();
 	}
+
+	RemoveAllAnchors();
+
+	CPropertySheet::OnDestroy();
 }
 
 // maps an index to a button ID and vice-versa
@@ -184,8 +186,8 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 	if (IsWizard())	// wizard mode
 	{
 		// use pre-calculated margins
-		layout.tl_margin = m_sizePageTL;
-		layout.br_margin = m_sizePageBR;
+		layout.sizeMarginTL = m_sizePageTL;
+		layout.sizeMarginBR = m_sizePageBR;
 	}
 	else	// tab mode
 	{
@@ -198,13 +200,13 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LayoutInfo &layout)
 		ScreenToClient(&rectPage);
 
 		// use tab control
-		layout.tl_margin = rectPage.TopLeft() - rectSheet.TopLeft();
-		layout.br_margin = rectPage.BottomRight() - rectSheet.BottomRight();
+		layout.sizeMarginTL = rectPage.TopLeft() - rectSheet.TopLeft();
+		layout.sizeMarginBR = rectPage.BottomRight() - rectSheet.BottomRight();
 	}
 
 	// set anchor types
-	layout.tl_type = TOP_LEFT;
-	layout.br_type = BOTTOM_RIGHT;
+	layout.sizeTypeTL = TOP_LEFT;
+	layout.sizeTypeBR = BOTTOM_RIGHT;
 
 	// use this layout info
 	return TRUE;
@@ -219,10 +221,10 @@ void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 
 	if (m_bInitDone)
 	{
-		ArrangeLayout();
-
 		// update size-grip
 		UpdateGripPos();
+
+		ArrangeLayout();
 	}
 }
 
@@ -239,28 +241,9 @@ void CResizableSheet::OnPageChanged()
 
 BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC) 
 {
-	//ClipChildren(pDC);
-	// don't work! - WS_CLIPCHILDREN used instead (in OnCreate)
-	// don't add controls that need parent to draw background
+	ClipChildren(pDC);
 
 	return CPropertySheet::OnEraseBkgnd(pDC);
-}
-
-void CResizableSheet::OnPaint() 
-{
-	CPaintDC dc(this);
-
-	DrawGrip(dc);
-}
-
-UINT CResizableSheet::OnNcHitTest(CPoint point) 
-{
-	// test if in size grip
-	UINT ht = HitTest(point);
-	if (ht != HTNOWHERE)
-		return ht;
-	
-	return CPropertySheet::OnNcHitTest(point);
 }
 
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 

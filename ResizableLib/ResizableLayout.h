@@ -35,8 +35,6 @@ const CSize NOANCHOR(-1,-1),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
 
-#define HWND_CALLBACK	HWND_BROADCAST
-
 
 class CResizableLayout
 {
@@ -46,63 +44,67 @@ class CResizableLayout
 		HWND hWnd;
 		UINT nCallbackID;
 
-		BOOL adj_hscroll;
-		BOOL need_refresh;
+		BOOL bAdjHScroll;
+		BOOL bNeedRefresh;
 
 		// upper-left corner
-		CSize tl_type;
-		CSize tl_margin;
+		CSize sizeTypeTL;
+		CSize sizeMarginTL;
 		
 		// bottom-right corner
-		CSize br_type;
-		CSize br_margin;
+		CSize sizeTypeBR;
+		CSize sizeMarginBR;
 	
 	public:
 		LayoutInfo() : hWnd(NULL), nCallbackID(0),
-			adj_hscroll(FALSE), need_refresh(FALSE),
-			tl_type(0,0), tl_margin(0,0),
-			br_type(0,0), br_margin(0,0)
+			bAdjHScroll(FALSE), bNeedRefresh(FALSE),
+			sizeTypeTL(0,0), sizeMarginTL(0,0),
+			sizeTypeBR(0,0), sizeMarginBR(0,0)
 		{ }
 
-		LayoutInfo(HWND hw, SIZE tl_t, SIZE tl_m, 
+		LayoutInfo(HWND hwnd, SIZE tl_t, SIZE tl_m, 
 			SIZE br_t, SIZE br_m, BOOL hscroll, BOOL refresh)
 		{
-			hWnd = hw;
+			hWnd = hwnd;
 			nCallbackID = 0;
 
-			adj_hscroll = hscroll;
-			need_refresh = refresh;
+			bAdjHScroll = hscroll;
+			bNeedRefresh = refresh;
 
-			tl_type = tl_t;
-			tl_margin = tl_m;
+			sizeTypeTL = tl_t;
+			sizeMarginTL = tl_m;
 			
-			br_type = br_t;
-			br_margin = br_m;
+			sizeTypeBR = br_t;
+			sizeMarginBR = br_m;
 		}
 	};
 
 	CArray<LayoutInfo, LayoutInfo&> m_arrLayout;	// list of repositionable controls
 
+	CDC* m_pClipDC;
 	static BOOL CALLBACK EnumAndClipChildWindow(HWND hWnd, LPARAM lParam);
 
 protected:
+	virtual BOOL LikesClipping(HWND hWnd);
+	virtual BOOL NeedsRefresh(HWND hWnd);
+
 	// exclude child windows from the clipping region
-	void ClipChildren(CDC *pDC, BOOL bOnlyAnchored = TRUE);
+	void ClipChildren(CDC *pDC, BOOL bOnlyAnchored = FALSE);
 	
 	// override for scrollable or expanding parent windows
 	virtual void GetTotalClientRect(LPRECT lpRect);
 
 	// add anchors to a control, given its HWND
-	void AddAnchor(HWND hWnd, CSize tl_type, CSize br_type = NOANCHOR);
+	void AddAnchor(HWND hWnd, CSize sizeTypeTL, CSize sizeTypeBR = NOANCHOR);
 
 	// add anchors to a control, given its ID
-	void AddAnchor(UINT ctrl_ID, CSize tl_type, CSize br_type = NOANCHOR)
+	void AddAnchor(UINT nID, CSize sizeTypeTL, CSize sizeTypeBR = NOANCHOR)
 	{
-		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), ctrl_ID),
-			tl_type, br_type);
-	};
+		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+			sizeTypeTL, sizeTypeBR);
+	}
 
-	// add a callback (control ID or HWND is unknown or can change)
+	// add a callback (control ID or HWND is unknown or may change)
 	void AddAnchorCallback(UINT nCallbackID);
 
 	// adjust children's layout, when parent's size changes
@@ -115,18 +117,18 @@ protected:
 	void RemoveAllAnchors()
 	{
 		m_arrLayout.RemoveAll();
-	};
+	}
 
 	virtual CWnd* GetResizableWnd() = 0;
 
 public:
-	CResizableLayout() {};
+	CResizableLayout() { m_pClipDC = NULL; }
 
 	virtual ~CResizableLayout()
 	{
 		// just for safety
 		RemoveAllAnchors();
-	};
+	}
 };
 
 #endif // !defined(AFX_RESIZABLELAYOUT_H__A7664CF3_1F96_4904_830F_8FB70A99F129__INCLUDED_)

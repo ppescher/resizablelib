@@ -34,10 +34,8 @@ static char THIS_FILE[]=__FILE__;
 
 CResizableGrip::CResizableGrip()
 {
-	m_bShowGrip = TRUE;
-	
-	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
+	m_sizeGrip.cx = GetSystemMetrics(SM_CXVSCROLL);
+	m_sizeGrip.cy = GetSystemMetrics(SM_CYHSCROLL);
 }
 
 CResizableGrip::~CResizableGrip()
@@ -45,51 +43,91 @@ CResizableGrip::~CResizableGrip()
 
 }
 
-UINT CResizableGrip::HitTest(CPoint point)
-{
-	// size-grip goes bottom right in the client area
-	// (any right-to-left adjustment should go here)
-
-	CPoint pt = point;
-	GetResizableWnd()->ScreenToClient(&pt);
-
-	// if in size grip and in client area
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) &&
-		pt.x >= 0 && pt.y >= 0)
-		return HTBOTTOMRIGHT;
-
-	return HTNOWHERE;
-}
-
 void CResizableGrip::UpdateGripPos()
 {
 	// size-grip goes bottom right in the client area
 	// (any right-to-left adjustment should go here)
 
-	GetResizableWnd()->InvalidateRect(&m_rcGripRect);	// del old grip
+	RECT rect;
+	GetResizableWnd()->GetClientRect(&rect);
 
-	GetResizableWnd()->GetClientRect(&m_rcGripRect);
+	rect.left = rect.right - m_sizeGrip.cx;
+	rect.top = rect.bottom - m_sizeGrip.cy;
 
-	m_rcGripRect.left = m_rcGripRect.right - m_szGripSize.cx;
-	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
+	// must stay below other children
+	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
+		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION);
 
-	GetResizableWnd()->InvalidateRect(&m_rcGripRect);	// paint new grip
+	// maximized windows cannot be resized
+	if (GetResizableWnd()->IsZoomed())
+		m_wndGrip.EnableWindow(FALSE);
+	else
+		m_wndGrip.EnableWindow(TRUE);
 }
 
 void CResizableGrip::ShowSizeGrip(BOOL bShow)
 {
-	if (m_bShowGrip != bShow)
-	{
-		m_bShowGrip = bShow;
-		GetResizableWnd()->InvalidateRect(&m_rcGripRect);
-	}
+	m_wndGrip.ShowWindow(bShow ? SW_SHOW : SW_HIDE);
 }
 
-void CResizableGrip::DrawGrip(CDC &dc)
+#define RSZ_GRIP_OBJ	_T("ResizableGrip")
+
+BOOL CResizableGrip::InitGrip()
 {
-	if (m_bShowGrip && !GetResizableWnd()->IsZoomed())
+	CRect rect(0 , 0, m_sizeGrip.cx, m_sizeGrip.cy);
+
+	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP,
+		rect, GetResizableWnd(), 0);
+
+	if (bRet)
 	{
-		// draw size-grip
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
+		// set a triangular window region
+		CRgn rgnGrip, rgn;
+		rgn.CreateRectRgn(0,0,1,1);
+		rgnGrip.CreateRectRgnIndirect(&rect);
+	
+		for (int y=0; y<m_sizeGrip.cy; y++)
+		{
+			rgn.SetRectRgn(0, y, m_sizeGrip.cx-y, y+1);
+			rgnGrip.CombineRgn(&rgnGrip, &rgn, RGN_DIFF);
+		}
+		m_wndGrip.SetWindowRgn((HRGN)rgnGrip.Detach(), FALSE);
+
+		// subclass control
+		::SetProp(m_wndGrip, RSZ_GRIP_OBJ,
+			(HANDLE)::GetWindowLong(m_wndGrip, GWL_WNDPROC));
+		::SetWindowLong(m_wndGrip, GWL_WNDPROC, (LONG)GripWindowProc);
+
+		// update pos
+		UpdateGripPos();
+		ShowSizeGrip();
 	}
+
+	return bRet;
+}
+
+LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	WNDPROC oldWndProc = (WNDPROC)::GetProp(hwnd, RSZ_GRIP_OBJ);
+
+	switch (msg)
+	{
+	case WM_NCHITTEST:
+
+		// choose proper cursor shape
+		if (IsRTL(hwnd))
+			return HTBOTTOMLEFT;
+		else
+			return HTBOTTOMRIGHT;
+
+	case WM_DESTROY:
+		
+		// unsubclass
+		::RemoveProp(hwnd, RSZ_GRIP_OBJ);
+		::SetWindowLong(hwnd, GWL_WNDPROC, (LONG)oldWndProc);
+
+		break;
+	}
+
+	return ::CallWindowProc(oldWndProc, hwnd, msg, wParam, lParam);
 }

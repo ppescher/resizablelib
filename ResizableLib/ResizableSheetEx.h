@@ -104,8 +104,6 @@ protected:
 protected:
 	virtual BOOL ArrangeLayoutCallback(LayoutInfo& layout);
 	//{{AFX_MSG(CResizableSheetEx)
-	afx_msg void OnPaint();
-	afx_msg UINT OnNcHitTest(CPoint point);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();

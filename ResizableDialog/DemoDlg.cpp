@@ -37,6 +37,7 @@ BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CDemoDlg)
 	ON_BN_CLICKED(IDC_RADIO1, OnRadio1)
 	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
+	ON_WM_CREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -107,4 +108,17 @@ void CDemoDlg::OnRadio1()
 void CDemoDlg::OnRadio2() 
 {
  	ShowSizeGrip(TRUE);
+}
+
+
+#define WS_EX_LAYOUT_RTL	0x00400000
+
+int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+//	ModifyStyleEx(0, WS_EX_LAYOUT_RTL);
+
+	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	
+	return 0;
 }

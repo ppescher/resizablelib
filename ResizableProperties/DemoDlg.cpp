@@ -61,3 +61,4 @@ void CDemoDlg::OnButton2()
 //	propSheet.EnableStackedTabs(FALSE);
 	propSheet.DoModal();
 }
+

@@ -62,11 +62,9 @@ CResizableDialog::~CResizableDialog()
 
 BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
 	//{{AFX_MSG_MAP(CResizableDialog)
-	ON_WM_NCHITTEST()
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
-	ON_WM_PAINT()
 	ON_WM_CREATE()
 	ON_WM_ERASEBKGND()
 	//}}AFX_MSG_MAP
@@ -82,7 +80,10 @@ int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// automatically set resizable style
-	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME /*| WS_CLIPCHILDREN*/, SWP_FRAMECHANGED);
+	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME, SWP_FRAMECHANGED);
+
+	if (!InitGrip())
+		return -1;
 
 	return 0;
 }
@@ -116,13 +117,6 @@ void CResizableDialog::OnDestroy()
 	CDialog::OnDestroy();
 }
 
-void CResizableDialog::OnPaint() 
-{
-	CPaintDC dc(this); // device context for painting
-	
-	DrawGrip(dc);
-}
-
 void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
 {
 	CWnd::OnSize(nType, cx, cy);
@@ -132,21 +126,11 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 
 	if (m_bInitDone)
 	{
-		ArrangeLayout();
-
 		// update size-grip
 		UpdateGripPos();
-	}
-}
 
-UINT CResizableDialog::OnNcHitTest(CPoint point) 
-{
-	// test if in size grip
-	UINT ht = HitTest(point);
-	if (ht != HTNOWHERE)
-		return ht;
-	
-	return CDialog::OnNcHitTest(point);
+		ArrangeLayout();
+	}
 }
 
 void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 

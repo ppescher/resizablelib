@@ -39,8 +39,8 @@ class CResizablePageEx : public CPropertyPageEx, public CResizableLayout
 // Construction
 public:
 	CResizablePageEx();
-	CResizablePageEx(UINT nIDTemplate, UINT nIDCaption = 0);
-	CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption = 0);
+	CResizablePageEx(UINT nIDTemplate, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
+	CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
 
 // Attributes
 public:
@@ -77,6 +77,7 @@ protected:
 
 // Generated message map functions
 protected:
+	virtual BOOL NeedsRefresh(HWND hWnd);
 	//{{AFX_MSG(CResizablePageEx)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);

@@ -9,22 +9,28 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define WS_EX_LAYOUT_RTL	0x00400000
+
 class CResizableGrip  
 {
-// Attributes
 private:
-	// flags
-	BOOL m_bShowGrip;
+	SIZE m_sizeGrip;		// holds grip size
 
-	SIZE m_szGripSize;			// set at construction time
+	CScrollBar m_wndGrip;	// grip control
 
-	CRect m_rcGripRect;			// current pos of grip
+private:
+	static BOOL IsRTL(HWND hwnd)
+	{
+		DWORD dwExStyle = ::GetWindowLong(hwnd, GWL_EXSTYLE);
+		return (dwExStyle & WS_EX_LAYOUT_RTL);
+	}
+
+	static LRESULT CALLBACK GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 protected:
-	void DrawGrip(CDC& dc);
-	void ShowSizeGrip(BOOL bShow);	// show or hide the size grip
+	BOOL InitGrip();
 	void UpdateGripPos();
-	UINT HitTest(CPoint point);		// in screen coord
+	void ShowSizeGrip(BOOL bShow = TRUE);	// show or hide the size grip
 
 	virtual CWnd* GetResizableWnd() = 0;
 
