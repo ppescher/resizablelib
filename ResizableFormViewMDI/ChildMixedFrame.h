@@ -8,6 +8,7 @@
 //
 
 #include "ResizableMDIChild.h"
+#include "ResizableSplitterWnd.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CChildMixedFrame frame
@@ -33,7 +34,7 @@ public:
 
 // Implementation
 protected:
-	CSplitterWnd m_wndSplitter;
+	CResizableSplitterWnd m_wndSplitter;
 	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 	virtual ~CChildMixedFrame();
 
