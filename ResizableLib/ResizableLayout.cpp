@@ -240,9 +240,13 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion)
 	// only clips anchored controls
 	for (int i=0; i<m_arrLayout.GetSize(); ++i)
 	{
-		HWND hWnd = m_arrLayout[i].hWnd;
-		if (hWnd != NULL && ::IsWindowVisible(hWnd))
-			EnumAndClipChildWindow(m_arrLayout[i].hWnd, pRegion);
+		LayoutInfo layout = m_arrLayout[i];
+		
+		if (layout.hWnd == NULL
+			&& !ArrangeLayoutCallback(layout))	// request data
+				continue;
+		if (::IsWindowVisible(layout.hWnd))
+			EnumAndClipChildWindow(layout.hWnd, pRegion);
 	}
 }
 
@@ -336,6 +340,7 @@ BOOL CResizableLayout::LikesClipping(HWND hWnd)
 	{
 		switch (style & SS_TYPEMASK)
 		{
+		case SS_LEFTNOWORDWRAP:
 		case SS_BLACKRECT:
 		case SS_GRAYRECT:
 		case SS_WHITERECT:
