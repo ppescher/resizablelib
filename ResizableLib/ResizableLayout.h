@@ -27,6 +27,9 @@
 // special type for layout anchors
 typedef struct tagANCHOR
 {
+	int cx;
+	int cy;
+
 	tagANCHOR() {}
 
 	tagANCHOR(int x, int y)
@@ -35,83 +38,84 @@ typedef struct tagANCHOR
 		cy = y;
 	}
 
-	int cx;
-	int cy;
 } ANCHOR, *PANCHOR, *LPANCHOR;
 
+// define common constants
 const ANCHOR
 	TOP_LEFT(0,0), TOP_CENTER(50,0), TOP_RIGHT(100,0),
 	MIDDLE_LEFT(0,50), MIDDLE_CENTER(50,50), MIDDLE_RIGHT(100,50),
 	BOTTOM_LEFT(0,100), BOTTOM_CENTER(50,100), BOTTOM_RIGHT(100,100);
 
+// holds a window layout settings
+typedef struct tagLAYOUTINFO
+{
+	HWND hWnd;
+	UINT nCallbackID;
 
+	TCHAR sWndClass[MAX_PATH];
+
+	// upper-left corner
+	ANCHOR anchorTypeTL;
+	SIZE sizeMarginTL;
+	
+	// bottom-right corner
+	ANCHOR anchorTypeBR;
+	SIZE sizeMarginBR;
+
+	// custom window support
+	BOOL bMsgSupport;
+	RESIZEPROPERTIES properties;
+
+	tagLAYOUTINFO() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
+	{ }
+
+	tagLAYOUTINFO(HWND hwnd, ANCHOR tl_type, SIZE tl_margin, 
+		ANCHOR br_type, SIZE br_margin)
+		:
+		hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
+		anchorTypeTL(tl_type), sizeMarginTL(tl_margin),
+		anchorTypeBR(br_type), sizeMarginBR(br_margin)
+	{
+		sWndClass[0] = 0;
+	}
+
+} LAYOUTINFO, *PLAYOUTINFO, *LPLAYOUTINFO;
+
+// layout manager implementation
 class CResizableLayout
 {
-protected:
-	class LayoutInfo
-	{
-	public:
-		HWND hWnd;
-		UINT nCallbackID;
-
-		TCHAR sWndClass[MAX_PATH];
-
-		// upper-left corner
-		ANCHOR anchorTypeTL;
-		SIZE sizeMarginTL;
-		
-		// bottom-right corner
-		ANCHOR anchorTypeBR;
-		SIZE sizeMarginBR;
-
-		// custom window support
-		BOOL bMsgSupport;
-		RESIZEPROPERTIES properties;
-	
-	public:
-		LayoutInfo() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
-		{ }
-
-		LayoutInfo(HWND hwnd, ANCHOR tl_type, SIZE tl_margin, 
-			ANCHOR br_type, SIZE br_margin)
-			: hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
-			anchorTypeTL(tl_type), sizeMarginTL(tl_margin),
-			anchorTypeBR(br_type), sizeMarginBR(br_margin)
-		{
-			sWndClass[0] = 0;
-		}
-	};
-
 private:
 	// list of repositionable controls
 	CMap<HWND, HWND, POSITION, POSITION> m_mapLayout;
-	CList<LayoutInfo, LayoutInfo&> m_listLayout;
-	CList<LayoutInfo, LayoutInfo&> m_listLayoutCB;
+	CList<LAYOUTINFO, LAYOUTINFO&> m_listLayout;
+	CList<LAYOUTINFO, LAYOUTINFO&> m_listLayoutCB;
 
 	// used for clipping
 	HRGN m_hOldClipRgn;
 	int m_nOldClipRgn;
 
-	void ClipChildWindow(const CResizableLayout::LayoutInfo &layout, CRgn* pRegion) const;
+	// used for anti-flickering
+	RECT m_rectClientBefore;
+	BOOL m_bNoRecursion;
 
-	void CalcNewChildPosition(const CResizableLayout::LayoutInfo &layout,
+	void ClipChildWindow(const LAYOUTINFO &layout, CRgn* pRegion) const;
+
+	void CalcNewChildPosition(const LAYOUTINFO &layout,
 		const CRect &rectParent, CRect &rectChild, UINT& uFlags) const;
 
 protected:
 	// override to initialize resize properties (clipping, refresh)
-	virtual void InitResizeProperties(CResizableLayout::LayoutInfo& layout) const;
+	virtual void InitResizeProperties(LAYOUTINFO& layout) const;
 
 	// override to specify clipping for unsupported windows
-	virtual BOOL LikesClipping(const CResizableLayout::LayoutInfo &layout) const;
+	virtual BOOL LikesClipping(const LAYOUTINFO &layout) const;
 
 	// override to specify refresh for unsupported windows
-	virtual BOOL NeedsRefresh(const CResizableLayout::LayoutInfo &layout,
+	virtual BOOL NeedsRefresh(const LAYOUTINFO &layout,
 		const CRect &rectOld, const CRect &rectNew) const;
 
-	// paint the background on the given DC (for XP theme's compatibility)
-
-	// clip out child windows from the given DC
-	void ClipChildren(CDC* pDC, BOOL bUndo);
+	// clip out child windows from the given DC (returns if clipping done)
+	BOOL ClipChildren(CDC* pDC, BOOL bUndo);
 
 	// get the clipping region (without clipped child windows)
 	void GetClippingRegion(CRgn* pRegion) const;
@@ -206,14 +210,21 @@ protected:
 	void ArrangeLayout() const;
 
 	// override to provide dynamic control's layout info
-	virtual BOOL ArrangeLayoutCallback(CResizableLayout::LayoutInfo& layout) const;
+	virtual BOOL ArrangeLayoutCallback(LAYOUTINFO& layout) const;
 
 	// override to provide the parent window
 	virtual CWnd* GetResizableWnd() const = 0;
 
+	// enhance anti-flickering
+	void HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT& lResult);
+	
+	// enable resizable style for top level windows
+	void MakeResizable(LPCREATESTRUCT lpCreateStruct);
+
 public:
 	CResizableLayout()
 	{
+		m_bNoRecursion = FALSE;
 		m_hOldClipRgn = ::CreateRectRgn(0,0,0,0);
 	}
 

@@ -69,7 +69,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTypeTL, ANCHOR anchorTy
 	sizeMarginBR.cy = rectChild.bottom - rectParent.Height() * anchorTypeBR.cy / 100;
 
 	// prepare the structure
-	LayoutInfo layout(hWnd, anchorTypeTL, sizeMarginTL,
+	LAYOUTINFO layout(hWnd, anchorTypeTL, sizeMarginTL,
 		anchorTypeBR, sizeMarginBR);
 
 	// get control's window class
@@ -95,12 +95,12 @@ void CResizableLayout::AddAnchorCallback(UINT nCallbackID)
 	// it can however use a non-callback control, which is updated before
 
 	// add to the list
-	LayoutInfo layout;
+	LAYOUTINFO layout;
 	layout.nCallbackID = nCallbackID;
 	m_listLayoutCB.AddTail(layout);
 }
 
-BOOL CResizableLayout::ArrangeLayoutCallback(CResizableLayout::LayoutInfo& /*layout*/) const
+BOOL CResizableLayout::ArrangeLayoutCallback(LAYOUTINFO& /*layout*/) const
 {
 	ASSERT(FALSE);
 	// must be overridden, if callback is used
@@ -112,7 +112,7 @@ void CResizableLayout::ArrangeLayout() const
 {
 	// common vars
 	UINT uFlags;
-	LayoutInfo layout;
+	LAYOUTINFO layout;
 	CRect rectParent, rectChild;
 	int count = m_listLayout.GetCount();
 	int countCB = m_listLayoutCB.GetCount();
@@ -170,7 +170,7 @@ void CResizableLayout::ArrangeLayout() const
 	::EndDeferWindowPos(hdwp);
 }
 
-void CResizableLayout::ClipChildWindow(const CResizableLayout::LayoutInfo& layout,
+void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
 									   CRgn* pRegion) const
 {
 	// obtain window position
@@ -222,7 +222,7 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 	pRegion->CreateRectRgnIndirect(&rect);
 
 	// clip only anchored controls
-	LayoutInfo layout;
+	LAYOUTINFO layout;
 	POSITION pos = m_listLayout.GetHeadPosition();
 	while (pos != NULL)
 	{
@@ -251,8 +251,12 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 }
 
 // enable/restore clipping on the specified DC when appropriate
-void CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
+BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 {
+#if (_WIN32_WINNT >= 0x0501)
+	// clipping not necessary when double-buffering enabled
+	pDC; bUndo;
+#else
 	HDC hDC = pDC->GetSafeHdc();
 	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
@@ -274,6 +278,8 @@ void CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 		CRgn rgnClip;
 		GetClippingRegion(&rgnClip);
 		::ExtSelectClipRgn(hDC, rgnClip, RGN_AND);
+
+		return TRUE;
 	}
 
 	// restore old clipping region, only if modified and valid
@@ -283,7 +289,11 @@ void CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 			::SelectClipRgn(hDC, m_hOldClipRgn);
 		else
 			::SelectClipRgn(hDC, NULL);
+		
+		return TRUE;
 	}
+#endif
+	return FALSE;
 }
 
 void CResizableLayout::GetTotalClientRect(LPRECT lpRect) const
@@ -291,7 +301,7 @@ void CResizableLayout::GetTotalClientRect(LPRECT lpRect) const
 	GetResizableWnd()->GetClientRect(lpRect);
 }
 
-BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
+BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 								const CRect& rectOld, const CRect& rectNew) const
 {
 	if (layout.bMsgSupport)
@@ -385,7 +395,7 @@ BOOL CResizableLayout::NeedsRefresh(const CResizableLayout::LayoutInfo& layout,
 	return bRefresh;
 }
 
-BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout) const
+BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 {
 	if (layout.bMsgSupport)
 	{
@@ -455,7 +465,7 @@ BOOL CResizableLayout::LikesClipping(const CResizableLayout::LayoutInfo& layout)
 	return TRUE;
 }
 
-void CResizableLayout::CalcNewChildPosition(const CResizableLayout::LayoutInfo& layout,
+void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 						const CRect &rectParent, CRect &rectChild, UINT& uFlags) const
 {
 	CWnd* pParent = GetResizableWnd();
@@ -499,7 +509,7 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
 	if (!m_mapLayout.Lookup(hWnd, pos))
 		return FALSE;
 
-	const CResizableLayout::LayoutInfo& layout = m_listLayout.GetAt(pos);
+	const LAYOUTINFO& layout = m_listLayout.GetAt(pos);
 
 	// augmented size, relative to anchor points
 	CSize size = sizeChild + layout.sizeMarginTL - layout.sizeMarginBR;
@@ -517,7 +527,7 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
 	return TRUE;
 }
 
-void CResizableLayout::InitResizeProperties(CResizableLayout::LayoutInfo &layout) const
+void CResizableLayout::InitResizeProperties(LAYOUTINFO &layout) const
 {
 	// check if custom window supports this library
 	// (properties must be correctly set by the window)
@@ -531,5 +541,81 @@ void CResizableLayout::InitResizeProperties(CResizableLayout::LayoutInfo &layout
 		layout.properties.bCachedLikesClipping = LikesClipping(layout);
 		// refresh property is assumed as dynamic
 		layout.properties.bAskRefresh = TRUE;
+	}
+}
+
+void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
+{
+	if (lpCreateStruct->style & WS_CHILD)
+		return;
+
+	CWnd* pWnd = GetResizableWnd();
+
+#if(_WIN32_WINNT >= 0x0501)
+	// enable double-buffering on supported platforms
+	pWnd->ModifyStyleEx(0, WS_EX_COMPOSITED);
+#endif
+
+	if (!(lpCreateStruct->style & WS_THICKFRAME))
+	{
+		// set resizable style
+		pWnd->ModifyStyle(DS_MODALFRAME, WS_THICKFRAME);
+		// keep client area
+		CRect rect(CPoint(lpCreateStruct->x, lpCreateStruct->y),
+			CSize(lpCreateStruct->cx, lpCreateStruct->cy));
+		pWnd->SendMessage(WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
+		// adjust size to reflect new style
+		::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
+			::IsMenu(pWnd->GetMenu()->GetSafeHmenu()), pWnd->GetExStyle());
+		pWnd->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
+			SWP_NOSENDCHANGING|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
+		// update dimensions
+		lpCreateStruct->cx = rect.Width();
+		lpCreateStruct->cy = rect.Height();
+	}
+}
+
+void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT &lResult)
+{
+#if (_WIN32_WINNT >= 0x0501)
+	if (m_bNoRecursion)
+	{
+		// prevent recursion when resetting the window region
+		return;
+	}
+#endif
+
+	if (!bAfterDefault)
+	{
+		// save a copy before default handler gets called
+		m_rectClientBefore = lpncsp->rgrc[2];
+	}
+	else // after default WM_NCCALCSIZE msg processing
+	{
+		if (lResult != 0)
+		{
+			// default processing already uses an advanced policy
+			return;
+		}
+		// default calculated client rect
+		RECT &rectClientAfter = lpncsp->rgrc[0];
+
+		// intersection between old and new client area is to be preserved
+		// set source and destination rects to this intersection
+		RECT &rectPreserve = lpncsp->rgrc[1];
+		::IntersectRect(&rectPreserve, &rectClientAfter, &m_rectClientBefore);
+		lpncsp->rgrc[2] = rectPreserve;
+
+		lResult = WVR_VALIDRECTS;
+
+#if (_WIN32_WINNT >= 0x0501)
+		CWnd* pWnd = GetResizableWnd();
+		if (!(pWnd->GetStyle() & WS_CHILD))
+		{
+			m_bNoRecursion = TRUE;
+			pWnd->SetWindowRgn(NULL, FALSE);
+			m_bNoRecursion = FALSE;
+		}
+#endif
 	}
 }
