@@ -20,11 +20,12 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#include "ResizableMinMax.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSplitterWnd frame with splitter
 
-class CResizableSplitterWnd : public CSplitterWnd
+class CResizableSplitterWnd : public CSplitterWnd, public CResizableMinMax
 {
 	DECLARE_DYNAMIC(CResizableSplitterWnd)
 
