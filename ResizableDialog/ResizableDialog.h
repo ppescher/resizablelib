@@ -27,11 +27,14 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "ResizableLayout.h"
+#include "ResizableGrip.h"
+#include "ResizableMinMax.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
 
-class CResizableDialog : public CDialog, public CResizableLayout
+class CResizableDialog : public CDialog, public CResizableLayout,
+						 public CResizableGrip, public CResizableMinMax
 {
 
 // Construction
@@ -43,10 +46,6 @@ public:
 // Attributes
 private:
 	// flags
-	BOOL m_bShowGrip;
-	BOOL m_bUseMaxTrack;
-	BOOL m_bUseMinTrack;
-	BOOL m_bUseMaxRect;
 	BOOL m_bEnableSaveRestore;
 
 	// internal status
@@ -54,15 +53,6 @@ private:
 	CString m_sEntry;			// entry for save/restore
 
 	BOOL m_bInitDone;			// if all internal vars initialized
-
-	SIZE m_szGripSize;			// set at construction time
-
-	CRect m_rcGripRect;			// current pos of grip
-
-	POINT m_ptMinTrackSize;		// min tracking size
-	POINT m_ptMaxTrackSize;		// max tracking size
-	POINT m_ptMaxPos;			// maximized position
-	POINT m_ptMaxSize;			// maximized size
 
 // Operations
 public:
@@ -81,17 +71,9 @@ private:
 	void Construct();
 	void LoadWindowRect();
 	void SaveWindowRect();
-	void UpdateGripPos();
 
 // callable from derived classes
 protected:
-	void ShowSizeGrip(BOOL bShow);				// show or hide the size grip
-	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
-	void ResetMaximizedRect();					// reset to default maximized rect
-	void SetMinTrackSize(const CSize& size);	// set minimum tracking size
-	void ResetMinTrackSize();					// reset to default minimum tracking size
-	void SetMaxTrackSize(const CSize& size);	// set maximum tracking size
-	void ResetMaxTrackSize();					// reset to default maximum tracking size
 	void EnableSaveRestore(LPCTSTR pszSection, LPCTSTR pszEntry);	// section and entry in app's profile
 
 	virtual CWnd* GetLayoutParent()

@@ -35,16 +35,7 @@ inline void CResizableDialog::Construct()
 {
 	m_bInitDone = FALSE;
 
-	m_bUseMinTrack = TRUE;
-	m_bUseMaxTrack = FALSE;
-	m_bUseMaxRect = FALSE;
-
-	m_bShowGrip = TRUE;
-	
 	m_bEnableSaveRestore = FALSE;
-
-	m_szGripSize.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_szGripSize.cy = GetSystemMetrics(SM_CYHSCROLL);
 }
 
 CResizableDialog::CResizableDialog()
@@ -84,23 +75,33 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog message handlers
 
+int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+{
+	if (CDialog::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// automatically set resizable style
+	ModifyStyle(DS_MODALFRAME, WS_POPUP | WS_THICKFRAME);
+
+	return 0;
+}
 
 BOOL CResizableDialog::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
 
-	UpdateGripPos();
-
 	// gets the template size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
-	m_ptMinTrackSize.x = rc.Width();
-	m_ptMinTrackSize.y = rc.Height();
+	SetMinTrackSize(rc.Size());
+
+	// init
+
+	UpdateGripPos();
 
 	m_bInitDone = TRUE;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CResizableDialog::OnDestroy() 
@@ -118,11 +119,7 @@ void CResizableDialog::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	
-	if (m_bShowGrip && !IsZoomed())
-	{
-		// draw size-grip
-		dc.DrawFrameControl(&m_rcGripRect, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-	}
+	DrawGrip(dc);
 }
 
 void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
@@ -135,9 +132,7 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 	if (m_bInitDone)
 	{
 		// update size-grip
-		InvalidateRect(&m_rcGripRect);
 		UpdateGripPos();
-		InvalidateRect(&m_rcGripRect);
 
 		ArrangeLayout();
 	}
@@ -145,13 +140,10 @@ void CResizableDialog::OnSize(UINT nType, int cx, int cy)
 
 UINT CResizableDialog::OnNcHitTest(CPoint point) 
 {
-	CPoint pt = point;
-	ScreenToClient(&pt);
-
-	// if in size grip and in client area
-	if (m_bShowGrip && m_rcGripRect.PtInRect(pt) &&
-		pt.x >= 0 && pt.y >= 0)
-		return HTBOTTOMRIGHT;
+	// test if in size grip
+	UINT ht = HitTest(point);
+	if (ht != HTNOWHERE)
+		return ht;
 	
 	return CDialog::OnNcHitTest(point);
 }
@@ -161,79 +153,7 @@ void CResizableDialog::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	if (!m_bInitDone)
 		return;
 
-	if (m_bUseMinTrack)
-		lpMMI->ptMinTrackSize = m_ptMinTrackSize;
-
-	if (m_bUseMaxTrack)
-		lpMMI->ptMaxTrackSize = m_ptMaxTrackSize;
-
-	if (m_bUseMaxRect)
-	{
-		lpMMI->ptMaxPosition = m_ptMaxPos;
-		lpMMI->ptMaxSize = m_ptMaxSize;
-	}
-}
-
-
-void CResizableDialog::UpdateGripPos()
-{
-	// size-grip goes bottom right in the client area
-
-	GetClientRect(&m_rcGripRect);
-
-	m_rcGripRect.left = m_rcGripRect.right - m_szGripSize.cx;
-	m_rcGripRect.top = m_rcGripRect.bottom - m_szGripSize.cy;
-}
-
-// protected members
-
-void CResizableDialog::ShowSizeGrip(BOOL bShow)
-{
-	if (m_bShowGrip != bShow)
-	{
-		m_bShowGrip = bShow;
-		InvalidateRect(&m_rcGripRect);
-	}
-}
-
-void CResizableDialog::SetMaximizedRect(const CRect& rc)
-{
-	m_bUseMaxRect = TRUE;
-
-	m_ptMaxPos = rc.TopLeft();
-	m_ptMaxSize.x = rc.Width();
-	m_ptMaxSize.y = rc.Height();
-}
-
-void CResizableDialog::ResetMaximizedRect()
-{
-	m_bUseMaxRect = FALSE;
-}
-
-void CResizableDialog::SetMinTrackSize(const CSize& size)
-{
-	m_bUseMinTrack = TRUE;
-
-	m_ptMinTrackSize.x = size.cx;
-	m_ptMinTrackSize.y = size.cy;
-}
-
-void CResizableDialog::ResetMinTrackSize()
-{
-	m_bUseMinTrack = FALSE;
-}
-
-void CResizableDialog::SetMaxTrackSize(const CSize& size)
-{
-	m_bUseMaxTrack = TRUE;
-
-	m_ptMaxTrackSize.x = size.cx;
-	m_ptMaxTrackSize.y = size.cy;
-}
-
-void CResizableDialog::ResetMaxTrackSize()
-{
-	m_bUseMaxTrack = FALSE;
+	MinMaxInfo(lpMMI);
 }
 
 // NOTE: this must be called after all the other settings
@@ -293,14 +213,4 @@ void CResizableDialog::LoadWindowRect()
 	{
 		SetWindowPlacement(&wp);
 	}
-}
-
-int CResizableDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) 
-{
-	if (CDialog::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-	ModifyStyle(DS_MODALFRAME, WS_POPUP|WS_THICKFRAME);
-
-	return 0;
 }
