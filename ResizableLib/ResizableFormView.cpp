@@ -93,7 +93,7 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 
 	// hide size grip when there are scrollbars
 	CSize size = GetTotalSize();
-	if (cx < size.cx || cy < size.cy)
+	if ((cx < size.cx || cy < size.cy) && (m_nMapMode >= 0))
 		HideSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
 	else
 		ShowSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
@@ -160,14 +160,13 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect)
 
 BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC) 
 {
-	// Windows XP doesn't like clipping regions ...try this!
-	EraseBackground(pDC);
-	return TRUE;
+	ClipChildren(pDC, FALSE);
 
-/*	ClipChildren(pDC);	// old-method (for safety)
+	BOOL bRet = CFormView::OnEraseBkgnd(pDC);
 
-	return CFormView::OnEraseBkgnd(pDC);
-*/
+	ClipChildren(pDC, TRUE);
+
+	return bRet;
 }
 
 int CResizableFormView::OnCreate(LPCREATESTRUCT lpCreateStruct) 
