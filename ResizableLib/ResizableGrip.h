@@ -21,7 +21,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define WS_EX_LAYOUT_RTL	0x00400000
+#ifndef WS_EX_LAYOUTRTL
+#pragma message("Please update your Windows header files")
+#define WS_EX_LAYOUTRTL	0x00400000
+#endif
 
 class CResizableGrip  
 {
@@ -34,7 +37,7 @@ private:
 	static BOOL IsRTL(HWND hwnd)
 	{
 		DWORD dwExStyle = ::GetWindowLong(hwnd, GWL_EXSTYLE);
-		return (dwExStyle & WS_EX_LAYOUT_RTL);
+		return (dwExStyle & WS_EX_LAYOUTRTL);
 	}
 
 	static LRESULT CALLBACK GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
