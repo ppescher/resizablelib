@@ -1,9 +1,24 @@
 // ResizableWndState.h: interface for the CResizableWndState class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of ResizableLib
+// http://sourceforge.net/projects/resizablelib
+//
+// Copyright (C) 2000-2004 by Paolo Messina
+// http://www.geocities.com/ppescher - mailto:ppescher@hotmail.com
+//
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
+/////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RESIZABLEWNDSTATE_H__23E0B3B0_2B95_47AF_A73D_CA629855B40B__INCLUDED_)
-#define AFX_RESIZABLEWNDSTATE_H__23E0B3B0_2B95_47AF_A73D_CA629855B40B__INCLUDED_
+#if !defined(AFX_RESIZABLEWNDSTATE_H__INCLUDED_)
+#define AFX_RESIZABLEWNDSTATE_H__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,4 +40,4 @@ public:
 	virtual ~CResizableWndState();
 };
 
-#endif // !defined(AFX_RESIZABLEWNDSTATE_H__23E0B3B0_2B95_47AF_A73D_CA629855B40B__INCLUDED_)
+#endif // !defined(AFX_RESIZABLEWNDSTATE_H__INCLUDED_)

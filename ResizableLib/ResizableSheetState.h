@@ -1,9 +1,24 @@
 // ResizableSheetState.h: interface for the CResizableSheetState class.
 //
-//////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// This file is part of ResizableLib
+// http://sourceforge.net/projects/resizablelib
+//
+// Copyright (C) 2000-2004 by Paolo Messina
+// http://www.geocities.com/ppescher - mailto:ppescher@hotmail.com
+//
+// The contents of this file are subject to the Artistic License (the "License").
+// You may not use this file except in compliance with the License. 
+// You may obtain a copy of the License at:
+// http://www.opensource.org/licenses/artistic-license.html
+//
+// If you find this code useful, credits would be nice!
+//
+/////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RESIZABLESHEETSTATE_H__1F7B9232_4DA6_4CB7_9649_620A2CBB87DA__INCLUDED_)
-#define AFX_RESIZABLESHEETSTATE_H__1F7B9232_4DA6_4CB7_9649_620A2CBB87DA__INCLUDED_
+#if !defined(AFX_RESIZABLESHEETSTATE_H__INCLUDED_)
+#define AFX_RESIZABLESHEETSTATE_H__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,4 +40,4 @@ public:
 	virtual ~CResizableSheetState();
 };
 
-#endif // !defined(AFX_RESIZABLESHEETSTATE_H__1F7B9232_4DA6_4CB7_9649_620A2CBB87DA__INCLUDED_)
+#endif // !defined(AFX_RESIZABLESHEETSTATE_H__INCLUDED_)
