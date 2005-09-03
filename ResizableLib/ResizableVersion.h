@@ -48,5 +48,8 @@ extern DWORD real_WIN32_IE;
 
 void InitRealVersions();
 
+// runtime check for visual style settings
+
+BOOL IsWindowThemed(CWnd* pWnd);
 
 #endif // !defined(AFX_RESIZABLEVERSION_H__INCLUDED_)

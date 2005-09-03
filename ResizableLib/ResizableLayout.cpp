@@ -864,17 +864,22 @@ void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS 
 		//		This is especially evident on WinXP when the non-client
 		//		area is rendered with Visual Styles enabled and the
 		//		windows have a non rectangular region.
+		// NOTE: Implementers of skin systems that modify the window region
+		//      should not rely on this fix and should handle non-client
+		//      window messages themselves, to avoid flickering
 #if (_WIN32_WINNT >= 0x0501)
-		//! @todo change rt check to only if themed frame. what about custom wnd region?
 		if (real_WIN32_WINNT >= 0x0501)
 		{
 			CWnd* pWnd = GetResizableWnd();
-			DWORD dwStyle = pWnd->GetStyle();
-			if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
+			if (IsWindowThemed(pWnd))
 			{
-				m_bNoRecursion = TRUE;
-				pWnd->SetWindowRgn(NULL, FALSE);
-				m_bNoRecursion = FALSE;
+				DWORD dwStyle = pWnd->GetStyle();
+				if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
+				{
+					m_bNoRecursion = TRUE;
+					pWnd->SetWindowRgn(NULL, FALSE);
+					m_bNoRecursion = FALSE;
+				}
 			}
 		}
 #endif
