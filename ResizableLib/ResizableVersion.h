@@ -42,14 +42,16 @@ extern DWORD real_WIN32_WINNT;
 extern DWORD real_WIN32_IE;
 #endif
 
+extern DWORD real_ThemeSettings;
+
 // called automatically by a static initializer
 // (if not appropriate can be called later)
 // to setup global version numbers
 
 void InitRealVersions();
 
-// runtime check for visual style settings
+// check for visual style settings
 
-BOOL IsWindowThemed(CWnd* pWnd);
+void InitThemeSettings();
 
 #endif // !defined(AFX_RESIZABLEVERSION_H__INCLUDED_)

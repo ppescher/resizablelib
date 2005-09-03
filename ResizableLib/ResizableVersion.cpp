@@ -125,6 +125,8 @@ DWORD real_WIN32_WINNT = 0;
 DWORD real_WIN32_IE = 0;
 #endif
 
+DWORD real_ThemeSettings = 0;
+
 // macro to convert version numbers to hex format
 #define CNV_OS_VER(x) ((BYTE)(((BYTE)(x) / 10 * 16) | ((BYTE)(x) % 10)))
 
@@ -187,41 +189,28 @@ void InitRealVersions()
 }
 
 // Whether non-client area is using XP Visual Style
-BOOL IsWindowThemed(CWnd* pWnd)
+void InitThemeSettings()
 {
-	ASSERT(pWnd); // must be a valid pointer
+	real_ThemeSettings = 0;
 
 	typedef BOOL (STDAPICALLTYPE * IS_APP_THEMED)(VOID);
 	typedef DWORD (STDAPICALLTYPE * GET_THEME_APP_PROPERTIES)(VOID);
-	typedef HTHEME (STDAPICALLTYPE * GET_WINDOW_THEME)(HWND);
 
 	// check dll is in place, themes can't work without
-	HMODULE hLib = ::GetModuleHandle(_T("uxtheme.dll"));
+	HMODULE hLib = GetModuleHandle(_T("uxtheme.dll"));
 	if (hLib == NULL)
-		return FALSE;
+		return;
 
 	// check calling process has themes enabled
 	IS_APP_THEMED pfnIsAppThemed =
-		(IS_APP_THEMED)::GetProcAddress(hLib, "IsAppThemed");
+		(IS_APP_THEMED) GetProcAddress(hLib, "IsAppThemed");
 	ASSERT(pfnIsAppThemed);
 	if (!pfnIsAppThemed())
-		return FALSE;
+		return;
 
 	// check application theme includes non-client area
 	GET_THEME_APP_PROPERTIES pfnGetThemeAppProperties =
-		(GET_THEME_APP_PROPERTIES)::GetProcAddress(hLib, "GetThemeAppProperties");
+		(GET_THEME_APP_PROPERTIES) GetProcAddress(hLib, "GetThemeAppProperties");
 	ASSERT(pfnGetThemeAppProperties);
-	if (!(STAP_ALLOW_NONCLIENT & pfnGetThemeAppProperties()))
-		return FALSE;
-
-	// check specified window has a theme applied
-	// (it should not, when a custom window region is used, like most media players)
-	GET_WINDOW_THEME pfnGetWindowTheme =
-		(GET_WINDOW_THEME)::GetProcAddress(hLib, "GetWindowTheme");
-	ASSERT(pfnGetWindowTheme);
-	if (NULL == pfnGetWindowTheme(pWnd->m_hWnd))
-		return FALSE;
-
-	return TRUE;
+	real_ThemeSettings = pfnGetThemeAppProperties();
 }
-

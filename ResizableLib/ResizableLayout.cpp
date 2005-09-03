@@ -781,6 +781,8 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 	if (lpCreateStruct->style & WS_CHILD)
 		return;
 
+	InitThemeSettings(); //! @todo move theme check in more appropriate place
+
 	CWnd* pWnd = GetResizableWnd();
 
 #if (_WIN32_WINNT >= 0x0501 && !defined(RSZLIB_NO_XP_DOUBLE_BUFFER))
@@ -868,18 +870,16 @@ void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS 
 		//      should not rely on this fix and should handle non-client
 		//      window messages themselves, to avoid flickering
 #if (_WIN32_WINNT >= 0x0501)
-		if (real_WIN32_WINNT >= 0x0501)
+		if ((real_WIN32_WINNT >= 0x0501)
+			&& (real_ThemeSettings & STAP_ALLOW_NONCLIENT))
 		{
 			CWnd* pWnd = GetResizableWnd();
-			if (IsWindowThemed(pWnd))
+			DWORD dwStyle = pWnd->GetStyle();
+			if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
 			{
-				DWORD dwStyle = pWnd->GetStyle();
-				if ((dwStyle & (WS_CAPTION|WS_MAXIMIZE)) == WS_CAPTION)
-				{
-					m_bNoRecursion = TRUE;
-					pWnd->SetWindowRgn(NULL, FALSE);
-					m_bNoRecursion = FALSE;
-				}
+				m_bNoRecursion = TRUE;
+				pWnd->SetWindowRgn(NULL, FALSE);
+				m_bNoRecursion = FALSE;
 			}
 		}
 #endif
