@@ -101,11 +101,6 @@ BOOL CResizableSheet::OnInitDialog()
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
 
-	// set the initial size as the min track size
-	CRect rc;
-	GetWindowRect(&rc);
-	SetMinTrackSize(rc.Size());
-
 	// initialize layout
 	PresetLayout();
 	m_bLayoutDone = TRUE;
@@ -122,7 +117,10 @@ void CResizableSheet::OnDestroy()
 			SavePage(m_sSection);
 	}
 
+	// reset instance data
 	RemoveAllAnchors();
+	ResetAllRects();
+	PrivateConstruct();
 
 	CPropertySheet::OnDestroy();
 }
@@ -145,44 +143,92 @@ void CResizableSheet::PresetLayout()
 	GetWindowRect(&rc);
 	SetMinTrackSize(rc.Size());
 
-	if (GetStyle() & WS_CHILD)
+	// use *total* parent size to have correct margins
+	CRect rectPage, rectSheet;
+	GetTotalClientRect(&rectSheet);
+
+	// get page area
+	if (IsWizard())
 	{
-		GetClientRect(&rc);
-		GetTabControl()->MoveWindow(&rc);
+		HWND hPage = PropSheet_GetCurrentPageHwnd(m_hWnd);
+		::GetWindowRect(hPage, &rectPage);
+	}
+	else
+	{
+		GetTabControl()->GetWindowRect(&rectPage);
+	}
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
+
+	// calculate margins
+	CRect rect;
+	int cxDiff = rectSheet.right - rectPage.right;
+	int cyDiff = 0;
+
+	// try all possible buttons
+	for (int i = 0; i < _propButtonsCount; i++)
+	{
+		CWnd* pWnd = GetDlgItem(_propButtons[i]);
+		if (NULL != pWnd)
+		{
+			// move buttons if necessary
+			if (GetStyle() & WS_CHILD)
+			{
+				pWnd->GetWindowRect(&rect);
+				::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rect, 2);
+
+				cyDiff = rectSheet.bottom - rect.bottom;
+				rect.OffsetRect(cxDiff, cyDiff);
+
+				pWnd->MoveWindow(&rect);
+			}
+			// add buttons to the layout manager
+			AddAnchor(_propButtons[i], BOTTOM_RIGHT);
+		}
 	}
 
-	if (IsWizard())	// wizard mode
+	// setup pages area
+	if (IsWizard())
 	{
+		// move line and pages if necessary
+		if (GetStyle() & WS_CHILD)
+		{
+			GetDlgItem(ID_WIZLINE)->GetWindowRect(&rect);
+			::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rect, 2);
+
+			rect.OffsetRect(0, cyDiff);
+			rect.InflateRect(cxDiff, 0);
+
+			GetDlgItem(ID_WIZLINE)->MoveWindow(&rect);
+
+			rectPage.bottom += cyDiff;
+			rectPage.left = 0;
+			rectPage.top = 0;
+			rectPage.right = rectSheet.right;
+		}
+
+		AddAnchor(ID_WIZLINE, BOTTOM_LEFT, BOTTOM_RIGHT);
+
 		// hide tab control
 		GetTabControl()->ShowWindow(SW_HIDE);
 
-		AddAnchor(ID_WIZLINE, BOTTOM_LEFT, BOTTOM_RIGHT);
+		// pre-calculate margins
+		m_sizePageTL = rectPage.TopLeft() - rectSheet.TopLeft();
+		m_sizePageBR = rectPage.BottomRight() - rectSheet.BottomRight();
 	}
-	else	// tab mode
+	else
 	{
+		// grow tab to the available sheet space
+		if (cyDiff > 0)
+			rectSheet.bottom = rectPage.bottom + cyDiff;
+		
+		if (GetStyle() & WS_CHILD)
+			GetTabControl()->MoveWindow(&rectSheet);
+
 		AddAnchor(AFX_IDC_TAB_CONTROL, TOP_LEFT, BOTTOM_RIGHT);
 	}
 
 	// add a callback for active page (which can change at run-time)
 	m_nCallbackID = AddAnchorCallback();
-
-	// use *total* parent size to have correct margins
-	CRect rectPage, rectSheet;
-	GetTotalClientRect(&rectSheet);
-
-	GetActivePage()->GetWindowRect(&rectPage);
-	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectPage, 2);
-
-	// pre-calculate margins
-	m_sizePageTL = rectPage.TopLeft() - rectSheet.TopLeft();
-	m_sizePageBR = rectPage.BottomRight() - rectSheet.BottomRight();
-
-	// add all possible buttons, if they exist
-	for (int i = 0; i < _propButtonsCount; i++)
-	{
-		if (NULL != GetDlgItem(_propButtons[i]))
-			AddAnchor(_propButtons[i], BOTTOM_RIGHT);
-	}
 
 	// prevent flickering
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
@@ -194,7 +240,7 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 		return CResizableLayout::ArrangeLayoutCallback(layout);
 
 	// set layout info for active page
-	layout.hWnd = (HWND)::SendMessage(m_hWnd, PSM_GETCURRENTPAGEHWND, 0, 0);
+	layout.hWnd = PropSheet_GetCurrentPageHwnd(m_hWnd);
 	if (!::IsWindow(layout.hWnd))
 		return FALSE;
 
