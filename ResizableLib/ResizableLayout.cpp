@@ -111,6 +111,34 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 }
 
 /*!
+ *  This function adds all the controls not yet added to the layout manager
+ *  and sets anchor points for its top-left and bottom-right corners.
+ *  
+ *  @param anchor Anchor point for the top-left and bottom-right corner
+ *
+ *  @remarks Overlapping controls, like group boxes and the controls inside,
+ *           may not be handled correctly. Use individual @ref AddAnchor calls
+ *           to solve any issues that may arise with clipping.
+ *
+ *  @sa AddAnchor
+ */
+void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
+{
+	HWND hParent = GetResizableWnd()->GetSafeHwnd();
+	ASSERT(::IsWindow(hParent));
+
+	HWND hWnd = ::GetWindow(hParent, GW_CHILD);
+	while (hWnd != NULL) 
+	{
+		POSITION pos;
+		if (!m_mapLayout.Lookup(hWnd, pos))
+			AddAnchor(hWnd, anchor, anchor);
+
+		hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT);
+	}
+}
+
+/*!
  *  This function adds a placeholder to the layout manager, that will be
  *  dinamically set by a callback function whenever required.
  *
@@ -792,12 +820,12 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 
 	if (!(lpCreateStruct->style & WS_THICKFRAME))
 	{
-		// set resizable style
-		pWnd->ModifyStyle(DS_MODALFRAME, WS_THICKFRAME);
 		// keep client area
 		CRect rect(CPoint(lpCreateStruct->x, lpCreateStruct->y),
 			CSize(lpCreateStruct->cx, lpCreateStruct->cy));
 		pWnd->SendMessage(WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
+		// set resizable style
+		pWnd->ModifyStyle(DS_MODALFRAME, WS_THICKFRAME);
 		// adjust size to reflect new style
 		::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
 			::IsMenu(pWnd->GetMenu()->GetSafeHmenu()), pWnd->GetExStyle());

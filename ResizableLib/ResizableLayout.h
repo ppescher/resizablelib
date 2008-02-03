@@ -205,6 +205,16 @@ protected:
 	}
 	//@}
 
+	//@{
+	//! @brief Add anchor points for all the remaining controls to the layout
+	void AddAllOtherAnchors(ANCHOR anchor);
+
+	void AddAllOtherAnchors()
+	{
+		AddAllOtherAnchors(TOP_LEFT);
+	}
+	//@}
+
 	//! @brief Add a callback slot to the layout for dynamic controls or anchor points
 	UINT AddAnchorCallback();
 
