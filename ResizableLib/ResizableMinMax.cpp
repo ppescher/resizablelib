@@ -149,6 +149,13 @@ void CResizableMinMax::ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild)
 	}
 }
 
+void CResizableMinMax::ResetAllRects()
+{
+	m_bUseMinTrack = FALSE;
+	m_bUseMaxTrack = FALSE;
+	m_bUseMaxRect = FALSE;
+}
+
 void CResizableMinMax::SetMaximizedRect(const CRect& rc)
 {
 	m_bUseMaxRect = TRUE;

@@ -84,6 +84,11 @@ void CResizableMDIFrame::OnDestroy()
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
+	// reset instance data
+	RemoveAllAnchors();
+	ResetAllRects();
+	m_bEnableSaveRestore = FALSE;
+
 	CMDIFrameWnd::OnDestroy();
 }
 

@@ -103,6 +103,7 @@ void CResizablePage::OnDestroy()
 {
 	// remove child windows
 	RemoveAllAnchors();
+	ResetAllRects();
 
 	CPropertyPage::OnDestroy();
 }

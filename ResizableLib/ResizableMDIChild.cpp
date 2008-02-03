@@ -102,6 +102,11 @@ void CResizableMDIChild::OnDestroy()
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
+	// reset instance data
+	RemoveAllAnchors();
+	ResetAllRects();
+	m_bEnableSaveRestore = FALSE;
+
 	CMDIChildWnd::OnDestroy();
 }
 

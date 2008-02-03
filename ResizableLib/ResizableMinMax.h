@@ -68,6 +68,8 @@ protected:
 	void ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild);
 	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
 
+	void ResetAllRects();
+
 	void SetMaximizedRect(const CRect& rc);		// set window rect when maximized
 	void ResetMaximizedRect();					// reset to default maximized rect
 	void SetMinTrackSize(const CSize& size);	// set minimum tracking size

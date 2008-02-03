@@ -172,7 +172,10 @@ void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 void CResizableFormView::OnDestroy() 
 {
+	// reset instance data
 	RemoveAllAnchors();
+	ResetAllRects();
+	PrivateConstruct();
 
 	CFormView::OnDestroy();
 }

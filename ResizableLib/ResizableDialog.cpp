@@ -99,8 +99,10 @@ void CResizableDialog::OnDestroy()
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
 
-	// remove child windows
+	// reset instance data
 	RemoveAllAnchors();
+	ResetAllRects();
+	PrivateConstruct();
 
 	CDialog::OnDestroy();
 }
