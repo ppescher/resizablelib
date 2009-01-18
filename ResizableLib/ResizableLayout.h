@@ -302,6 +302,7 @@ public:
 
 	virtual ~CResizableLayout()
 	{
+		::DeleteObject(m_hOldClipRgn);
 		// just for safety
 		RemoveAllAnchors();
 	}
