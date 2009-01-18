@@ -118,8 +118,10 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 		}
 		// adjust total size: add the client border and
 		// we counted one splitter more than necessary
-		sizeMax.cx += 2*m_cxBorder - m_cxSplitterGap;
-		sizeMax.cy += 2*m_cyBorder - m_cySplitterGap;
+		if (sizeMax.cx != LONG_MAX)
+			sizeMax.cx += 2*m_cxBorder - m_cxSplitterGap;
+		if (sizeMax.cy != LONG_MAX)
+			sizeMax.cy += 2*m_cyBorder - m_cySplitterGap;
 		sizeMin.cx += 2*m_cxBorder - m_cxSplitterGap;
 		sizeMin.cy += 2*m_cyBorder - m_cySplitterGap;
 		// add non-client size
