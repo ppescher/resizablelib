@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "demo.h"
 #include "DemoDlg.h"
-#include "MyPropertySheet.h"
 
 
 #ifdef _DEBUG
@@ -48,16 +47,16 @@ END_MESSAGE_MAP()
 void CDemoDlg::OnButton1() 
 {
 	// wizard mode (with help)
-	CMyPropertySheet propSheet;
-	propSheet.SetWizardMode();
 	propSheet.m_psh.dwFlags |= PSH_HASHELP;
+	propSheet.m_psh.dwFlags |= PSH_WIZARD;
 	propSheet.DoModal();
 }
 
 void CDemoDlg::OnButton2() 
 {
 	// property sheet (without help)
-	CMyPropertySheet propSheet;
+	propSheet.m_psh.dwFlags &= ~PSH_HASHELP;
+	propSheet.m_psh.dwFlags &= ~PSH_WIZARD;
 //	propSheet.EnableStackedTabs(FALSE);
 	propSheet.DoModal();
 }

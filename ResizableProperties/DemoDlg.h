@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 // DemoDlg.h : header file
 //
+#include "MyPropertySheet.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CDemoDlg dialog
@@ -32,6 +33,7 @@ public:
 
 // Implementation
 protected:
+	CMyPropertySheet propSheet;
 
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)

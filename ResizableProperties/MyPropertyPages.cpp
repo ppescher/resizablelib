@@ -53,10 +53,10 @@ BOOL CMyPropertyPage1::OnInitDialog()
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
 	AddAnchor(IDC_BUTTON1, TOP_RIGHT, BOTTOM_RIGHT);
 
-	SetDlgItemText(IDC_EDIT1, _T("Pages have been designed for a property"
-		" sheet dialog, so they have bad margins in wizard mode.\r\n\r\n"
-		"The active page can be saved together with dialog's size and"
-		" position. Select another page and try to close and open again."));
+	SetDlgItemText(IDC_EDIT1, _T("Pages have been designed for a property")
+		_T(" sheet dialog, so they have bad margins in wizard mode.\r\n\r\n")
+		_T("The active page can be saved together with dialog's size and")
+		_T(" position. Select another page and try to close and open again."));
 
 	return TRUE;
 }
@@ -110,8 +110,8 @@ BOOL CMyPropertyPage2::OnInitDialog()
 	AddAnchor(IDC_COMBO1, ANCHOR(100,70));
 	AddAnchor(IDC_BUTTON1, BOTTOM_RIGHT);
 
-	m_ctlEdit1.AddString(_T("Just a single item to test the "
-		"listbox behavior with very long lines..."));
+	m_ctlEdit1.AddString(_T("Just a single item to test the ")
+		_T("listbox behavior with very long lines..."));
 	m_ctlEdit1.SetHorizontalExtent(300);
 
 	return TRUE;
@@ -119,6 +119,8 @@ BOOL CMyPropertyPage2::OnInitDialog()
 
 BOOL CMyPropertyPage2::OnSetActive() 
 {
+	//AfxMessageBox( _T("There is a puzzle.") ); //FIXME: This causes missing layout update
+
 	((CPropertySheet*)GetParent())->SetWizardButtons(PSWIZB_BACK | PSWIZB_NEXT);
 	
 	return CResizablePage::OnSetActive();
