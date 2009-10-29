@@ -236,10 +236,12 @@ LIB32=link.exe -lib
 # Begin Source File
 
 SOURCE=.\ResizableComboBox.cpp
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\ResizableComboLBox.cpp
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -325,10 +327,12 @@ SOURCE=.\StdAfx.cpp
 # Begin Source File
 
 SOURCE=.\ResizableComboBox.h
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
 SOURCE=.\ResizableComboLBox.h
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
