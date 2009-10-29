@@ -10,6 +10,7 @@
 #include "ChildMixedFrame.h"
 #include "DemoDoc.h"
 #include "DemoView.h"
+#include "PropertyFormView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -72,7 +73,7 @@ BOOL CDemoApp::InitInstance()
 		IDR_DEMOTYPE2,
 		RUNTIME_CLASS(CDemoDoc),
 		RUNTIME_CLASS(CChildMixedFrame), // custom MDI child frame
-		RUNTIME_CLASS(CDemoView));
+		RUNTIME_CLASS(CPropertyFormView));
 	AddDocTemplate(pDocTemplate);
 
 	// create main MDI Frame window

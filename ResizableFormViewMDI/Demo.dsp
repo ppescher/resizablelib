@@ -290,6 +290,18 @@ SOURCE=.\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\MyPropertyPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyPropertySheet.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\PropertyFormView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -324,6 +336,18 @@ SOURCE=.\DemoView.h
 # Begin Source File
 
 SOURCE=.\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyPropertyPages.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\MyPropertySheet.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\PropertyFormView.h
 # End Source File
 # Begin Source File
 

@@ -6,6 +6,7 @@
 #include "ChildMixedFrame.h"
 #include "DemoDoc.h"
 #include "DemoView.h"
+#include "PropertyFormView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,7 +41,7 @@ BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* p
 {
 	// CG: The following block was added by the Splitter Bar component.
 	{
-		if (!m_wndSplitter.CreateStatic(this, 2, 1))
+		if (!m_wndSplitter.CreateStatic(this, 1, 2))
 		{
 			TRACE0("Failed to create splitter bar ");
 			return FALSE;    // failed to create
@@ -51,15 +52,15 @@ BOOL CChildMixedFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext* p
 			TRACE0("Failed to create splitter's first pane ");
 			return FALSE;    // failed to create
 		}
-		if (!m_wndSplitter.CreateView(1, 0,
-			RUNTIME_CLASS(CDemoView), CSize(0,0), pContext))
+		if (!m_wndSplitter.CreateView(0, 1,
+			RUNTIME_CLASS(CPropertyFormView), CSize(0,0), pContext))
 		{
 			TRACE0("Failed to create splitter's second pane ");
 			return FALSE;    // failed to create
 		}
 
-		m_wndSplitter.SetRowInfo(0, 100, 30);
-		m_wndSplitter.SetRowInfo(1, 100, 30);
+		m_wndSplitter.SetColumnInfo(0, 100, 30);
+		m_wndSplitter.SetColumnInfo(1, 100, 30);
 
 		return TRUE;
 	}
