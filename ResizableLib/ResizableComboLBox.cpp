@@ -162,7 +162,7 @@ void CResizableComboLBox::OnLButtonUp(UINT nFlags, CPoint point)
 	EndSizing();
 }
 
-UINT CResizableComboLBox::OnNcHitTest(CPoint point) 
+LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 {
 	CRect rcClient;
 	GetClientRect(&rcClient);
