@@ -4,15 +4,13 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // This file is part of ResizableLib
-// http://sourceforge.net/projects/resizablelib
+// https://github.com/ppescher/resizablelib
 //
-// Copyright (C) 2000-2004 by Paolo Messina
-// http://www.geocities.com/ppescher - mailto:ppescher@hotmail.com
+// Copyright (C) 2000-2015 by Paolo Messina
+// mailto:ppescher@hotmail.com
 //
-// The contents of this file are subject to the Artistic License (the "License").
-// You may not use this file except in compliance with the License. 
-// You may obtain a copy of the License at:
-// http://www.opensource.org/licenses/artistic-license.html
+// The contents of this file are subject to the Artistic License 2.0
+// http://opensource.org/licenses/Artistic-2.0
 //
 // If you find this code useful, credits would be nice!
 //
