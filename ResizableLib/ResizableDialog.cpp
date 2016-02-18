@@ -31,6 +31,7 @@ inline void CResizableDialog::PrivateConstruct()
 {
 	m_bEnableSaveRestore = FALSE;
 	m_dwGripTempState = 1;
+	m_bRectOnly = FALSE;
 }
 
 CResizableDialog::CResizableDialog()
@@ -107,7 +108,7 @@ void CResizableDialog::OnDestroy()
 
 void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
 {
-	CWnd::OnSize(nType, cx, cy);
+	CDialog::OnSize(nType, cx, cy);
 	
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed

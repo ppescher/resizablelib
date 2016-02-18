@@ -156,7 +156,7 @@
     <Text Include="Docs\typedef.txt">
       <Filter>Documentation</Filter>
     </Text>
-    <Text Include="Artistic-License.txt" />
+    <Text Include="Artistic-License.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Doxyfile">

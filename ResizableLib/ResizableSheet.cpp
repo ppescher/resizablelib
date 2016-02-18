@@ -35,6 +35,8 @@ inline void CResizableSheet::PrivateConstruct()
 	m_bSavePage = FALSE;
 	m_dwGripTempState = 1;
 	m_bLayoutDone = FALSE;
+	m_bRectOnly = FALSE;
+	m_nCallbackID = 0;
 }
 
 inline BOOL CResizableSheet::IsWizard() const
@@ -393,7 +395,6 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 int CResizableSheet::GetMinWidth()
 {
-	CWnd* pWnd = NULL;
 	CRect rectWnd, rectSheet;
 	GetTotalClientRect(&rectSheet);
 
@@ -401,7 +402,7 @@ int CResizableSheet::GetMinWidth()
 	// search for leftmost and rightmost button margins
 	for (int i = 0; i < 7; i++)
 	{
-		pWnd = GetDlgItem(_propButtons[i]);
+		CWnd* pWnd = GetDlgItem(_propButtons[i]);
 		// exclude not present or hidden buttons
 		if (pWnd == NULL || !(pWnd->GetStyle() & WS_VISIBLE))
 			continue;
