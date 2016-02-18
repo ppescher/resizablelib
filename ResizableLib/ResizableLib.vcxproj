@@ -492,7 +492,7 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Artistic-License.txt" />
+    <Text Include="Artistic-License.md" />
     <Text Include="Docs\class.txt" />
     <Text Include="Docs\default.txt" />
     <Text Include="Docs\function.txt" />
