@@ -38,9 +38,9 @@ class CResizableSheetEx : public CPropertySheetEx, public CResizableLayout,
 // Construction
 public:
 	CResizableSheetEx();
-	CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+	explicit CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
 		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
-	CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+	explicit CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
 		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
 
 // Attributes
@@ -103,7 +103,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandle(m_hWnd);
+		return CWnd::FromHandlePermanent(m_hWnd);
 	};
 
 // Generated message map functions

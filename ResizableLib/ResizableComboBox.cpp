@@ -28,6 +28,7 @@ static char THIS_FILE[] = __FILE__;
 // CResizableComboBox
 
 CResizableComboBox::CResizableComboBox()
+	: m_rectDropDown(), m_iExtent(0)
 {
 	m_bClipMaxHeight = TRUE;
 	m_bIntegralHeight = TRUE;
@@ -49,10 +50,10 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableComboBox message handlers
 
-HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CComboBox::OnCtlColor(pDC, pWnd, nCtlColor);
-	
+
 	if (nCtlColor == CTLCOLOR_LISTBOX)
 	{
 		if (!(GetStyle() & CBS_SIMPLE)
@@ -69,7 +70,7 @@ HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return hbr;
 }
 
-LRESULT CResizableComboBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableComboBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -110,7 +111,7 @@ void CResizableComboBox::InitHorizontalExtent()
 	CFont* pOldFont = dc.SelectObject(GetFont());
 
 	CString str;
-	
+
 	m_iExtent = 0;
 	int n = GetCount();
 	for (int i=0; i<n; i++)
@@ -144,16 +145,16 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 	dc.SelectObject(pOldFont);
 }
 
-void CResizableComboBox::PreSubclassWindow() 
+void CResizableComboBox::PreSubclassWindow()
 {
 	ASSERT(GetStyle() & CBS_NOINTEGRALHEIGHT);
 
 	InitHorizontalExtent();
-	
+
 	GetDroppedControlRect(&m_rectDropDown);
 	::MapWindowPoints(NULL, GetSafeHwnd(),
 		(LPPOINT)&m_rectDropDown, 2);
-	
+
 	CComboBox::PreSubclassWindow();
 }
 
@@ -167,7 +168,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 
 	if (!m_bIntegralHeight || n == 0)
 		return inth;
-	
+
 	if (dwStyle & CBS_OWNERDRAWVARIABLE)
 	{
 		inth = 0;	// try to reach availh by integral steps

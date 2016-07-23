@@ -33,13 +33,14 @@
 /*!
  *  long_description
  */
-class CResizableGrip  
+class CResizableGrip
 {
 private:
 	class CSizeGrip : public CScrollBar
 	{
 	public:
 		CSizeGrip()
+			: m_size()
 		{
 			m_bTransparent = FALSE;
 			m_bTriangular = FALSE;
@@ -65,7 +66,7 @@ private:
 		CBitmap m_bmGrip, m_bmMask;
 	};
 
-	CSizeGrip m_wndGrip;		// grip control
+	CSizeGrip *m_wndGrip;		// grip control
 	int m_nShowCount;			// support for hiding the grip
 
 protected:

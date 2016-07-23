@@ -38,13 +38,13 @@ class CResizableFormView : public CFormView, public CResizableLayout,
 
 // Construction
 protected:      // must derive your own class
-	CResizableFormView(UINT nIDTemplate);
-	CResizableFormView(LPCTSTR lpszTemplateName);
+	explicit CResizableFormView(UINT nIDTemplate);
+	explicit CResizableFormView(LPCTSTR lpszTemplateName);
 	virtual ~CResizableFormView();
 
 private:
 	void PrivateConstruct();
-	
+
 	// support for temporarily hiding the grip
 	DWORD m_dwGripTempState;
 	enum GripHideReason		// bitmask
@@ -62,7 +62,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandle(m_hWnd);
+		return CWnd::FromHandlePermanent(m_hWnd);
 	};
 
 

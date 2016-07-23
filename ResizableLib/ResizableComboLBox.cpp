@@ -29,6 +29,7 @@ static char THIS_FILE[] = __FILE__;
 // CResizableComboLBox
 
 CResizableComboLBox::CResizableComboLBox()
+	: m_nHitTest(0), m_pOwnerCombo(NULL)
 {
 	m_dwAddToStyle = WS_THICKFRAME;
 	m_dwAddToStyleEx = 0;//WS_EX_CLIENTEDGE;
@@ -56,7 +57,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableComboLBox message handlers
 
-void CResizableComboLBox::PreSubclassWindow() 
+void CResizableComboLBox::PreSubclassWindow()
 {
 	CWnd::PreSubclassWindow();
 
@@ -90,7 +91,7 @@ void CResizableComboLBox::InitializeControl()
 		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOMOVE);
 }
 
-void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point) 
+void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CPoint pt = point;
 	MapWindowPoints(NULL, &pt, 1);	// to screen coord
@@ -136,7 +137,7 @@ void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point)
 		SWP_NOACTIVATE|SWP_NOZORDER|nCopyFlag);
 }
 
-void CResizableComboLBox::OnLButtonDown(UINT nFlags, CPoint point) 
+void CResizableComboLBox::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CPoint pt = point;
 	MapWindowPoints(NULL, &pt, 1);	// to screen coord
@@ -156,7 +157,7 @@ void CResizableComboLBox::OnLButtonDown(UINT nFlags, CPoint point)
 		CWnd::OnLButtonDown(nFlags, point);
 }
 
-void CResizableComboLBox::OnLButtonUp(UINT nFlags, CPoint point) 
+void CResizableComboLBox::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CWnd::OnLButtonUp(nFlags, point);
 
@@ -217,7 +218,7 @@ LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 	return ht;
 }
 
-void CResizableComboLBox::OnCaptureChanged(CWnd *pWnd) 
+void CResizableComboLBox::OnCaptureChanged(CWnd *pWnd)
 {
 	EndSizing();
 
@@ -232,7 +233,7 @@ void CResizableComboLBox::EndSizing()
 	m_sizeAfterSizing = rect.Size();
 }
 
-void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 {
 	if (!m_bSizing)
 	{
@@ -245,13 +246,13 @@ void CResizableComboLBox::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 	CWnd::OnWindowPosChanging(lpwndpos);
 }
 
-void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* lpwndpos) 
+void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* lpwndpos)
 {
 	// default implementation sends a WM_SIZE message
 	// that can change the size again to force integral height
 
 	// since we do that manually during resize, we should also
-	// update the horizontal scrollbar 
+	// update the horizontal scrollbar
 	SendMessage(WM_HSCROLL, SB_ENDSCROLL, 0);
 
 	GetWindowRect(&m_pOwnerCombo->m_rectDropDown);

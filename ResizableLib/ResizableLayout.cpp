@@ -44,7 +44,7 @@ static char THIS_FILE[]=__FILE__;
 /*!
  *  This function adds a new control to the layout manager and sets anchor
  *  points for its top-left and bottom-right corners.
- *  
+ *
  *  @param hWnd Window handle to the control to be added
  *  @param anchorTopLeft Anchor point for the top-left corner
  *  @param anchorBottomRight Anchor point for the bottom-right corner
@@ -82,7 +82,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 
 	marginTopLeft.cx = rectChild.left - rectParent.Width() * anchorTopLeft.cx / 100;
 	marginTopLeft.cy = rectChild.top - rectParent.Height() * anchorTopLeft.cy / 100;
-	
+
 	// calculate margin for the bottom-right corner
 
 	marginBottomRight.cx = rectChild.right - rectParent.Width() * anchorBottomRight.cx / 100;
@@ -111,7 +111,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 /*!
  *  This function adds all the controls not yet added to the layout manager
  *  and sets anchor points for its top-left and bottom-right corners.
- *  
+ *
  *  @param anchor Anchor point for the top-left and bottom-right corner
  *
  *  @remarks Overlapping controls, like group boxes and the controls inside,
@@ -126,7 +126,7 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
 	ASSERT(::IsWindow(hParent));
 
 	HWND hWnd = ::GetWindow(hParent, GW_CHILD);
-	while (hWnd != NULL) 
+	while (hWnd != NULL)
 	{
 		POSITION pos;
 		if (!m_mapLayout.Lookup(hWnd, pos))
@@ -164,13 +164,13 @@ UINT CResizableLayout::AddAnchorCallback()
 /*!
  *  This function is called for each placeholder added to the layout manager
  *  and must be overridden to provide the necessary layout information.
- *  
+ *
  *  @param layout Reference to a LAYOUTINFO structure to be filled with
  *         layout information for the specified placeholder.
  *         On input, nCallbackID is the identification number
  *         returned by AddAnchorCallback. On output, anchor points and
  *         the window handle must be set and valid.
- *  
+ *
  *  @return The return value is @c TRUE if the layout information has been
  *          provided successfully, @c FALSE to skip this placeholder.
  *
@@ -183,9 +183,9 @@ UINT CResizableLayout::AddAnchorCallback()
 BOOL CResizableLayout::ArrangeLayoutCallback(LAYOUTINFO& layout) const
 {
 	UNREFERENCED_PARAMETER(layout);
-	
+
 	ASSERT(FALSE); // must be overridden, if callback is used
-	
+
 	return FALSE; // no useful output data
 }
 
@@ -197,7 +197,7 @@ BOOL CResizableLayout::ArrangeLayoutCallback(LAYOUTINFO& layout) const
  *           once for performace reasons, so all the controls are in their
  *           old position when AddAnchorCallback is called.
  *           To know where a control will be placed use GetAnchorPosition.
- *  
+ *
  *  @sa AddAnchor AddAnchorCallback ArrangeLayoutCallback GetAnchorPosition
  */
 void CResizableLayout::ArrangeLayout() const
@@ -217,15 +217,15 @@ void CResizableLayout::ArrangeLayout() const
 
 	// reposition child windows
 	HDWP hdwp = ::BeginDeferWindowPos(count + countCB);
-	
+
 	POSITION pos = m_listLayout.GetHeadPosition();
 	while (pos != NULL)
 	{
 		// get layout info
 		layout = m_listLayout.GetNext(pos);
-		
+
 		// calculate new child's position, size and flags for SetWindowPos
-		CalcNewChildPosition(layout, rectParent, rectChild, uFlags);
+		CalcNewChildPosition(layout, rectParent, rectChild, &uFlags);
 
 		// only if size or position changed
 		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
@@ -248,7 +248,7 @@ void CResizableLayout::ArrangeLayout() const
 			continue;
 
 		// calculate new child's position, size and flags for SetWindowPos
-		CalcNewChildPosition(layout, rectParent, rectChild, uFlags);
+		CalcNewChildPosition(layout, rectParent, rectChild, &uFlags);
 
 		// only if size or position changed
 		if ((uFlags & (SWP_NOMOVE|SWP_NOSIZE)) != (SWP_NOMOVE|SWP_NOSIZE))
@@ -311,7 +311,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
  *  This function retrieves the clipping region for the current layout.
  *  It can be used to draw directly inside the region, without applying
  *  clipping as the ClipChildren function does.
- *  
+ *
  *  @param pRegion Pointer to a CRegion object that holds the
  *         calculated clipping region upon return
  *
@@ -344,7 +344,7 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 	{
 		// get layout info
 		layout = m_listLayout.GetNext(pos);
-		
+
 		if (::IsWindowVisible(layout.hWnd))
 			ClipChildWindow(layout, pRegion);
 	}
@@ -383,10 +383,10 @@ inline CWnd* GetRootParentWnd(CWnd* pWnd)
  *  This function enables or restores clipping on the specified DC when
  *  appropriate. It should be called whenever drawing on the window client
  *  area to avoid flickering.
- *  
- *  @param pDC Pointer to the target device context 
+ *
+ *  @param pDC Pointer to the target device context
  *  @param bUndo Flag that specifies wether to restore the clipping region
- *  
+ *
  *  @return The return value is @c TRUE if the clipping region has been
  *          modified, @c FALSE if clipping was not necessary.
  *
@@ -441,7 +441,7 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 			::SelectClipRgn(hDC, m_hOldClipRgn);
 		else
 			::SelectClipRgn(hDC, NULL);
-		
+
 		return TRUE;
 	}
 
@@ -453,7 +453,7 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
  *  classes too, in place of the standard GetClientRect. It can be useful
  *  for windows with scrollbars or expanding windows, to provide the true
  *  client area, including even those parts which are not visible.
- *  
+ *
  *  @param lpRect Pointer to the RECT structure that holds the result
  *
  *  @remarks Override this function to provide the client area the class uses
@@ -469,13 +469,13 @@ void CResizableLayout::GetTotalClientRect(LPRECT lpRect) const
 /*!
  *  This function is used to determine if a control needs to be painted when
  *  it is moved or resized by the layout manager.
- *  
+ *
  *  @param layout Reference to a @c LAYOUTINFO structure for the control
  *  @param rectOld Reference to a @c RECT structure that holds the control
  *         position and size before the layout update
  *  @param rectNew Reference to a @c RECT structure that holds the control
  *         position and size after the layout update
- *  
+ *
  *  @return The return value is @c TRUE if the control should be freshly
  *          painted after a layout update, @c FALSE if not necessary.
  *
@@ -562,10 +562,10 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 		SCROLLINFO info;
 		info.cbSize = sizeof(SCROLLINFO);
 		info.fMask = SIF_PAGE | SIF_POS | SIF_RANGE;
-		if (::GetScrollInfo(layout.hWnd, SB_HORZ, &info))
+		if (::GetScrollInfo(layout.hWnd, SB_HORZ, &info) && info.nPage > 1) //fix for unsigned subtraction
 		{
 			// subtract the page size
-			info.nMax -= __max(info.nPage - 1, 0);
+			info.nMax -= info.nPage-1; //should not use __max() macro
 		}
 
 		// resizing will cause the text to scroll on the right
@@ -584,9 +584,9 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
  *  This function is used to determine if a control can be safely clipped
  *  out of the parent window client area when it is repainted, usually
  *  after a resize operation.
- *  
+ *
  *  @param layout Reference to a @c LAYOUTINFO structure for the control
- *  
+ *
  *  @return The return value is @c TRUE if clipping is supported by the
  *          control, @c FALSE otherwise.
  *
@@ -649,14 +649,12 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 		case SS_BITMAP:
 			// bitmaps
 			return TRUE;
-			break;
 
 		case SS_ICON:
 		case SS_ENHMETAFILE:
 			if (style & SS_CENTERIMAGE)
 				return FALSE;
 			return TRUE;
-			break;
 
 		default:
 			return FALSE;
@@ -673,19 +671,19 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
  *  control in the layout and flags for @c SetWindowPos
  */
 void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
-						const CRect &rectParent, CRect &rectChild, UINT& uFlags) const
+						const CRect &rectParent, CRect &rectChild, UINT *lpFlags) const
 {
 	CWnd* pParent = GetResizableWnd();
 
 	::GetWindowRect(layout.hWnd, &rectChild);
 	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
-	
+
 	CRect rectNew;
 
 	// calculate new top-left corner
 	rectNew.left = layout.marginTopLeft.cx + rectParent.Width() * layout.anchorTopLeft.cx / 100;
 	rectNew.top = layout.marginTopLeft.cy + rectParent.Height() * layout.anchorTopLeft.cy / 100;
-	
+
 	// calculate new bottom-right corner
 	rectNew.right = layout.marginBottomRight.cx + rectParent.Width() * layout.anchorBottomRight.cx / 100;
 	rectNew.bottom = layout.marginBottomRight.cy + rectParent.Height() * layout.anchorBottomRight.cy / 100;
@@ -697,14 +695,16 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 	BOOL bRefresh = layout.properties.bAskRefresh ?
 		NeedsRefresh(layout, rectChild, rectNew) : layout.properties.bCachedNeedsRefresh;
 
-	// set flags 
-	uFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
-	if (bRefresh)
-		uFlags |= SWP_NOCOPYBITS;
-	if (rectNew.TopLeft() == rectChild.TopLeft())
-		uFlags |= SWP_NOMOVE;
-	if (rectNew.Size() == rectChild.Size())
-		uFlags |= SWP_NOSIZE;
+	// set flags
+	if (lpFlags) {
+		*lpFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
+		if (bRefresh)
+			*lpFlags |= SWP_NOCOPYBITS;
+		if (rectNew.TopLeft() == rectChild.TopLeft())
+			*lpFlags |= SWP_NOMOVE;
+		if (rectNew.Size() == rectChild.Size())
+			*lpFlags |= SWP_NOSIZE;
+	}
 
 	// update rect
 	rectChild = rectNew;
@@ -713,11 +713,11 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 /*!
  *  This function calculates the top, left, bottom, right margins for a
  *  given size of the specified control.
- *  
+ *
  *  @param hWnd Window handle to a control in the layout
  *  @param sizeChild Size of the control to use in calculations
  *  @param rectMargins Holds the calculated margins
- *  
+ *
  *  @return The return value is @c TRUE if successful, @c FALSE otherwise
  *
  *  @remarks This function can be used to infer the parent window size
@@ -752,7 +752,7 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
  *  This function is used to set the initial resize properties of a control
  *  in the layout, that are stored in the @c properties member of the
  *  related @c LAYOUTINFO structure.
- *  
+ *
  *  @param layout Reference to the @c LAYOUTINFO structure to be set
  *
  *  @remarks The various flags are used to specify whether the resize
@@ -760,7 +760,7 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
  *           call to the property querying functions is needed at every
  *           layout update, or they are static properties, and the cached
  *           value is used whenever necessary.
- *        @n The default implementation sends a registered message to the 
+ *        @n The default implementation sends a registered message to the
  *           control, giving it the opportunity to specify its resize
  *           properties, which takes precedence if the message is supported.
  *           It then sets the @a clipping property as static, calling
@@ -794,15 +794,15 @@ void CResizableLayout::InitResizeProperties(LAYOUTINFO &layout) const
 /*!
  *  This function modifies a window to enable resizing functionality.
  *  This affects the window style, size, system menu and appearance.
- *  
+ *
  *  @param lpCreateStruct Pointer to a @c CREATESTRUCT structure, usually
  *         passed by the system to the window procedure in a @c WM_CREATE
  *         or @c WM_NCCREATE
- *  
+ *
  *  @remarks The function is intended to be called only inside a @c WM_CREATE
  *           or @c WM_NCCREATE message handler.
  */
-void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
+void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 {
 	if (lpCreateStruct->style & WS_CHILD)
 		return;
@@ -838,7 +838,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
 /*!
  *  This function should be called inside the parent window @c WM_NCCALCSIZE
  *  message handler to help eliminate flickering.
- *  
+ *
  *  @param bAfterDefault Flag that specifies wether the call is made before
  *         or after the default handler
  *  @param lpncsp Pointer to the @c NCCALCSIZE_PARAMS structure that is
@@ -846,7 +846,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
  *  @param lResult Reference to the result of the message handler.
  *         It contains the default handler result on input and the value to
  *         return from the window procedure on output.
- *  
+ *
  *  @remarks This function fixes the annoying flickering effect that is
  *           visible when resizing the top or left edges of the window
  *           (at least on a "left to right" Windows localized version).

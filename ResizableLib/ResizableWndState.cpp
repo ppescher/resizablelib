@@ -40,7 +40,7 @@ CResizableWndState::~CResizableWndState()
 // depending on your application settings
 
 #define PLACEMENT_ENT	_T("WindowPlacement")
-#define PLACEMENT_FMT 	_T("%d,%d,%d,%d,%d,%d,%d,%d")
+#define PLACEMENT_FMT 	_T("%ld,%ld,%ld,%ld,%u,%u,%ld,%ld")
 
 /*!
  *  This function saves the current window position and size using the base
@@ -49,10 +49,10 @@ CResizableWndState::~CResizableWndState()
  *  @sa CResizableState::WriteState
  *  @note Window coordinates are in the form used by the system functions
  *  GetWindowPlacement and SetWindowPlacement.
- *  
+ *
  *  @param pszName String that identifies stored settings
  *  @param bRectOnly Flag that specifies wether to ignore min/max state
- *  
+ *
  *  @return Returns @a TRUE if successful, @a FALSE otherwise
  */
 BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
@@ -64,7 +64,7 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 	wp.length = sizeof(WINDOWPLACEMENT);
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
-	
+
 	// use workspace coordinates
 	RECT& rc = wp.rcNormalPosition;
 
@@ -91,10 +91,10 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
  *  @sa CResizableState::WriteState
  *  @note Window coordinates are in the form used by the system functions
  *  GetWindowPlacement and SetWindowPlacement.
- *  
+ *
  *  @param pszName String that identifies stored settings
  *  @param bRectOnly Flag that specifies wether to ignore min/max state
- *  
+ *
  *  @return Returns @a TRUE if successful, @a FALSE otherwise
  */
 BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
@@ -105,7 +105,7 @@ BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 	id = CString(pszName) + PLACEMENT_ENT;
 	if (!ReadState(id, data))	// never saved before
 		return FALSE;
-	
+
 	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
 	wp.length = sizeof(WINDOWPLACEMENT);
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))

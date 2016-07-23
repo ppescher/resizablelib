@@ -52,12 +52,12 @@ public:
 	virtual ~CResizableMinMax();
 
 protected:
-	void MinMaxInfo(LPMINMAXINFO lpMMI);
-	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd);
+	void MinMaxInfo(LPMINMAXINFO lpMMI) const;
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd);
 
-	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize sizeExtra);
-	
-	void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, UINT nID, CSize sizeExtra)
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize sizeExtra);
+
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, UINT nID, CSize sizeExtra)
 	{
 		ChainMinMaxInfo(lpMMI,
 			::GetDlgItem(pParentWnd->GetSafeHwnd(), nID), sizeExtra);

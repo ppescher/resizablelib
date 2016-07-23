@@ -21,7 +21,7 @@
 #if !defined(AFX_RESIZABLELAYOUT_H__INCLUDED_)
 #define AFX_RESIZABLELAYOUT_H__INCLUDED_
 
-#include <afxtempl.h>
+//#include <afxtempl.h>
 #include "ResizableMsgSupport.h"
 
 #if _MSC_VER > 1000
@@ -43,7 +43,7 @@ typedef struct tagANCHOR
 	int cx; //!< horizontal component, in percent
 	int cy; //!< vertical component, in percent
 
-	tagANCHOR() {}
+	tagANCHOR() : cx(0), cy(0) {}
 
 	tagANCHOR(int x, int y)
 	{
@@ -97,7 +97,7 @@ typedef struct tagLAYOUTINFO
 	ANCHOR anchorTopLeft;
 	//! Fixed distance for the top-left corner
 	SIZE marginTopLeft;
-	
+
 	//! Anchor point for the bottom-right corner
 	ANCHOR anchorBottomRight;
 	//! Fixed distance for the bottom-right corner
@@ -109,11 +109,12 @@ typedef struct tagLAYOUTINFO
 	RESIZEPROPERTIES properties;
 
 	tagLAYOUTINFO() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
+		, marginTopLeft(), marginBottomRight()
 	{
 		sWndClass[0] = 0;
 	}
 
-	tagLAYOUTINFO(HWND hwnd, ANCHOR tl_type, SIZE tl_margin, 
+	tagLAYOUTINFO(HWND hwnd, ANCHOR tl_type, SIZE tl_margin,
 		ANCHOR br_type, SIZE br_margin)
 		:
 		hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
@@ -159,7 +160,7 @@ private:
 
 	//! @brief Helper function to calculate new layout
 	void CalcNewChildPosition(const LAYOUTINFO &layout,
-		const CRect &rectParent, CRect &rectChild, UINT& uFlags) const;
+		const CRect &rectParent, CRect &rectChild, UINT *lpFlags) const;
 
 protected:
 	//! @brief Override to initialize resize properties (clipping, refresh)
@@ -177,7 +178,7 @@ protected:
 
 	//! @brief Get the layout clipping region
 	void GetClippingRegion(CRgn* pRegion) const;
-	
+
 	//! @brief Override for scrollable or expanding parent windows
 	virtual void GetTotalClientRect(LPRECT lpRect) const;
 
@@ -225,9 +226,7 @@ protected:
 		if (!m_mapLayout.Lookup(hWnd, pos))
 			return FALSE;
 
-		UINT uTmpFlags;
-		CalcNewChildPosition(m_listLayout.GetAt(pos), rectParent, rectChild,
-			(lpFlags != NULL) ? (*lpFlags) : uTmpFlags);
+		CalcNewChildPosition(m_listLayout.GetAt(pos), rectParent, rectChild, lpFlags);
 		return TRUE;
 	}
 
@@ -287,12 +286,13 @@ protected:
 
 	//! @brief Enhance anti-flickering
 	void HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT& lResult);
-	
+
 	//! @brief Enable resizable style for top level parent windows
-	void MakeResizable(LPCREATESTRUCT lpCreateStruct);
+	void MakeResizable(LPCREATESTRUCT lpCreateStruct) const;
 
 public:
 	CResizableLayout()
+		: m_rectClientBefore()
 	{
 		m_bNoRecursion = FALSE;
 		m_hOldClipRgn = ::CreateRectRgn(0,0,0,0);

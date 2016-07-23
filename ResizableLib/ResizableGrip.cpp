@@ -34,16 +34,18 @@ static char THIS_FILE[]=__FILE__;
 CResizableGrip::CResizableGrip()
 {
 	m_nShowCount = 0;
+	m_wndGrip = new CSizeGrip();
 }
 
 CResizableGrip::~CResizableGrip()
 {
-
+	m_wndGrip->DestroyWindow();
+	delete m_wndGrip;
 }
 
 void CResizableGrip::UpdateSizeGrip()
 {
-	if (!::IsWindow(m_wndGrip.m_hWnd))
+	if (!::IsWindow(m_wndGrip->m_hWnd))
 		return;
 
 	// size-grip goes bottom right in the client area
@@ -52,11 +54,11 @@ void CResizableGrip::UpdateSizeGrip()
 	RECT rect;
 	GetResizableWnd()->GetClientRect(&rect);
 
-	rect.left = rect.right - m_wndGrip.m_size.cx;
-	rect.top = rect.bottom - m_wndGrip.m_size.cy;
+	rect.left = rect.right - m_wndGrip->m_size.cx;
+	rect.top = rect.bottom - m_wndGrip->m_size.cy;
 
 	// must stay below other children
-	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
+	m_wndGrip->SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
 		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION
 		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
@@ -106,12 +108,12 @@ void CResizableGrip::SetSizeGripVisibility(BOOL bVisible)
 
 BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
 {
-	if (::IsWindow(m_wndGrip.m_hWnd))
+	if (::IsWindow(m_wndGrip->m_hWnd))
 	{
 		if (nBkMode == OPAQUE)
-			m_wndGrip.SetTransparency(FALSE);
+			m_wndGrip->SetTransparency(FALSE);
 		else if (nBkMode == TRANSPARENT)
-			m_wndGrip.SetTransparency(TRUE);
+			m_wndGrip->SetTransparency(TRUE);
 		else
 			return FALSE;
 		return TRUE;
@@ -121,25 +123,25 @@ BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
 
 void CResizableGrip::SetSizeGripShape(BOOL bTriangular)
 {
-	if (::IsWindow(m_wndGrip.m_hWnd))
-		m_wndGrip.SetTriangularShape(bTriangular);
+	if (::IsWindow(m_wndGrip->m_hWnd))
+		m_wndGrip->SetTriangularShape(bTriangular);
 }
 
 BOOL CResizableGrip::CreateSizeGrip(BOOL bVisible /*= TRUE*/,
 		BOOL bTriangular /*= TRUE*/, BOOL bTransparent /*= FALSE*/)
 {
 	// create grip
-	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
-	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS
+	CRect rect(0 , 0, m_wndGrip->m_size.cx, m_wndGrip->m_size.cy);
+	BOOL bRet = m_wndGrip->Create(WS_CHILD | WS_CLIPSIBLINGS
 		| SBS_SIZEGRIP, rect, GetResizableWnd(), 0);
 
 	if (bRet)
 	{
 		// set options
-		m_wndGrip.SetTriangularShape(bTriangular);
-		m_wndGrip.SetTransparency(bTransparent);
+		m_wndGrip->SetTriangularShape(bTriangular);
+		m_wndGrip->SetTransparency(bTransparent);
 		SetSizeGripVisibility(bVisible);
-	
+
 		// update position
 		UpdateSizeGrip();
 	}
@@ -155,7 +157,7 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 	return GetExStyle() & WS_EX_LAYOUTRTL;
 }
 
-BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs) 
+BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// set window size
 	m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
@@ -163,7 +165,7 @@ BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 
 	cs.cx = m_size.cx;
 	cs.cy = m_size.cy;
-	
+
 	return CScrollBar::PreCreateWindow(cs);
 }
 
@@ -188,7 +190,6 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			return HTBOTTOMLEFT;
 		else
 			return HTBOTTOMRIGHT;
-		break;
 
 	case WM_SETTINGCHANGE:
 		{
@@ -249,7 +250,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
 			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
 			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
-			
+
 			// draw transparently
 			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
 			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);

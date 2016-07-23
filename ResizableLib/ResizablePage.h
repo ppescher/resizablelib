@@ -36,8 +36,8 @@ class CResizablePage : public CPropertyPage, public CResizableLayout,
 // Construction
 public:
 	CResizablePage();
-	CResizablePage(UINT nIDTemplate, UINT nIDCaption = 0);
-	CResizablePage(LPCTSTR lpszTemplateName, UINT nIDCaption = 0);
+	explicit CResizablePage(UINT nIDTemplate, UINT nIDCaption = 0);
+	explicit CResizablePage(LPCTSTR lpszTemplateName, UINT nIDCaption = 0);
 
 // Attributes
 public:
@@ -62,7 +62,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandle(m_hWnd);
+		return CWnd::FromHandlePermanent(m_hWnd);
 	};
 
 // Generated message map functions

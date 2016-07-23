@@ -36,8 +36,8 @@ class CResizablePageEx : public CPropertyPageEx, public CResizableLayout,
 // Construction
 public:
 	CResizablePageEx();
-	CResizablePageEx(UINT nIDTemplate, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
-	CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
+	explicit CResizablePageEx(UINT nIDTemplate, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
+	explicit CResizablePageEx(LPCTSTR lpszTemplateName, UINT nIDCaption = 0, UINT nIDHeaderTitle = 0, UINT nIDHeaderSubTitle = 0);
 
 // Attributes
 public:
@@ -62,7 +62,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandle(m_hWnd);
+		return CWnd::FromHandlePermanent(m_hWnd);
 	};
 
 // Generated message map functions

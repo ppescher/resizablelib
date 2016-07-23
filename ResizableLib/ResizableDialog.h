@@ -38,8 +38,8 @@ class CResizableDialog : public CDialog, public CResizableLayout,
 // Construction
 public:
 	CResizableDialog();
-	CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL);
-	CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd = NULL);
+	explicit CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL);
+	explicit CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd = NULL);
 
 // Attributes
 private:
@@ -79,7 +79,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandle(m_hWnd);
+		return CWnd::FromHandlePermanent(m_hWnd);
 	};
 
 // Generated message map functions
