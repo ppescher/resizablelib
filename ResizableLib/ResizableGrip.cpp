@@ -34,18 +34,16 @@ static char THIS_FILE[]=__FILE__;
 CResizableGrip::CResizableGrip()
 {
 	m_nShowCount = 0;
-	m_wndGrip = new CSizeGrip();
 }
 
 CResizableGrip::~CResizableGrip()
 {
-	m_wndGrip->DestroyWindow();
-	delete m_wndGrip;
+
 }
 
 void CResizableGrip::UpdateSizeGrip()
 {
-	if (!::IsWindow(m_wndGrip->m_hWnd))
+	if (!::IsWindow(m_wndGrip.m_hWnd))
 		return;
 
 	// size-grip goes bottom right in the client area
@@ -54,11 +52,11 @@ void CResizableGrip::UpdateSizeGrip()
 	RECT rect;
 	GetResizableWnd()->GetClientRect(&rect);
 
-	rect.left = rect.right - m_wndGrip->m_size.cx;
-	rect.top = rect.bottom - m_wndGrip->m_size.cy;
+	rect.left = rect.right - m_wndGrip.m_size.cx;
+	rect.top = rect.bottom - m_wndGrip.m_size.cy;
 
 	// must stay below other children
-	m_wndGrip->SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
+	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
 		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION
 		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
@@ -108,12 +106,12 @@ void CResizableGrip::SetSizeGripVisibility(BOOL bVisible)
 
 BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
 {
-	if (::IsWindow(m_wndGrip->m_hWnd))
+	if (::IsWindow(m_wndGrip.m_hWnd))
 	{
 		if (nBkMode == OPAQUE)
-			m_wndGrip->SetTransparency(FALSE);
+			m_wndGrip.SetTransparency(FALSE);
 		else if (nBkMode == TRANSPARENT)
-			m_wndGrip->SetTransparency(TRUE);
+			m_wndGrip.SetTransparency(TRUE);
 		else
 			return FALSE;
 		return TRUE;
@@ -123,23 +121,23 @@ BOOL CResizableGrip::SetSizeGripBkMode(int nBkMode)
 
 void CResizableGrip::SetSizeGripShape(BOOL bTriangular)
 {
-	if (::IsWindow(m_wndGrip->m_hWnd))
-		m_wndGrip->SetTriangularShape(bTriangular);
+	if (::IsWindow(m_wndGrip.m_hWnd))
+		m_wndGrip.SetTriangularShape(bTriangular);
 }
 
 BOOL CResizableGrip::CreateSizeGrip(BOOL bVisible /*= TRUE*/,
 		BOOL bTriangular /*= TRUE*/, BOOL bTransparent /*= FALSE*/)
 {
 	// create grip
-	CRect rect(0 , 0, m_wndGrip->m_size.cx, m_wndGrip->m_size.cy);
-	BOOL bRet = m_wndGrip->Create(WS_CHILD | WS_CLIPSIBLINGS
+	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
+	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS
 		| SBS_SIZEGRIP, rect, GetResizableWnd(), 0);
 
 	if (bRet)
 	{
 		// set options
-		m_wndGrip->SetTriangularShape(bTriangular);
-		m_wndGrip->SetTransparency(bTransparent);
+		m_wndGrip.SetTriangularShape(bTriangular);
+		m_wndGrip.SetTransparency(bTransparent);
 		SetSizeGripVisibility(bVisible);
 
 		// update position

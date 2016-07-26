@@ -66,7 +66,7 @@ private:
 		CBitmap m_bmGrip, m_bmMask;
 	};
 
-	CSizeGrip *m_wndGrip;		// grip control
+	CSizeGrip m_wndGrip;		// grip control
 	int m_nShowCount;			// support for hiding the grip
 
 protected:
