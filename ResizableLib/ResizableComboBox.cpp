@@ -133,7 +133,7 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(GetFont());
 
-	int cx = dc.GetTextExtent(szText, lstrlen(szText)).cx;
+	int cx = dc.GetTextExtent(szText, static_cast<int>(_tcslen(szText))).cx;
 	if (cx > m_iExtent)
 	{
 		m_iExtent = cx;

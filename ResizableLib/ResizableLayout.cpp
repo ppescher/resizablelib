@@ -148,7 +148,7 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
  *
  *  @sa AddAnchor ArrangeLayoutCallback ArrangeLayout
  */
-UINT CResizableLayout::AddAnchorCallback()
+LRESULT CResizableLayout::AddAnchorCallback()
 {
 	// one callback control cannot rely upon another callback control's
 	// size and/or position (they're updated all together at the end)
@@ -204,25 +204,22 @@ void CResizableLayout::ArrangeLayout() const
 {
 	// common vars
 	UINT uFlags;
-	LAYOUTINFO layout;
 	CRect rectParent, rectChild;
-	int count = m_listLayout.GetCount();
-	int countCB = m_listLayoutCB.GetCount();
+	INT_PTR count = m_listLayout.GetCount() + m_listLayoutCB.GetCount();
 
-	if (count + countCB == 0)
+	if (count <= 0)
 		return;
 
 	// get parent window's rect
 	GetTotalClientRect(&rectParent);
 
 	// reposition child windows
-	HDWP hdwp = ::BeginDeferWindowPos(count + countCB);
+	HDWP hdwp = ::BeginDeferWindowPos(static_cast<int>(count));
 
-	POSITION pos = m_listLayout.GetHeadPosition();
-	while (pos != NULL)
+	for (POSITION pos = m_listLayout.GetHeadPosition(); pos != NULL;)
 	{
 		// get layout info
-		layout = m_listLayout.GetNext(pos);
+		const LAYOUTINFO layout = m_listLayout.GetNext(pos);
 
 		// calculate new child's position, size and flags for SetWindowPos
 		CalcNewChildPosition(layout, rectParent, rectChild, &uFlags);
@@ -238,11 +235,10 @@ void CResizableLayout::ArrangeLayout() const
 	// for callback items you may use GetAnchorPosition to know the
 	// new position and size of a non-callback item after resizing
 
-	pos = m_listLayoutCB.GetHeadPosition();
-	while (pos != NULL)
+	for (POSITION pos = m_listLayoutCB.GetHeadPosition(); pos != NULL;)
 	{
 		// get layout info
-		layout = m_listLayoutCB.GetNext(pos);
+		LAYOUTINFO layout = m_listLayoutCB.GetNext(pos);
 		// request layout data
 		if (!ArrangeLayoutCallback(layout))
 			continue;
@@ -511,7 +507,7 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 	// window classes that need refresh when resized
 	if (0 == lstrcmp(layout.sWndClass, WC_STATIC))
 	{
-		DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
+		LONG_PTR style = ::GetWindowLongPtr(layout.hWnd, GWL_STYLE);
 
 		switch (style & SS_TYPEMASK)
 		{
@@ -606,7 +602,7 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 			return clipping.bLikesClipping;
 	}
 
-	DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
+	LONG_PTR style = ::GetWindowLongPtr(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
 	if (0 == lstrcmp(layout.sWndClass, WC_BUTTON))

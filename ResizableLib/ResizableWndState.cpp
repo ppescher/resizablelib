@@ -58,10 +58,8 @@ CResizableWndState::~CResizableWndState()
 BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
 	CString data, id;
-	WINDOWPLACEMENT wp;
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 
@@ -100,21 +98,19 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
 	CString data, id;
-	WINDOWPLACEMENT wp;
+	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
 	id = CString(pszName) + PLACEMENT_ENT;
 	if (!ReadState(id, data))	// never saved before
 		return FALSE;
 
-	ZeroMemory(&wp, sizeof(WINDOWPLACEMENT));
-	wp.length = sizeof(WINDOWPLACEMENT);
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 
 	// use workspace coordinates
 	RECT& rc = wp.rcNormalPosition;
 
-	if (_stscanf(data, PLACEMENT_FMT, &rc.left, &rc.top,
+	if (_stscanf_s(data, PLACEMENT_FMT, &rc.left, &rc.top,
 		&rc.right, &rc.bottom, &wp.showCmd, &wp.flags,
 		&wp.ptMinPosition.x, &wp.ptMinPosition.y) == 8)
 	{
@@ -122,12 +118,9 @@ BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 		{
 			wp.showCmd = SW_SHOWNORMAL;
 			wp.flags = 0;
-			return GetResizableWnd()->SetWindowPlacement(&wp);
 		}
-		else	// restore also min/max state
-		{
-			return GetResizableWnd()->SetWindowPlacement(&wp);
-		}
+		// restore also min/max state
+		return GetResizableWnd()->SetWindowPlacement(&wp);
 	}
 	return FALSE;
 }

@@ -74,7 +74,7 @@ protected:
 	BOOL CreateSizeGrip(BOOL bVisible = TRUE,
 		BOOL bTriangular = TRUE, BOOL bTransparent = FALSE);
 
-	BOOL IsSizeGripVisible();	// TRUE if grip is set to be visible
+	BOOL IsSizeGripVisible() const;	// TRUE if grip is set to be visible
 	void SetSizeGripVisibility(BOOL bVisible);	// set default visibility
 	void UpdateSizeGrip();		// update the grip's visibility and position
 	void ShowSizeGrip(DWORD* pStatus, DWORD dwMask = 1);	// temp show the size grip

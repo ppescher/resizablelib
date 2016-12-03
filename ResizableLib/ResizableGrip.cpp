@@ -90,7 +90,7 @@ void CResizableGrip::HideSizeGrip(DWORD* pStatus, DWORD dwMask /*= 1*/)
 	}
 }
 
-BOOL CResizableGrip::IsSizeGripVisible()
+BOOL CResizableGrip::IsSizeGripVisible() const
 {
 	// NB: visibility is effective only after an update
 	return (m_nShowCount > 0);
@@ -184,10 +184,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 
 	case WM_NCHITTEST:
 		// choose proper cursor shape
-		if (IsRTL())
-			return HTBOTTOMLEFT;
-		else
-			return HTBOTTOMRIGHT;
+		return IsRTL() ? HTBOTTOMLEFT : HTBOTTOMRIGHT;
 
 	case WM_SETTINGCHANGE:
 		{
@@ -261,7 +258,6 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 				EndPaint(&ps);
 			return 0;
 		}
-		break;
 	}
 
 	return CScrollBar::WindowProc(message, wParam, lParam);

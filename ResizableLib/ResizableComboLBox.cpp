@@ -171,7 +171,7 @@ LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 	MapWindowPoints(NULL, &rcClient);
 
 	// ask for default hit-test value
-	UINT ht = CWnd::OnNcHitTest(point);
+	LRESULT ht = CWnd::OnNcHitTest(point);
 
 	// disable improper resizing (based on layout setting)
 	switch (ht)
