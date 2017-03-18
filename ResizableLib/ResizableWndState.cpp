@@ -69,7 +69,7 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 	if (bRectOnly)	// save size/pos only (normal state)
 	{
 		data.Format(PLACEMENT_FMT, rc.left, rc.top,
-			rc.right, rc.bottom, SW_SHOWNORMAL, 0, 0, 0);
+			rc.right, rc.bottom, SW_SHOWNORMAL, 0U, 0L, 0L);
 	}
 	else	// save also min/max state
 	{

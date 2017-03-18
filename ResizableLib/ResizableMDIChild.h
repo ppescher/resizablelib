@@ -57,7 +57,7 @@ protected:
 	virtual CWnd* GetResizableWnd() const
 	{
 		// make the layout know its parent window
-		return CWnd::FromHandlePermanent(m_hWnd);
+		return CWnd::FromHandle(m_hWnd);
 	};
 
 private:
