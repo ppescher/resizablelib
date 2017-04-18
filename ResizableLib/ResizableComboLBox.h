@@ -58,7 +58,7 @@ private:
 	CPoint m_ptBeforeSizing;	// screen coords
 	CRect m_rcBeforeSizing;		// screen coords
 	CSize m_sizeAfterSizing;	// screen coords
-	UINT m_nHitTest;			// current resize operation
+	LRESULT m_nHitTest;			// current resize operation
 	BOOL m_bSizing;
 
 	void InitializeControl();

@@ -130,7 +130,7 @@ LRESULT CResizableSheetEx::OnResizeSupport(WPARAM wParam, LPARAM lParam)
 			// a window object must be still associated to the page handle
 			// but MFC subclassing has been turned off to allow the system
 			// to subclass it first, so we can catch all the messages
-			CWnd* pWnd = CWnd::FromHandlePermanent((HWND)lParam);
+			CWnd* pWnd = CWnd::FromHandle((HWND)lParam);
 			if (pWnd == NULL)
 				return 0;
 

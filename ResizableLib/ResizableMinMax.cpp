@@ -32,6 +32,7 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 
 CResizableMinMax::CResizableMinMax()
+	: m_ptMinTrackSize(), m_ptMaxTrackSize(), m_ptMaxPos(), m_ptMaxSize()
 {
 	m_bUseMinTrack = FALSE;
 	m_bUseMaxTrack = FALSE;
@@ -43,7 +44,7 @@ CResizableMinMax::~CResizableMinMax()
 
 }
 
-void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI)
+void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI) const
 {
 	if (m_bUseMinTrack)
 		lpMMI->ptMinTrackSize = m_ptMinTrackSize;

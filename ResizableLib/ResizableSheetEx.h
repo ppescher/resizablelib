@@ -38,9 +38,9 @@ class CResizableSheetEx : public CPropertySheetEx, public CResizableLayout,
 // Construction
 public:
 	CResizableSheetEx();
-	CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+	explicit CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
 		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
-	CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
+	explicit CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0,
 		HBITMAP hbmWatermark = NULL, HPALETTE hpalWatermark = NULL, HBITMAP hbmHeader = NULL);
 
 // Attributes
@@ -54,7 +54,7 @@ private:
 	BOOL m_bSavePage;
 
 	// layout vars
-	UINT m_nCallbackID;
+	LRESULT m_nCallbackID;
 	CSize m_sizePageTL, m_sizePageBR;
 	BOOL m_bLayoutDone;
 

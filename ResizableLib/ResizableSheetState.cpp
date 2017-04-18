@@ -66,9 +66,9 @@ BOOL CResizableSheetState::SavePage(LPCTSTR pszName)
 	if (page < 0)
 		page = pSheet->m_psh.nStartPage;
 
-	CString data, id;
-	_itot(page, data.GetBuffer(10), 10);
-	id = CString(pszName) + ACTIVEPAGE_ENT;
+	CString data;
+	_itot_s(page, data.GetBuffer(10), 10, 10);
+	CString id = CString(pszName) + ACTIVEPAGE_ENT;
 	return WriteState(id, data);
 }
 

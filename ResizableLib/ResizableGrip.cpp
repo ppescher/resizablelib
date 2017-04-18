@@ -90,7 +90,7 @@ void CResizableGrip::HideSizeGrip(DWORD* pStatus, DWORD dwMask /*= 1*/)
 	}
 }
 
-BOOL CResizableGrip::IsSizeGripVisible()
+BOOL CResizableGrip::IsSizeGripVisible() const
 {
 	// NB: visibility is effective only after an update
 	return (m_nShowCount > 0);
@@ -139,7 +139,7 @@ BOOL CResizableGrip::CreateSizeGrip(BOOL bVisible /*= TRUE*/,
 		m_wndGrip.SetTriangularShape(bTriangular);
 		m_wndGrip.SetTransparency(bTransparent);
 		SetSizeGripVisibility(bVisible);
-	
+
 		// update position
 		UpdateSizeGrip();
 	}
@@ -155,7 +155,7 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 	return GetExStyle() & WS_EX_LAYOUTRTL;
 }
 
-BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs) 
+BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// set window size
 	m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
@@ -163,7 +163,7 @@ BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 
 	cs.cx = m_size.cx;
 	cs.cy = m_size.cy;
-	
+
 	return CScrollBar::PreCreateWindow(cs);
 }
 
@@ -184,11 +184,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 
 	case WM_NCHITTEST:
 		// choose proper cursor shape
-		if (IsRTL())
-			return HTBOTTOMLEFT;
-		else
-			return HTBOTTOMRIGHT;
-		break;
+		return IsRTL() ? HTBOTTOMLEFT : HTBOTTOMRIGHT;
 
 	case WM_SETTINGCHANGE:
 		{
@@ -249,7 +245,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
 			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
 			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
-			
+
 			// draw transparently
 			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
 			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);
@@ -262,7 +258,6 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 				EndPaint(&ps);
 			return 0;
 		}
-		break;
 	}
 
 	return CScrollBar::WindowProc(message, wParam, lParam);

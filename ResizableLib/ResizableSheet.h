@@ -38,8 +38,8 @@ class CResizableSheet : public CPropertySheet, public CResizableLayout,
 // Construction
 public:
 	CResizableSheet();
-	CResizableSheet(UINT nIDCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
-	CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
+	explicit CResizableSheet(UINT nIDCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
+	explicit CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd = NULL, UINT iSelectPage = 0);
 
 // Attributes
 private:
@@ -52,7 +52,7 @@ private:
 	BOOL m_bSavePage;
 
 	// layout vars
-	UINT m_nCallbackID;
+	LRESULT m_nCallbackID;
 	CSize m_sizePageTL, m_sizePageBR;
 	BOOL m_bLayoutDone;
 

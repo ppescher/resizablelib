@@ -54,7 +54,7 @@ typedef struct tagREFRESHPROPERTY
 	RECT rcNew;
 
 	// initialize with valid data
-	tagREFRESHPROPERTY() : bNeedsRefresh(TRUE) {}
+	tagREFRESHPROPERTY() : bNeedsRefresh(TRUE), rcOld(), rcNew() {}
 
 } REFRESHPROPERTY, *PREFRESHPROPERTY, *LPREFRESHPROPERTY;
 

@@ -36,8 +36,8 @@ class CResizablePage : public CPropertyPage, public CResizableLayout,
 // Construction
 public:
 	CResizablePage();
-	CResizablePage(UINT nIDTemplate, UINT nIDCaption = 0);
-	CResizablePage(LPCTSTR lpszTemplateName, UINT nIDCaption = 0);
+	explicit CResizablePage(UINT nIDTemplate, UINT nIDCaption = 0);
+	explicit CResizablePage(LPCTSTR lpszTemplateName, UINT nIDCaption = 0);
 
 // Attributes
 public:

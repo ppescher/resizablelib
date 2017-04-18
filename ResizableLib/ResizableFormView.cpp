@@ -181,7 +181,7 @@ void CResizableFormView::OnDestroy()
 LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if (message == WM_INITDIALOG)
-		return (LRESULT)OnInitDialog();
+		return static_cast<LRESULT>(OnInitDialog());
 
 	if (message != WM_NCCALCSIZE || wParam == 0)
 		return CFormView::WindowProc(message, wParam, lParam);
@@ -198,7 +198,7 @@ BOOL CResizableFormView::OnInitDialog()
 {
 	const MSG* pMsg = GetCurrentMessage();
 
-	BOOL bRet = (BOOL)CFormView::WindowProc(pMsg->message, pMsg->wParam, pMsg->lParam);
+	BOOL bRet = CFormView::WindowProc(pMsg->message, pMsg->wParam, pMsg->lParam) != 0;
 
 	// we need to associate member variables with control IDs
 	UpdateData(FALSE);
@@ -213,12 +213,5 @@ BOOL CResizableFormView::OnInitDialog()
 
 BOOL CResizableFormView::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (!CFormView::OnNcCreate(lpCreateStruct))
-		return FALSE;
-	
-	// create and init the size-grip
-	if (!CreateSizeGrip())
-		return FALSE;
-
-	return TRUE;
+	return CFormView::OnNcCreate(lpCreateStruct) && CreateSizeGrip();	// create and init the size-grip
 }
