@@ -112,11 +112,11 @@ void CResizableComboBox::InitHorizontalExtent()
 	CString str;
 	
 	m_iExtent = 0;
-	int n = GetCount();
+	const int n = GetCount();
 	for (int i=0; i<n; i++)
 	{
 		GetLBText(i, str);
-		int cx = dc.GetTextExtent(str).cx;
+		const int cx = dc.GetTextExtent(str).cx;
 		if (cx > m_iExtent)
 			m_iExtent = cx;
 	}
@@ -132,7 +132,7 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(GetFont());
 
-	int cx = dc.GetTextExtent(szText, lstrlen(szText)).cx;
+	const int cx = dc.GetTextExtent(szText, lstrlen(szText)).cx;
 	if (cx > m_iExtent)
 	{
 		m_iExtent = cx;
@@ -163,7 +163,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 	int availh = height;	// available height
 	int n = GetCount();
 
-	DWORD dwStyle = GetStyle();
+	const DWORD dwStyle = GetStyle();
 
 	if (!m_bIntegralHeight || n == 0)
 		return inth;
@@ -175,7 +175,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 		// use items below the first visible
 		for (i=GetTopIndex(); availh>0 && i<n; i++)
 		{
-			int h = GetItemHeight(i);
+			const int h = GetItemHeight(i);
 			if (h == CB_ERR)
 				break;
 
@@ -185,7 +185,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 		// to fill the remaining height, use items above
 		for (i=GetTopIndex()-1; availh>0 && i>=0; i--)
 		{
-			int h = GetItemHeight(i);
+			const int h = GetItemHeight(i);
 			if (h == CB_ERR)
 				break;
 
@@ -198,7 +198,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 		if (!m_bClipMaxHeight) // it can be higher than all the items
 		{
 			// to fill the remaining height, use last item
-			int h = GetItemHeight(n-1);
+			const int h = GetItemHeight(n-1);
 			if (h != CB_ERR)
 			{
 				inth += availh - availh % h;
@@ -208,7 +208,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 	else
 	{
 		// every item has the same height (take the first)
-		int h = GetItemHeight(0);
+		const int h = GetItemHeight(0);
 		if (h != CB_ERR && n != CB_ERR)
 		{
 			int rows = availh / h;

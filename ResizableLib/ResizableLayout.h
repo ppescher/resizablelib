@@ -173,7 +173,7 @@ protected:
 		const CRect &rectOld, const CRect &rectNew) const;
 
 	//! @brief Clip controls in the layout out of the specified device context
-	BOOL ClipChildren(CDC* pDC, BOOL bUndo);
+	BOOL ClipChildren(const CDC* pDC, BOOL bUndo);
 
 	//! @brief Get the layout clipping region
 	void GetClippingRegion(CRgn* pRegion) const;
@@ -289,7 +289,7 @@ protected:
 	void HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT& lResult);
 	
 	//! @brief Enable resizable style for top level parent windows
-	void MakeResizable(LPCREATESTRUCT lpCreateStruct);
+	void MakeResizable(LPCREATESTRUCT lpCreateStruct) const;
 
 public:
 	CResizableLayout()

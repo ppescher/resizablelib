@@ -90,7 +90,7 @@ void CResizableState::SetStateStore(LPCTSTR szPath)
  *  
  *  @return The return value is a string that specifies the current path
  */
-LPCTSTR CResizableState::GetStateStore()
+LPCTSTR CResizableState::GetStateStore() const
 {
 	return m_sStorePath;
 }

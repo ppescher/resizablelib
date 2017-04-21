@@ -366,11 +366,11 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 
-	CTabCtrl* pTab = GetTabControl();
+	const CTabCtrl* pTab = GetTabControl();
 	if (!pTab)
 		return;
 
-	int nCount = GetPageCount();
+	const int nCount = GetPageCount();
 	for (int idx = 0; idx < nCount; ++idx)
 	{
 		if (IsWizard())	// wizard mode
@@ -393,7 +393,6 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 
 int CResizableSheet::GetMinWidth()
 {
-	CWnd* pWnd = NULL;
 	CRect rectWnd, rectSheet;
 	GetTotalClientRect(&rectSheet);
 
@@ -401,7 +400,7 @@ int CResizableSheet::GetMinWidth()
 	// search for leftmost and rightmost button margins
 	for (int i = 0; i < 7; i++)
 	{
-		pWnd = GetDlgItem(_propButtons[i]);
+		const CWnd* pWnd = GetDlgItem(_propButtons[i]);
 		// exclude not present or hidden buttons
 		if (pWnd == NULL || !(pWnd->GetStyle() & WS_VISIBLE))
 			continue;
@@ -410,8 +409,8 @@ int CResizableSheet::GetMinWidth()
 		// of the parent window (negative value)
 		pWnd->GetWindowRect(&rectWnd);
 		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
-		int left = rectSheet.right - rectWnd.left;
-		int right = rectSheet.right - rectWnd.right;
+		const int left = rectSheet.right - rectWnd.left;
+		const int right = rectSheet.right - rectWnd.right;
 
 		if (left > max)
 			max = left;
@@ -420,7 +419,7 @@ int CResizableSheet::GetMinWidth()
 	}
 
 	// sizing border width
-	int border = GetSystemMetrics(SM_CXSIZEFRAME);
+	const int border = GetSystemMetrics(SM_CXSIZEFRAME);
 	
 	// compute total width
 	return max + min + 2*border;

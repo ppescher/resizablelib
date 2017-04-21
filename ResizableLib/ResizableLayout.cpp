@@ -206,8 +206,8 @@ void CResizableLayout::ArrangeLayout() const
 	UINT uFlags;
 	LAYOUTINFO layout;
 	CRect rectParent, rectChild;
-	int count = m_listLayout.GetCount();
-	int countCB = m_listLayoutCB.GetCount();
+	const INT_PTR count = m_listLayout.GetCount();
+    const INT_PTR countCB = m_listLayoutCB.GetCount();
 
 	if (count + countCB == 0)
 		return;
@@ -297,7 +297,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
 	}
 
 	// get the clipping property
-	BOOL bClipping = layout.properties.bAskClipping ?
+	const BOOL bClipping = layout.properties.bAskClipping ?
 		LikesClipping(layout) : layout.properties.bCachedLikesClipping;
 
 	// modify region accordingly
@@ -321,7 +321,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
  */
 void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 {
-	CWnd* pWnd = GetResizableWnd();
+	const CWnd* pWnd = GetResizableWnd();
 
 	// System's default clipping area is screen's size,
 	// not enough for max track size, for example:
@@ -395,7 +395,7 @@ inline CWnd* GetRootParentWnd(CWnd* pWnd)
  *           this function, with the last parameter set to @c TRUE first
  *           and to @c FALSE at the end.
  */
-BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
+BOOL CResizableLayout::ClipChildren(const CDC* pDC, BOOL bUndo)
 {
 #if (_WIN32_WINNT >= 0x0501 && !defined(RSZLIB_NO_XP_DOUBLE_BUFFER))
 	// clipping not necessary when double-buffering enabled
@@ -410,7 +410,7 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 #endif
 
 	HDC hDC = pDC->GetSafeHdc();
-	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
+	const HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
 	m_nOldClipRgn = -1; // invalid region by default
 
@@ -498,8 +498,8 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 			return refresh.bNeedsRefresh;
 	}
 
-	int nDiffWidth = (rectNew.Width() - rectOld.Width());
-	int nDiffHeight = (rectNew.Height() - rectOld.Height());
+	const int nDiffWidth = (rectNew.Width() - rectOld.Width());
+	const int nDiffHeight = (rectNew.Height() - rectOld.Height());
 
 	// is the same size?
 	if (nDiffWidth == 0 && nDiffHeight == 0)
@@ -606,7 +606,7 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 			return clipping.bLikesClipping;
 	}
 
-	DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
+	const DWORD style = ::GetWindowLong(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
 	if (0 == lstrcmp(layout.sWndClass, WC_BUTTON))
@@ -694,7 +694,7 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 	rectNew.OffsetRect(rectParent.TopLeft());
 
 	// get the refresh property
-	BOOL bRefresh = layout.properties.bAskRefresh ?
+	const BOOL bRefresh = layout.properties.bAskRefresh ?
 		NeedsRefresh(layout, rectChild, rectNew) : layout.properties.bCachedNeedsRefresh;
 
 	// set flags 
@@ -802,7 +802,7 @@ void CResizableLayout::InitResizeProperties(LAYOUTINFO &layout) const
  *  @remarks The function is intended to be called only inside a @c WM_CREATE
  *           or @c WM_NCCREATE message handler.
  */
-void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct)
+void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 {
 	if (lpCreateStruct->style & WS_CHILD)
 		return;

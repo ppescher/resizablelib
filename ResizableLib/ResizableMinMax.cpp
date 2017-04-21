@@ -43,7 +43,7 @@ CResizableMinMax::~CResizableMinMax()
 
 }
 
-void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI)
+void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI) const
 {
 	if (m_bUseMinTrack)
 		lpMMI->ptMinTrackSize = m_ptMinTrackSize;
@@ -58,7 +58,7 @@ void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI)
 	}
 }
 
-void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd)
+void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, const CWnd* pWnd)
 {
 	// get the extra size from child to parent
 	CRect rectClient, rectWnd;
@@ -68,7 +68,7 @@ void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, C
 		pParentFrame->GetWindowRect(rectWnd);
 	pParentFrame->RepositionBars(0, 0xFFFF,
 		AFX_IDW_PANE_FIRST, CWnd::reposQuery, rectClient);
-	CSize sizeExtra = rectWnd.Size() - rectClient.Size();
+	const CSize sizeExtra = rectWnd.Size() - rectClient.Size();
 
 	ChainMinMaxInfo(lpMMI, pWnd->GetSafeHwnd(), sizeExtra);
 }
@@ -78,9 +78,9 @@ void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize
 	// ask the child window for track size
 	MINMAXINFO mmiChild = *lpMMI;
 	::SendMessage(hWndChild, WM_GETMINMAXINFO, 0, (LPARAM)&mmiChild);
-	BOOL bRetMax = (lpMMI->ptMaxTrackSize.x != mmiChild.ptMaxTrackSize.x
+	const BOOL bRetMax = (lpMMI->ptMaxTrackSize.x != mmiChild.ptMaxTrackSize.x
 		|| lpMMI->ptMaxTrackSize.y != mmiChild.ptMaxTrackSize.y);
-	BOOL bRetMin = (lpMMI->ptMinTrackSize.x != mmiChild.ptMinTrackSize.x
+	const BOOL bRetMin = (lpMMI->ptMinTrackSize.x != mmiChild.ptMinTrackSize.x
 		|| lpMMI->ptMinTrackSize.y != mmiChild.ptMinTrackSize.y);
 
 	// add static extra size

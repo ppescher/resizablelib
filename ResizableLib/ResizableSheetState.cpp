@@ -55,12 +55,12 @@ BOOL CResizableSheetState::SavePage(LPCTSTR pszName)
 	// saves active page index, or the initial page if problems
 	// cannot use GetActivePage, because it always fails
 
-	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
+	const CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
 	if (pSheet == NULL)
 		return FALSE;
 
 	int page = pSheet->m_psh.nStartPage;
-	CTabCtrl *pTab = pSheet->GetTabControl();
+	const CTabCtrl *pTab = pSheet->GetTabControl();
 	if (pTab != NULL) 
 		page = pTab->GetCurSel();
 	if (page < 0)

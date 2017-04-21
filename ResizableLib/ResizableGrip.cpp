@@ -90,7 +90,7 @@ void CResizableGrip::HideSizeGrip(DWORD* pStatus, DWORD dwMask /*= 1*/)
 	}
 }
 
-BOOL CResizableGrip::IsSizeGripVisible()
+BOOL CResizableGrip::IsSizeGripVisible() const
 {
 	// NB: visibility is effective only after an update
 	return (m_nShowCount > 0);

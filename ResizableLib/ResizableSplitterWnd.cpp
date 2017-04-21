@@ -58,7 +58,7 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			CRect rectClient, rectWnd;
 			GetWindowRect(rectWnd);
 			pPane->GetWindowRect(rectClient);
-			CSize sizeExtra = rectWnd.Size() - rectClient.Size();
+			const CSize sizeExtra = rectWnd.Size() - rectClient.Size();
 
 			ChainMinMaxInfo(lpMMI, pPane->m_hWnd, sizeExtra);
 		}
@@ -75,7 +75,7 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			int max = LONG_MAX;
 			for (int row = 0; row < m_nRows; ++row)
 			{
-				CWnd* pWnd = GetPane(row, col);
+				const CWnd* pWnd = GetPane(row, col);
 				// ask the child window for track size
 				MINMAXINFO mmiChild = *lpMMI;
 				mmiChild.ptMinTrackSize.x = 0;
@@ -98,7 +98,7 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			int max = LONG_MAX;
 			for (int col = 0; col < m_nCols; ++col)
 			{
-				CWnd* pWnd = GetPane(row, col);
+				const CWnd* pWnd = GetPane(row, col);
 				// ask the child window for track size
 				MINMAXINFO mmiChild = *lpMMI;
 				mmiChild.ptMinTrackSize.y = 0;

@@ -50,7 +50,7 @@ protected:
 	static void SetDefaultStateStore(LPCTSTR szPath);
 
 	//! @brief Get current path where state is stored
-	LPCTSTR GetStateStore();
+	LPCTSTR GetStateStore() const;
 	
 	//! @brief Set current path where state is stored
 	void SetStateStore(LPCTSTR szPath);
