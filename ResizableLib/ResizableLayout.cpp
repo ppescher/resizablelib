@@ -384,14 +384,14 @@ inline CWnd* GetRootParentWnd(CWnd* pWnd)
  *  @param bUndo Flag that specifies wether to restore the clipping region
  *
  *  @return The return value is @c TRUE if the clipping region has been
- *          modified, @c FALSE if clipping was not necessary.
+ *          modified, @c FALSE otherwise
  *
  *  @remarks For anti-flickering to work, you should wrap your
  *           @c WM_ERASEBKGND message handler inside a pair of calls to
- *           this function, with the last parameter set to @c TRUE first
- *           and to @c FALSE at the end.
+ *           this function, with the last parameter set to @c FALSE first
+ *           and to @c TRUE at the end.
  */
-BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
+BOOL CResizableLayout::ClipChildren(const CDC* pDC, BOOL bUndo)
 {
 #if (_WIN32_WINNT >= 0x0501 && !defined(RSZLIB_NO_XP_DOUBLE_BUFFER))
 	// clipping not necessary when double-buffering enabled
@@ -408,8 +408,6 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 	HDC hDC = pDC->GetSafeHdc();
 	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
-	m_nOldClipRgn = -1; // invalid region by default
-
 	// Some controls (such as transparent toolbars and standard controls
 	// with XP theme enabled) send a WM_ERASEBKGND msg to the parent
 	// to draw themselves, in which case we must not enable clipping.
@@ -417,27 +415,25 @@ BOOL CResizableLayout::ClipChildren(CDC* pDC, BOOL bUndo)
 	// We check that the window associated with the DC is the
 	// resizable window and not a child control.
 
-	if (!bUndo && (hWnd == ::WindowFromDC(hDC)))
+	if (!bUndo)
 	{
-		// save old DC clipping region
-		m_nOldClipRgn = ::GetClipRgn(hDC, m_hOldClipRgn);
-
-		// clip out supported child windows
-		CRgn rgnClip;
-		GetClippingRegion(&rgnClip);
-		::ExtSelectClipRgn(hDC, rgnClip, RGN_AND);
-
-		return TRUE;
+		if (hWnd != ::WindowFromDC(hDC))
+			m_nOldClipRgn = -1; // invalid region
+		else
+		{
+			// save old DC clipping region
+			m_nOldClipRgn = ::GetClipRgn(hDC, m_hOldClipRgn);
+			// clip out supported child windows
+			CRgn rgnClip;
+			GetClippingRegion(&rgnClip);
+			::ExtSelectClipRgn(hDC, rgnClip, RGN_AND);
+		}
+		return (m_nOldClipRgn >= 0) ? TRUE : FALSE;
 	}
 
-	// restore old clipping region, only if modified and valid
-	if (bUndo && m_nOldClipRgn >= 0)
+	if (m_nOldClipRgn >= 0) // restore old clipping region, only if modified and valid
 	{
-		if (m_nOldClipRgn == 1)
-			::SelectClipRgn(hDC, m_hOldClipRgn);
-		else
-			::SelectClipRgn(hDC, NULL);
-
+		::SelectClipRgn(hDC, (m_nOldClipRgn>0 ? m_hOldClipRgn : NULL));
 		return TRUE;
 	}
 
