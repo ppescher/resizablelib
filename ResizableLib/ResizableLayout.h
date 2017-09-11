@@ -108,8 +108,8 @@ typedef struct tagLAYOUTINFO
 	//! Redraw settings for anti-flickering and proper painting
 	RESIZEPROPERTIES properties;
 
-	tagLAYOUTINFO() : hWnd(NULL), nCallbackID(0), bMsgSupport(FALSE)
-		, marginTopLeft(), marginBottomRight()
+	tagLAYOUTINFO() : hWnd(NULL), nCallbackID(0)
+		, marginTopLeft(), marginBottomRight(), bMsgSupport(FALSE)
 	{
 		sWndClass[0] = 0;
 	}
@@ -117,9 +117,9 @@ typedef struct tagLAYOUTINFO
 	tagLAYOUTINFO(HWND hwnd, ANCHOR tl_type, SIZE tl_margin,
 		ANCHOR br_type, SIZE br_margin)
 		:
-		hWnd(hwnd), nCallbackID(0), bMsgSupport(FALSE),
+		hWnd(hwnd), nCallbackID(0),
 		anchorTopLeft(tl_type), marginTopLeft(tl_margin),
-		anchorBottomRight(br_type), marginBottomRight(br_margin)
+		anchorBottomRight(br_type), marginBottomRight(br_margin), bMsgSupport(FALSE)
 	{
 		sWndClass[0] = 0;
 	}
@@ -174,7 +174,7 @@ protected:
 		const CRect &rectOld, const CRect &rectNew) const;
 
 	//! @brief Clip controls in the layout out of the specified device context
-	BOOL ClipChildren(CDC* pDC, BOOL bUndo);
+	BOOL ClipChildren(const CDC* pDC, BOOL bUndo);
 
 	//! @brief Get the layout clipping region
 	void GetClippingRegion(CRgn* pRegion) const;
