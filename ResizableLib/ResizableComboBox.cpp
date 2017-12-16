@@ -113,11 +113,11 @@ void CResizableComboBox::InitHorizontalExtent()
 	CString str;
 
 	m_iExtent = 0;
-	int n = GetCount();
+	const int n = GetCount();
 	for (int i=0; i<n; i++)
 	{
 		GetLBText(i, str);
-		int cx = dc.GetTextExtent(str).cx;
+		const int cx = dc.GetTextExtent(str).cx;
 		if (cx > m_iExtent)
 			m_iExtent = cx;
 	}
@@ -133,7 +133,7 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(GetFont());
 
-	int cx = dc.GetTextExtent(szText, static_cast<int>(_tcslen(szText))).cx;
+	const int cx = dc.GetTextExtent(szText, static_cast<int>(_tcslen(szText))).cx;
 	if (cx > m_iExtent)
 	{
 		m_iExtent = cx;
@@ -160,23 +160,20 @@ void CResizableComboBox::PreSubclassWindow()
 
 int CResizableComboBox::MakeIntegralHeight(const int height)
 {
-	int inth = height;	// integral height (result)
+	const int n = GetCount();
+
+	if (!m_bIntegralHeight || n <= 0)
+		return height;
+
 	int availh = height;	// available height
-	int n = GetCount();
-
-	DWORD dwStyle = GetStyle();
-
-	if (!m_bIntegralHeight || n == 0)
-		return inth;
-
-	if (dwStyle & CBS_OWNERDRAWVARIABLE)
+	if (GetStyle() & CBS_OWNERDRAWVARIABLE)
 	{
-		inth = 0;	// try to reach availh by integral steps
+		int inth = 0;	// try to reach availh by integral steps
 		int i;
 		// use items below the first visible
 		for (i=GetTopIndex(); availh>0 && i<n; i++)
 		{
-			int h = GetItemHeight(i);
+			const int h = GetItemHeight(i);
 			if (h == CB_ERR)
 				break;
 
@@ -186,7 +183,7 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 		// to fill the remaining height, use items above
 		for (i=GetTopIndex()-1; availh>0 && i>=0; i--)
 		{
-			int h = GetItemHeight(i);
+			const int h = GetItemHeight(i);
 			if (h == CB_ERR)
 				break;
 
@@ -199,29 +196,28 @@ int CResizableComboBox::MakeIntegralHeight(const int height)
 		if (!m_bClipMaxHeight) // it can be higher than all the items
 		{
 			// to fill the remaining height, use last item
-			int h = GetItemHeight(n-1);
-			if (h != CB_ERR)
-			{
+			const int h = GetItemHeight(n-1);
+			if (h > 0)
 				inth += availh - availh % h;
-			}
 		}
-	}
-	else
-	{
-		// every item has the same height (take the first)
-		int h = GetItemHeight(0);
-		if (h != CB_ERR && n != CB_ERR)
-		{
-			int rows = availh / h;
-			// can't be higher than all the items
-			if (m_bClipMaxHeight && rows > n)
-				rows = n;
-			inth = rows * h;
-			// scroll into view
-			if (n - rows < GetTopIndex())
-				SetTopIndex(n-rows);
-		}
+
+		return inth;
 	}
 
-	return inth;
+	// every item has the same height (take the first)
+	int h = GetItemHeight(0);
+	if (h > 0)
+	{
+		int rows = availh / h;
+		// can't be higher than all the items
+		if (m_bClipMaxHeight && rows > n)
+			rows = n;
+		// scroll into view
+		if (n - rows < GetTopIndex())
+			SetTopIndex(n-rows);
+
+		return rows * h;
+	}
+
+	return height;
 }

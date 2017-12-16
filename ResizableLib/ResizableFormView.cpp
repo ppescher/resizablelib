@@ -83,7 +83,7 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
-	CWnd* pParent = GetParentFrame();
+	const CWnd* pParent = GetParentFrame();
 
 	// hide size grip when parent is maximized
 	if (pParent->IsZoomed())
@@ -92,7 +92,7 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 		ShowSizeGrip(&m_dwGripTempState, GHR_MAXIMIZED);
 
 	// hide size grip when there are scrollbars
-	CSize size = GetTotalSize();
+	const CSize size = GetTotalSize();
 	if ((cx < size.cx || cy < size.cy) && (m_nMapMode >= 0))
 		HideSizeGrip(&m_dwGripTempState, GHR_SCROLLBAR);
 	else
@@ -100,7 +100,6 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 
 	// hide size grip when the parent frame window is not resizable
 	// or the form is not bottom-right aligned (e.g. there's a statusbar)
-	DWORD dwStyle = pParent->GetStyle();
 	CRect rect, rectChild;
 	GetWindowRect(rect);
 
@@ -116,7 +115,7 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 			break;
 		}
 	}
-	if ((dwStyle & WS_THICKFRAME) && bCanResize)
+	if ((pParent->GetStyle() & WS_THICKFRAME) && bCanResize)
 		ShowSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
 	else
 		HideSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);

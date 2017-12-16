@@ -57,15 +57,15 @@ CResizableWndState::~CResizableWndState()
  */
 BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
-	CString data, id;
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
 
 	// use workspace coordinates
-	RECT& rc = wp.rcNormalPosition;
+	const RECT& rc = wp.rcNormalPosition;
 
+	CString data;
 	if (bRectOnly)	// save size/pos only (normal state)
 	{
 		data.Format(PLACEMENT_FMT, rc.left, rc.top,
@@ -78,8 +78,7 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 			wp.ptMinPosition.x, wp.ptMinPosition.y);
 	}
 
-	id = CString(pszName) + PLACEMENT_ENT;
-	return WriteState(id, data);
+	return WriteState(CString(pszName) + PLACEMENT_ENT, data);
 }
 
 /*!
@@ -97,11 +96,10 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
  */
 BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
-	CString data, id;
+	CString data;
 	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
 
-	id = CString(pszName) + PLACEMENT_ENT;
-	if (!ReadState(id, data))	// never saved before
+	if (!ReadState(CString(pszName) + PLACEMENT_ENT, data))	// never saved before
 		return FALSE;
 
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
