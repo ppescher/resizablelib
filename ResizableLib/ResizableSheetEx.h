@@ -109,7 +109,7 @@ protected:
 // Generated message map functions
 protected:
 	void GetHeaderRect(LPRECT lpRect);
-	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
+	virtual BOOL CalcSizeExtra(HWND hWndChild, const CSize& sizeChild, CSize& sizeExtra);
 	virtual BOOL ArrangeLayoutCallback(LAYOUTINFO& layout) const;
 	//{{AFX_MSG(CResizableSheetEx)
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);

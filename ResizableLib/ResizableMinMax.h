@@ -53,18 +53,18 @@ public:
 
 protected:
 	void MinMaxInfo(LPMINMAXINFO lpMMI) const;
-	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, CWnd* pWnd);
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, const CWnd* pWnd);
 
-	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, CSize sizeExtra);
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, const CSize& sizeExtra);
 
-	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentWnd, UINT nID, CSize sizeExtra)
+	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, const CWnd* pParentWnd, UINT nID, const CSize& sizeExtra)
 	{
 		ChainMinMaxInfo(lpMMI,
 			::GetDlgItem(pParentWnd->GetSafeHwnd(), nID), sizeExtra);
 	}
 
 	void ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild);
-	virtual BOOL CalcSizeExtra(HWND hWndChild, CSize sizeChild, CSize& sizeExtra);
+	virtual BOOL CalcSizeExtra(HWND hWndChild, const CSize& sizeChild, CSize& sizeExtra);
 
 	void ResetAllRects();
 

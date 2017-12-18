@@ -55,21 +55,21 @@ BOOL CResizableSheetState::SavePage(LPCTSTR pszName)
 	// saves active page index, or the initial page if problems
 	// cannot use GetActivePage, because it always fails
 
-	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
+	const CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
 	if (pSheet == NULL)
 		return FALSE;
 
 	int page = pSheet->m_psh.nStartPage;
-	CTabCtrl *pTab = pSheet->GetTabControl();
+	const CTabCtrl *pTab = pSheet->GetTabControl();
 	if (pTab != NULL) 
 		page = pTab->GetCurSel();
 	if (page < 0)
 		page = pSheet->m_psh.nStartPage;
 
 	CString data;
-	_itot_s(page, data.GetBuffer(10), 10, 10);
-	CString id = CString(pszName) + ACTIVEPAGE_ENT;
-	return WriteState(id, data);
+	data.Format(_T("%i"), page);
+
+	return WriteState(CString(pszName) + ACTIVEPAGE_ENT, data);
 }
 
 /*!
@@ -84,14 +84,11 @@ BOOL CResizableSheetState::LoadPage(LPCTSTR pszName)
 {
 	// restore active page, zero (the first) if not found
 
-	CString data, id;
-	id = CString(pszName) + ACTIVEPAGE_ENT;
-	if (!ReadState(id, data))
+	CString data;
+	if (!ReadState(CString(pszName) + ACTIVEPAGE_ENT, data))
 		return FALSE;
 	
-	int page = _ttoi(data);
 	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetResizableWnd());
-	if (pSheet != NULL)
-		return pSheet->SetActivePage(page);
-	return FALSE;
+
+	return (pSheet != NULL) && pSheet->SetActivePage(_ttoi(data));
 }

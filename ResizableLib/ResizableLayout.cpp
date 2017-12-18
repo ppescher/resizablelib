@@ -205,7 +205,7 @@ void CResizableLayout::ArrangeLayout() const
 	// common vars
 	UINT uFlags;
 	CRect rectParent, rectChild;
-	INT_PTR count = m_listLayout.GetCount() + m_listLayoutCB.GetCount();
+	const INT_PTR count = m_listLayout.GetCount() + m_listLayoutCB.GetCount();
 
 	if (count <= 0)
 		return;
@@ -293,7 +293,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
 	}
 
 	// get the clipping property
-	BOOL bClipping = layout.properties.bAskClipping ?
+	const BOOL bClipping = layout.properties.bAskClipping ?
 		LikesClipping(layout) : layout.properties.bCachedLikesClipping;
 
 	// modify region accordingly
@@ -317,7 +317,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
  */
 void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 {
-	CWnd* pWnd = GetResizableWnd();
+	const CWnd* pWnd = GetResizableWnd();
 
 	// System's default clipping area is screen's size,
 	// not enough for max track size, for example:
@@ -334,26 +334,22 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 	pRegion->CreateRectRgnIndirect(&rect);
 
 	// clip only anchored controls
-	LAYOUTINFO layout;
-	POSITION pos = m_listLayout.GetHeadPosition();
-	while (pos != NULL)
+
+	for (POSITION pos = m_listLayout.GetHeadPosition(); pos != NULL;)
 	{
 		// get layout info
-		layout = m_listLayout.GetNext(pos);
+		LAYOUTINFO layout = m_listLayout.GetNext(pos);
 
 		if (::IsWindowVisible(layout.hWnd))
 			ClipChildWindow(layout, pRegion);
 	}
-	pos = m_listLayoutCB.GetHeadPosition();
-	while (pos != NULL)
+	
+	for (POSITION pos = m_listLayoutCB.GetHeadPosition(); pos != NULL;)
 	{
 		// get layout info
-		layout = m_listLayoutCB.GetNext(pos);
+		LAYOUTINFO layout = m_listLayoutCB.GetNext(pos);
 		// request data
-		if (!ArrangeLayoutCallback(layout))
-			continue;
-
-		if (::IsWindowVisible(layout.hWnd))
+		if (ArrangeLayoutCallback(layout) && ::IsWindowVisible(layout.hWnd))
 			ClipChildWindow(layout, pRegion);
 	}
 //! @todo Has XP changed this??? It doesn't seem correct anymore!
@@ -405,8 +401,8 @@ BOOL CResizableLayout::ClipChildren(const CDC* pDC, BOOL bUndo)
 	}
 #endif
 
-	HDC hDC = pDC->GetSafeHdc();
-	HWND hWnd = GetResizableWnd()->GetSafeHwnd();
+	const HDC hDC = pDC->GetSafeHdc();
+	const HWND hWnd = GetResizableWnd()->GetSafeHwnd();
 
 	// Some controls (such as transparent toolbars and standard controls
 	// with XP theme enabled) send a WM_ERASEBKGND msg to the parent
@@ -490,8 +486,8 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 			return refresh.bNeedsRefresh;
 	}
 
-	int nDiffWidth = (rectNew.Width() - rectOld.Width());
-	int nDiffHeight = (rectNew.Height() - rectOld.Height());
+	const int nDiffWidth = (rectNew.Width() - rectOld.Width());
+	const int nDiffHeight = (rectNew.Height() - rectOld.Height());
 
 	// is the same size?
 	if (nDiffWidth == 0 && nDiffHeight == 0)
@@ -543,9 +539,7 @@ BOOL CResizableLayout::NeedsRefresh(const LAYOUTINFO& layout,
 
 	// window classes that don't redraw client area correctly
 	// when the hor scroll pos changes due to a resizing
-	BOOL bHScroll = FALSE;
-	if (0 == lstrcmp(layout.sWndClass, WC_LISTBOX))
-		bHScroll = TRUE;
+	const BOOL bHScroll = (0 == lstrcmp(layout.sWndClass, WC_LISTBOX));
 
 	// fix for horizontally scrollable windows, if wider
 	if (bHScroll && (nDiffWidth > 0))
@@ -665,7 +659,7 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 						const CRect &rectParent, CRect &rectChild, UINT *lpFlags) const
 {
-	CWnd* pParent = GetResizableWnd();
+	const CWnd* pParent = GetResizableWnd();
 
 	::GetWindowRect(layout.hWnd, &rectChild);
 	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
