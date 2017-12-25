@@ -44,6 +44,15 @@ CResizableMinMax::~CResizableMinMax()
 
 }
 
+void CResizableMinMax::ApplyMinMaxTrackSize(LPMINMAXINFO lpMMI)
+{
+	lpMMI->ptMaxSize.x = __max(lpMMI->ptMaxSize.x, lpMMI->ptMinTrackSize.x);
+	lpMMI->ptMaxSize.y = __max(lpMMI->ptMaxSize.y, lpMMI->ptMinTrackSize.y);
+
+	lpMMI->ptMaxSize.x = __min(lpMMI->ptMaxSize.x, lpMMI->ptMaxTrackSize.x);
+	lpMMI->ptMaxSize.y = __min(lpMMI->ptMaxSize.y, lpMMI->ptMaxTrackSize.y);
+}
+
 void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI) const
 {
 	if (m_bUseMinTrack)
@@ -57,6 +66,8 @@ void CResizableMinMax::MinMaxInfo(LPMINMAXINFO lpMMI) const
 		lpMMI->ptMaxPosition = m_ptMaxPos;
 		lpMMI->ptMaxSize = m_ptMaxSize;
 	}
+
+	ApplyMinMaxTrackSize(lpMMI);
 }
 
 void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, const CWnd* pWnd)
@@ -104,6 +115,8 @@ void CResizableMinMax::ChainMinMaxInfo(LPMINMAXINFO lpMMI, HWND hWndChild, const
 		lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
 			mmiChild.ptMaxTrackSize.y);
 	}
+
+	ApplyMinMaxTrackSize(lpMMI);
 }
 
 BOOL CResizableMinMax::CalcSizeExtra(HWND /*hWndChild*/, const CSize& /*sizeChild*/, CSize& /*sizeExtra*/)
@@ -146,6 +159,8 @@ void CResizableMinMax::ChainMinMaxInfoCB(LPMINMAXINFO lpMMI, HWND hWndChild)
 		lpMMI->ptMaxTrackSize.y = __min(lpMMI->ptMaxTrackSize.y,
 			mmiChild.ptMaxTrackSize.y);
 	}
+
+	ApplyMinMaxTrackSize(lpMMI);
 }
 
 void CResizableMinMax::ResetAllRects()

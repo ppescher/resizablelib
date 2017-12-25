@@ -52,6 +52,8 @@ public:
 	virtual ~CResizableMinMax();
 
 protected:
+	static void ApplyMinMaxTrackSize(LPMINMAXINFO lpMMI);
+
 	void MinMaxInfo(LPMINMAXINFO lpMMI) const;
 	static void ChainMinMaxInfo(LPMINMAXINFO lpMMI, CWnd* pParentFrame, const CWnd* pWnd);
 
