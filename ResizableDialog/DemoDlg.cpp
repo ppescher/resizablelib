@@ -103,13 +103,15 @@ BOOL CDemoDlg::OnInitDialog()
 
 void CDemoDlg::OnRadio1() 
 {
+	ModifyStyle(WS_THICKFRAME, 0, SWP_FRAMECHANGED | SWP_DRAWFRAME);
 	HideSizeGrip(&m_dwGripTempState);
 	UpdateSizeGrip();
 }
 
 void CDemoDlg::OnRadio2() 
 {
- 	ShowSizeGrip(&m_dwGripTempState);
+	ModifyStyle(0, WS_THICKFRAME, SWP_FRAMECHANGED | SWP_DRAWFRAME);
+	ShowSizeGrip(&m_dwGripTempState);
 	UpdateSizeGrip();
 }
 
