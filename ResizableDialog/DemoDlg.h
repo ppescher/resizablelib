@@ -37,11 +37,17 @@ protected:
 
 	HICON m_hIcon;
 
+	static BOOL CALLBACK SendThemeChangedProc(HWND hwnd, LPARAM lParam);
+	void SetThemeProperties(DWORD dwFlags);
+
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnRadio1();
 	afx_msg void OnRadio2();
+	afx_msg void OnRadio3();
+	afx_msg void OnRadio4();
+	afx_msg void OnRadio5();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

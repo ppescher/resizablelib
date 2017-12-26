@@ -38,6 +38,9 @@ BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CDemoDlg)
 	ON_BN_CLICKED(IDC_RADIO1, OnRadio1)
 	ON_BN_CLICKED(IDC_RADIO2, OnRadio2)
+	ON_BN_CLICKED(IDC_RADIO3, OnRadio3)
+	ON_BN_CLICKED(IDC_RADIO4, OnRadio4)
+	ON_BN_CLICKED(IDC_RADIO5, OnRadio5)
 	ON_WM_CREATE()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -55,23 +58,38 @@ BOOL CDemoDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// preset layout
-	AddAnchor(IDOK, BOTTOM_RIGHT);
-	AddAnchor(IDCANCEL, BOTTOM_RIGHT);
-	
 	AddAnchor(IDC_SPIN1, TOP_RIGHT);
 
 	AddAnchor(IDC_LABEL1, TOP_LEFT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, BOTTOM_RIGHT);
 
-	AddAnchor(IDC_GROUP1, BOTTOM_LEFT, BOTTOM_RIGHT);
+	AddAnchor(IDC_GROUP1, BOTTOM_LEFT, BOTTOM_CENTER);
 	AddAnchor(IDC_RADIO1, BOTTOM_LEFT);
 	AddAnchor(IDC_RADIO2, BOTTOM_LEFT);
+
+	AddAnchor(IDC_GROUP2, BOTTOM_CENTER, BOTTOM_RIGHT);
+	AddAnchor(IDC_RADIO3, BOTTOM_CENTER);
+	AddAnchor(IDC_RADIO4, BOTTOM_CENTER);
+	AddAnchor(IDC_RADIO5, BOTTOM_CENTER);
 
 	// other initializations
 
 	// grip is visible by default
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO2);
 	GetDlgItem(IDC_RADIO2)->SetFocus();
+
+	// setup theme support
+	if (GetModuleHandle(_T("UxTheme.dll")) != NULL)
+	{
+		CheckRadioButton(IDC_RADIO3, IDC_RADIO5, IDC_RADIO3);
+	}
+	else
+	{
+		CheckRadioButton(IDC_RADIO3, IDC_RADIO5, IDC_RADIO5);
+		GetDlgItem(IDC_RADIO3)->EnableWindow(FALSE);
+		GetDlgItem(IDC_RADIO4)->EnableWindow(FALSE);
+		GetDlgItem(IDC_RADIO5)->EnableWindow(FALSE);
+	}
 
 	SetDlgItemText(IDC_EDIT1, _T("CResizableDialog\r\n\r\n")
 		_T("This dialog can be resized to full width and half the height of the screen.\r\n")
@@ -115,6 +133,44 @@ void CDemoDlg::OnRadio2()
 	UpdateSizeGrip();
 }
 
+BOOL CALLBACK CDemoDlg::SendThemeChangedProc(HWND hwnd, LPARAM /*lParam*/)
+{
+	::SendMessage(hwnd, WM_THEMECHANGED, 0, 0);
+	return TRUE;
+}
+
+void CDemoDlg::SetThemeProperties(DWORD dwFlags)
+{
+	static HMODULE hThemeLib = GetModuleHandle(_T("UxTheme.dll"));
+	typedef void (STDAPICALLTYPE *LPFNSETTHEMEAPPPROPERTIES)(DWORD);
+	static LPFNSETTHEMEAPPPROPERTIES lpfnSetThemeAppProperties = (hThemeLib == NULL) ? NULL :
+		(LPFNSETTHEMEAPPPROPERTIES) GetProcAddress(hThemeLib, "SetThemeAppProperties");
+	
+	if (lpfnSetThemeAppProperties == NULL)
+		return; // do nothing if no theme support
+
+	// apply new theme settings and redraw all windows
+	lpfnSetThemeAppProperties(dwFlags);
+	SendMessage(WM_THEMECHANGED);
+	EnumChildWindows(m_hWnd, SendThemeChangedProc, 0);
+	InvalidateRect(NULL);
+	UpdateWindow();
+}
+
+void CDemoDlg::OnRadio3()
+{
+	SetThemeProperties(STAP_ALLOW_NONCLIENT | STAP_ALLOW_CONTROLS | STAP_ALLOW_WEBCONTENT);
+}
+
+void CDemoDlg::OnRadio4()
+{
+	SetThemeProperties(STAP_ALLOW_NONCLIENT);
+}
+
+void CDemoDlg::OnRadio5()
+{
+	SetThemeProperties(0);
+}
 
 #define WS_EX_LAYOUT_RTL	0x00400000
 

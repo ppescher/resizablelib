@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,10 +16,8 @@
 // Italian (Italy) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
 LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,7 +64,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
+IDR_MAINFRAME           ICON                    "res\\Demo.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -74,69 +73,56 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
 //
 
 IDD_DEMO_DIALOG DIALOGEX 0, 0, 160, 121
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
-    WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "CResizableDialog Demo"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     LTEXT           "Static text",IDC_LABEL1,7,7,87,10
-    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS | 
-                    UDS_HORZ,134,7,19,10
-    EDITTEXT        IDC_EDIT1,7,18,146,48,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    WS_VSCROLL
-    CONTROL         "Hidden",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,17,86,53,9
-    CONTROL         "Visible",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,17,99,
-                    56,9
-    GROUPBOX        "Size Grip",IDC_GROUP1,7,72,87,42
-    DEFPUSHBUTTON   "OK",IDOK,103,76,50,14,WS_GROUP
-    PUSHBUTTON      "Cancel",IDCANCEL,103,100,50,14
+    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS | UDS_HORZ,134,7,19,10
+    EDITTEXT        IDC_EDIT1,7,18,146,48,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL
+    CONTROL         "Hidden",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,84,46,9
+    CONTROL         "Visible",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,14,99,46,9
+    GROUPBOX        "Size Grip",IDC_GROUP1,7,69,54,45,WS_GROUP
+    CONTROL         "All window controls",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON | WS_GROUP,75,79,76,10
+    CONTROL         "Non-client only",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,75,90,76,10
+    CONTROL         "No theme",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,75,101,76,10
+    GROUPBOX        "Theme Properties",IDC_GROUP2,67,69,86,45,WS_GROUP
 END
 
-IDD_SECOND_DIALOG DIALOG DISCARDABLE  0, 0, 186, 94
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_SECOND_DIALOG DIALOG 0, 0, 186, 94
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CResizableDialog - New features"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,74,73,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,73,50,14
     CONTROL         "",IDC_LINE1,"Static",SS_ETCHEDHORZ,7,66,172,1
-    CONTROL         131,IDC_PICTURE1,"Static",SS_BITMAP | SS_CENTERIMAGE | 
-                    SS_RIGHTJUST | SS_SUNKEN,7,7,63,52
+    CONTROL         IDB_BITMAP1,IDC_PICTURE1,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_RIGHTJUST | SS_SUNKEN,7,7,63,52
     CONTROL         "This is about 20% with some long text",IDC_STATIC2,
-                    "Static",SS_LEFTNOWORDWRAP | SS_CENTERIMAGE | SS_SUNKEN | 
-                    SS_WORDELLIPSIS | WS_GROUP,142,7,37,52
-    CTEXT           "This is an example of percentage resizing.\nBitmap is about 30%, this is about 50%.\n\nClick on the toolbar!",
-                    IDC_STATIC1,76,7,60,52,SS_NOPREFIX | SS_SUNKEN
+                    "Static",SS_LEFTNOWORDWRAP | SS_CENTERIMAGE | SS_SUNKEN | SS_WORDELLIPSIS | WS_GROUP,142,7,37,52
+    CTEXT           "This is an example of percentage resizing.\nBitmap is about 30%, this is about 50%.\n\nClick on the toolbar!",IDC_STATIC1,76,7,60,52,SS_NOPREFIX | SS_SUNKEN
 END
 
-IDD_TEST_DIALOG DIALOG DISCARDABLE  0, 0, 237, 154
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_TEST_DIALOG DIALOG 0, 0, 237, 154
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Test Dialog"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "",IDC_STATIC_TEST,"Static",SS_BLACKFRAME,7,7,109,140
     GROUPBOX        "Static Control's Style",IDC_GROUPBOX,122,7,108,102
-    COMBOBOX        IDC_COMBO_TYPE,129,21,94,56,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "SS_CENTERIMAGE",IDC_CHECK_CENTERIMAGE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,40,94,10
-    CONTROL         "SS_RIGHTJUST",IDC_CHECK_RIGHTJUST,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,53,94,10
-    CONTROL         "SS_REALSIZEIMAGE",IDC_CHECK_REALSIZEIMAGE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,66,94,10
-    CONTROL         "SS_ENDELLIPSIS",IDC_CHECK_ENDELLIPSIS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,79,94,10
-    CONTROL         "SS_PATHELLIPSIS",IDC_CHECK_PATHELLIPSIS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,129,92,94,10
+    COMBOBOX        IDC_COMBO_TYPE,129,21,94,56,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "SS_CENTERIMAGE",IDC_CHECK_CENTERIMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,40,94,10
+    CONTROL         "SS_RIGHTJUST",IDC_CHECK_RIGHTJUST,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,53,94,10
+    CONTROL         "SS_REALSIZEIMAGE",IDC_CHECK_REALSIZEIMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,66,94,10
+    CONTROL         "SS_ENDELLIPSIS",IDC_CHECK_ENDELLIPSIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,79,94,10
+    CONTROL         "SS_PATHELLIPSIS",IDC_CHECK_PATHELLIPSIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,129,92,94,10
     EDITTEXT        IDC_EDIT_TEXT,129,116,94,12,ES_AUTOHSCROLL
     PUSHBUTTON      "&Update",IDC_BUTTON_UPDATE,122,133,50,14
     PUSHBUTTON      "Close",IDCANCEL,180,133,50,14
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -159,15 +145,13 @@ BEGIN
     BEGIN
         BLOCK "041004B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Demo Applicazione MFC\0"
-            VALUE "FileVersion", "1, 0, 0, 2\0"
-            VALUE "InternalName", "Demo\0"
-            VALUE "LegalCopyright", "Copyright (C) 1999\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "Demo.EXE\0"
-            VALUE "ProductName", "Demo Applicazione\0"
-            VALUE "ProductVersion", "1, 0, 0, 2\0"
+            VALUE "FileDescription", "Demo Applicazione MFC"
+            VALUE "FileVersion", "1, 0, 0, 2"
+            VALUE "InternalName", "Demo"
+            VALUE "LegalCopyright", "Copyright (C) 1999"
+            VALUE "OriginalFilename", "Demo.EXE"
+            VALUE "ProductName", "Demo Applicazione"
+            VALUE "ProductVersion", "1, 0, 0, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -176,8 +160,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -185,7 +167,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DEMO_DIALOG, DIALOG
     BEGIN
@@ -223,15 +205,17 @@ END
 // Bitmap
 //
 
-IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
-IDR_TOOLBAR1            BITMAP  DISCARDABLE     "res\\toolbar1.bmp"
+IDB_BITMAP1             BITMAP                  "res\\bitmap1.bmp"
+
+IDR_TOOLBAR1            BITMAP                  "res\\toolbar1.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_TOOLBAR1 TOOLBAR DISCARDABLE  16, 15
+IDR_TOOLBAR1 TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_BUTTON1
     BUTTON      ID_BUTTON2
@@ -292,10 +276,21 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DEMO_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_BUTTON1              "\nuno"
     ID_BUTTON3              "\ntre"
