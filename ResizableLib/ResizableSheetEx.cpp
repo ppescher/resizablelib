@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableSheetEx.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -373,10 +374,10 @@ void CResizableSheetEx::OnSize(UINT nType, int cx, int cy)
 
 	if (IsWizard97())
 	{
-		// refresh header area
+		// refresh header area (erase needed if stretched)
 		CRect rect;
 		GetHeaderRect(rect);
-		InvalidateRect(rect, FALSE);
+		InvalidateRect(rect, (m_psh.dwFlags & PSH_STRETCHWATERMARK) ? TRUE : FALSE);
 	}
 }
 
@@ -391,14 +392,75 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
+	CRect rect;
+	if (IsWizard97())
+	{
+		// get header area
+		GetHeaderRect(rect);
+		// implement header redraw for compatibility (missing with Common Controls >= 6.00)
+		if (rect.Width() > 0 && (real_WIN32_IE >= 0x0600) && (real_ThemeSettings & STAP_ALLOW_CONTROLS))
+		{
+			if (m_psh.dwFlags & PSH_USEHBMHEADER)
+			{
+				CBitmap *pHdr = CBitmap::FromHandle(m_psh.hbmHeader);
+				if (m_psh.dwFlags & PSH_STRETCHWATERMARK)
+				{
+					BITMAP bmp;
+					ZeroMemory(&bmp, sizeof(bmp));
+					if (pHdr->GetBitmap(&bmp))
+					{
+						CDC dc;
+						dc.CreateCompatibleDC(pDC);
+						CBitmap *pOld = dc.SelectObject(pHdr);
+						int nOld = pDC->SetStretchBltMode(COLORONCOLOR);
+						pDC->StretchBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+						pDC->SetStretchBltMode(nOld);
+						dc.SelectObject(pOld);
+					}
+				}
+				else
+				{
+					CBrush brush(pHdr);
+					pDC->FillRect(&rect, &brush);
+				}
+			}
+			else
+			{
+				pDC->FillSolidRect(&rect, ::GetSysColor(COLOR_WINDOW));
+			}
+			// get system font
+			NONCLIENTMETRICS ncm;
+			ZeroMemory(&ncm, sizeof(ncm));
+			ncm.cbSize = sizeof(NONCLIENTMETRICS);
+			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
+			// create fonts, with bold variant
+			CFont fontTitle, fontSubTitle;
+			fontSubTitle.CreateFontIndirect(&ncm.lfMenuFont);
+			ncm.lfMenuFont.lfWeight += 300;
+			fontTitle.CreateFontIndirect(&ncm.lfMenuFont);
+			// draw title and sub-title
+			CRect rc(14, 6, 0, 0);
+			MapDialogRect(rc);
+			rc.right = rect.right;
+			rc.bottom = rect.bottom;
+			pDC->SetBkMode(TRANSPARENT);
+			int idx = GetActiveIndex();
+			CFont* pOld = pDC->SelectObject(&fontTitle);
+			pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT | DT_CALCRECT);
+			pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT);
+			rc.OffsetRect(rc.left, rc.Height());
+			pDC->SelectObject(&fontSubTitle);
+			pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT | DT_CALCRECT);
+			pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT);
+			pDC->SelectObject(pOld);
+		}
+	}
 	if (ClipChildren(pDC, FALSE))
 	{
 		// when clipping, remove header from clipping area
 		if (IsWizard97())
 		{
 			// clip header area out
-			CRect rect;
-			GetHeaderRect(rect);
 			pDC->ExcludeClipRect(rect);
 		}
 	}
