@@ -31,8 +31,6 @@ static char THIS_FILE[] = __FILE__;
 CResizableComboLBox::CResizableComboLBox()
 	: m_nHitTest(0), m_pOwnerCombo(NULL)
 {
-	m_dwAddToStyle = WS_THICKFRAME;
-	m_dwAddToStyleEx = 0;//WS_EX_CLIENTEDGE;
 	m_bSizing = FALSE;
 }
 
@@ -51,6 +49,7 @@ BEGIN_MESSAGE_MAP(CResizableComboLBox, CWnd)
 	ON_WM_CAPTURECHANGED()
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_WINDOWPOSCHANGED()
+	ON_WM_NCPAINT()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -71,6 +70,8 @@ BOOL CResizableComboLBox::IsRTL()
 
 void CResizableComboLBox::InitializeControl()
 {
+	CreateSizeGrip(FALSE);
+
 	CRect rect;
 	m_pOwnerCombo->GetWindowRect(&rect);
 	m_sizeAfterSizing.cx = rect.Width();
@@ -79,16 +80,18 @@ void CResizableComboLBox::InitializeControl()
 	m_sizeAfterSizing.cy += rect.Height();
 	m_sizeMin.cy = m_sizeAfterSizing.cy-2;
 
-	// change window's style
-	ModifyStyleEx(0, m_dwAddToStyleEx);
-	ModifyStyle(0, m_dwAddToStyle, SWP_FRAMECHANGED);
-
 	// count hscroll if present
 	if (GetStyle() & WS_HSCROLL)
 		m_sizeAfterSizing.cy += GetSystemMetrics(SM_CYHSCROLL);
 
-	SetWindowPos(NULL, 0, 0, m_sizeAfterSizing.cx, m_sizeAfterSizing.cy,
-		SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOMOVE);
+	// apply size constraints
+	WINDOWPOS wp;
+	ZeroMemory(&wp, sizeof(wp));
+	wp.cx = m_sizeAfterSizing.cx;
+	wp.cy = m_sizeAfterSizing.cy;
+	ApplyLimitsToPos(&wp);
+
+	SetWindowPos(NULL, 0, 0, wp.cx, wp.cy, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOMOVE);
 }
 
 void CResizableComboLBox::OnMouseMove(UINT nFlags, CPoint point)
@@ -215,6 +218,17 @@ LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 		ht = HTBORDER;
 	}
 
+	if (!IsRTL())
+	{
+		if (point.x > rcClient.right && point.y > rcClient.bottom)
+			ht = HTBOTTOMRIGHT;
+	}
+	else
+	{
+		if (point.x < rcClient.left && point.y > rcClient.bottom)
+			ht = HTBOTTOMLEFT;
+	}
+
 	return ht;
 }
 
@@ -260,6 +274,14 @@ void CResizableComboLBox::OnWindowPosChanged(WINDOWPOS FAR* lpwndpos)
 		(LPPOINT)&m_pOwnerCombo->m_rectDropDown, 2);
 
 	CWnd::OnWindowPosChanged(lpwndpos);
+
+	if (!m_bSizing)
+	{
+		// draw missing size grip
+		CDC *pDC = GetWindowDC();
+		PaintSizeGrip(pDC);
+		ReleaseDC(pDC);
+	}
 }
 
 void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
@@ -309,3 +331,34 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 	//TRACE("H c(%d) w(%d)\n", sizeClient.cy, lpwndpos->cy);
 }
 
+void CResizableComboLBox::OnNcPaint()
+{
+	CWnd::OnNcPaint();
+
+	// draw missing size grip
+	CDC *pDC = GetWindowDC();
+	PaintSizeGrip(pDC);
+	ReleaseDC(pDC);
+}
+
+void CResizableComboLBox::PaintSizeGrip(CDC * pDC)
+{
+	CRect rc;
+	GetClientRect(&rc);
+	CPoint ptOld = pDC->OffsetViewportOrg(rc.right, rc.bottom);
+	GetSizeGripWnd()->SendMessage(WM_PRINTCLIENT, (WPARAM)pDC->GetSafeHdc(), PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
+	pDC->SetViewportOrg(ptOld);
+}
+
+LRESULT CResizableComboLBox::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_PRINTCLIENT:
+		CWnd::WindowProc(message, wParam, lParam);
+		if (lParam & PRF_NONCLIENT)
+			PaintSizeGrip(CDC::FromHandle((HDC)wParam));
+		return 0;
+	}
+	return CWnd::WindowProc(message, wParam, lParam);
+}

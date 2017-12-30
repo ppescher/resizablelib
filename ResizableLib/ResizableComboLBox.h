@@ -48,6 +48,7 @@ public:
 	//{{AFX_VIRTUAL(CResizableComboLBox)
 	protected:
 	virtual void PreSubclassWindow();
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -64,13 +65,12 @@ private:
 	void InitializeControl();
 
 protected:
-	DWORD m_dwAddToStyle;
-	DWORD m_dwAddToStyleEx;
 	CSize m_sizeMin;			// initial size (minimum)
 	CResizableComboBox* m_pOwnerCombo;	// owner combobox
 
 	void ApplyLimitsToPos(WINDOWPOS* lpwndpos);
 	void EndSizing();
+	void PaintSizeGrip(CDC * pDC);
 
 	BOOL IsRTL();
 
@@ -90,6 +90,7 @@ protected:
 	afx_msg void OnCaptureChanged(CWnd *pWnd);
 	afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
 	afx_msg void OnWindowPosChanged(WINDOWPOS FAR* lpwndpos);
+	afx_msg void OnNcPaint();
 	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
