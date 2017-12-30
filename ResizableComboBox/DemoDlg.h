@@ -40,7 +40,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)
 	virtual BOOL OnInitDialog();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnButton1();
 	afx_msg void OnButton2();
 	afx_msg void OnButton3();

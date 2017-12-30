@@ -34,7 +34,7 @@ void CDemoDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CDemoDlg)
-	ON_WM_CREATE()
+	ON_WM_NCCREATE()
 	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, OnButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, OnButton3)
@@ -68,14 +68,14 @@ BOOL CDemoDlg::OnInitDialog()
 #define WS_EX_LAYOUTRTL	0x00400000
 #endif
 
-int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CDemoDlg::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 //	ModifyStyleEx(0, WS_EX_LAYOUTRTL);
 	
-	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
-		return -1;
+	if (!CResizableDialog::OnNcCreate(lpCreateStruct))
+		return FALSE;
 	
-	return 0;
+	return TRUE;
 }
 
 void CDemoDlg::OnButton1() 
