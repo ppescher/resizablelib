@@ -170,7 +170,6 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -212,7 +211,6 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -255,7 +253,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -294,7 +291,6 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -333,7 +329,6 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -372,7 +367,6 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -410,7 +404,6 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
@@ -452,7 +445,6 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level4</WarningLevel>
