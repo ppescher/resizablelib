@@ -81,6 +81,7 @@ protected:
 	void HideSizeGrip(DWORD* pStatus, DWORD dwMask = 1);	// temp hide the size grip
 	BOOL SetSizeGripBkMode(int nBkMode);		// like CDC::SetBkMode
 	void SetSizeGripShape(BOOL bTriangular);
+	CWnd* GetSizeGripWnd() { return &m_wndGrip; }
 
 	virtual CWnd* GetResizableWnd() const = 0;
 
