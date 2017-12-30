@@ -56,7 +56,7 @@ HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	if (nCtlColor == CTLCOLOR_LISTBOX)
 	{
-		if (!(GetStyle() & CBS_SIMPLE)
+		if ((GetStyle() & CBS_DROPDOWNLIST) != CBS_SIMPLE
 			&& (m_ctrlListBox.m_hWnd == NULL))
 		{
 			TRACE("ComboLBox: 0x%08X\n", pWnd->m_hWnd);
@@ -147,6 +147,7 @@ void CResizableComboBox::UpdateHorizontalExtent(LPCTSTR szText)
 
 void CResizableComboBox::PreSubclassWindow()
 {
+	// must have this style to be resizable
 	ASSERT(GetStyle() & CBS_NOINTEGRALHEIGHT);
 
 	InitHorizontalExtent();
