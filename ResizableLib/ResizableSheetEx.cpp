@@ -406,7 +406,6 @@ BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 				if (m_psh.dwFlags & PSH_STRETCHWATERMARK)
 				{
 					BITMAP bmp;
-					ZeroMemory(&bmp, sizeof(bmp));
 					if (pHdr->GetBitmap(&bmp))
 					{
 						CDC dc;
@@ -429,9 +428,7 @@ BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 				pDC->FillSolidRect(&rect, ::GetSysColor(COLOR_WINDOW));
 			}
 			// get system font
-			NONCLIENTMETRICS ncm;
-			ZeroMemory(&ncm, sizeof(ncm));
-			ncm.cbSize = sizeof(NONCLIENTMETRICS);
+			NONCLIENTMETRICS ncm = {sizeof(NONCLIENTMETRICS)};
 			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
 			// create fonts, with bold variant
 			CFont fontTitle, fontSubTitle;

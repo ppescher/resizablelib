@@ -85,8 +85,7 @@ void CResizableComboLBox::InitializeControl()
 		m_sizeAfterSizing.cy += GetSystemMetrics(SM_CYHSCROLL);
 
 	// apply size constraints
-	WINDOWPOS wp;
-	ZeroMemory(&wp, sizeof(wp));
+	WINDOWPOS wp = {};
 	wp.cx = m_sizeAfterSizing.cx;
 	wp.cy = m_sizeAfterSizing.cy;
 	ApplyLimitsToPos(&wp);
