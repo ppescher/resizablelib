@@ -56,6 +56,8 @@ BOOL CDemoDlg::OnInitDialog()
 	AddAnchor(IDC_COMBO1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_EDIT1, TOP_LEFT, TOP_RIGHT);
 	AddAnchor(IDC_LIST1, TOP_RIGHT, BOTTOM_RIGHT);
+	
+	AddAllOtherAnchors(TOP_LEFT, TOP_RIGHT);
 
 	m_ctrlList1.AddString(_T("a very very very loooong item text"));
 	m_ctrlList1.SetHorizontalExtent(400);

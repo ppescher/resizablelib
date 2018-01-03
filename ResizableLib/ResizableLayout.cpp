@@ -112,6 +112,8 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
  *  This function adds all the controls not yet added to the layout manager
  *  and sets anchor points for its top-left and bottom-right corners.
  *
+ *  @param anchorTopLeft Anchor point for the top-left corner
+ *  @param anchorBottomRight Anchor point for the bottom-right corner
  *  @param anchor Anchor point for the top-left and bottom-right corner
  *
  *  @remarks Overlapping controls, like group boxes and the controls inside,
@@ -120,7 +122,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
  *
  *  @sa AddAnchor
  */
-void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
+void CResizableLayout::AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBottomRight)
 {
 	HWND hParent = GetResizableWnd()->GetSafeHwnd();
 	ASSERT(::IsWindow(hParent));
@@ -130,7 +132,7 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
 	{
 		POSITION pos;
 		if (!m_mapLayout.Lookup(hWnd, pos))
-			AddAnchor(hWnd, anchor, anchor);
+			AddAnchor(hWnd, anchorTopLeft, anchorBottomRight);
 
 		hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT);
 	}

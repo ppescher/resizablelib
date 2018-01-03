@@ -206,7 +206,12 @@ protected:
 
 	//@{
 	//! @brief Add anchor points for all the remaining controls to the layout
-	void AddAllOtherAnchors(ANCHOR anchor);
+	void AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBottomRight);
+	
+	void AddAllOtherAnchors(ANCHOR anchor)
+	{
+		AddAllOtherAnchors(anchor, anchor);
+	}
 
 	void AddAllOtherAnchors()
 	{
