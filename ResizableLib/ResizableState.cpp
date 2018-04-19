@@ -27,6 +27,8 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+LPCTSTR CResizableState::m_sDefaultStorePath = _T("ResizableState");
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -40,11 +42,6 @@ CResizableState::~CResizableState()
 {
 
 }
-
-// static intializer must be called before user code
-#pragma warning(disable:4073)
-#pragma init_seg(lib)
-CString CResizableState::m_sDefaultStorePath(_T("ResizableState"));
 
 /*!
  *  Static function to set the default path used to store state information.
