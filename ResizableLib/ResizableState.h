@@ -38,7 +38,7 @@
  */
 class CResizableState
 {
-	static CString m_sDefaultStorePath;
+	static LPCTSTR m_sDefaultStorePath;
 	CString m_sStorePath;
 
 protected:
