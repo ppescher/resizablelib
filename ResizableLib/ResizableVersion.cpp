@@ -52,6 +52,8 @@ static _VersionInitializer g_version;
 static DLLVERSIONINFO g_dviCommCtrls;
 static OSVERSIONINFOEX g_osviWindows;
 
+#pragma warning(push)
+#pragma warning(disable:4996) 
 static void CheckOsVersion()
 {
 	// Try calling GetVersionEx using the OSVERSIONINFOEX structure.
@@ -72,6 +74,7 @@ static void CheckOsVersion()
 	g_osviWindows.dwPlatformId = VER_PLATFORM_WIN32_WINDOWS;
 	g_osviWindows.szCSDVersion[0] = TEXT('\0');
 }
+#pragma warning(pop)
 
 static void CheckCommCtrlsVersion()
 {
