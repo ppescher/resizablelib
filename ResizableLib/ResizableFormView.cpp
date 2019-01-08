@@ -121,8 +121,8 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 		HideSizeGrip(&m_dwGripTempState, GHR_ALIGNMENT);
 
 	// update grip and layout
-	UpdateSizeGrip();
 	ArrangeLayout();
+	UpdateSizeGrip();
 }
 
 void CResizableFormView::GetTotalClientRect(LPRECT lpRect) const
