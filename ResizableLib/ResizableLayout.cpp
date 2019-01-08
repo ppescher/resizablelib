@@ -75,18 +75,13 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 	// adjust position, if client area has been scrolled
 	rectChild.OffsetRect(-rectParent.TopLeft());
 
-	// go calculate margins
-	CSize marginTopLeft, marginBottomRight;
-
 	// calculate margin for the top-left corner
-
-	marginTopLeft.cx = rectChild.left - rectParent.Width() * anchorTopLeft.cx / 100;
-	marginTopLeft.cy = rectChild.top - rectParent.Height() * anchorTopLeft.cy / 100;
+	CSize marginTopLeft(rectChild.left - rectParent.Width() * anchorTopLeft.cx / 100,
+				rectChild.top - rectParent.Height() * anchorTopLeft.cy / 100);
 
 	// calculate margin for the bottom-right corner
-
-	marginBottomRight.cx = rectChild.right - rectParent.Width() * anchorBottomRight.cx / 100;
-	marginBottomRight.cy = rectChild.bottom - rectParent.Height() * anchorBottomRight.cy / 100;
+	CSize marginBottomRight(rectChild.right - rectParent.Width() * anchorBottomRight.cx / 100,
+				rectChild.bottom - rectParent.Height() * anchorBottomRight.cy / 100);
 
 	// prepare the structure
 	LAYOUTINFO layout(hWnd, anchorTopLeft, marginTopLeft,
@@ -214,13 +209,11 @@ BOOL CResizableLayout::ArrangeLayoutCallback(LAYOUTINFO& layout) const
  */
 void CResizableLayout::ArrangeLayout() const
 {
-	// common vars
-	UINT uFlags;
-	CRect rectParent, rectChild;
 	const INT_PTR count = m_listLayout.GetCount() + m_listLayoutCB.GetCount();
-
 	if (count <= 0)
 		return;
+
+	CRect rectParent, rectChild;
 
 	// get parent window's rect
 	GetTotalClientRect(&rectParent);
@@ -233,6 +226,7 @@ void CResizableLayout::ArrangeLayout() const
 		// get layout info
 		const LAYOUTINFO layout = m_listLayout.GetNext(pos);
 
+		UINT uFlags;
 		// calculate new child's position, size and flags for SetWindowPos
 		CalcNewChildPosition(layout, rectParent, rectChild, &uFlags);
 
@@ -255,6 +249,7 @@ void CResizableLayout::ArrangeLayout() const
 		if (!ArrangeLayoutCallback(layout))
 			continue;
 
+		UINT uFlags;
 		// calculate new child's position, size and flags for SetWindowPos
 		CalcNewChildPosition(layout, rectParent, rectChild, &uFlags);
 

@@ -235,10 +235,8 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 				BeginPaint(&ps) : CDC::FromHandle((HDC)wParam);
 
 			// select bitmaps
-			CBitmap *pOldGrip, *pOldMask;
-
-			pOldGrip = m_dcGrip.SelectObject(&m_bmGrip);
-			pOldMask = m_dcMask.SelectObject(&m_bmMask);
+			CBitmap *pOldGrip = m_dcGrip.SelectObject(&m_bmGrip);
+			CBitmap *pOldMask = m_dcMask.SelectObject(&m_bmMask);
 
 			// obtain original grip bitmap, make the mask and prepare masked bitmap
 			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);

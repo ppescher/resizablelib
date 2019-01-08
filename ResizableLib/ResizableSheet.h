@@ -70,7 +70,6 @@ public:
 	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
-	protected:
 
 // Implementation
 public:

@@ -579,24 +579,24 @@ int CResizableSheetEx::GetMinWidth()
 
 	int max = 0, min = rectSheet.Width();
 	// search for leftmost and rightmost button margins
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 7; ++i)
 	{
 		const CWnd* pWnd = GetDlgItem(_propButtons[i]);
 		// exclude not present or hidden buttons
-		if (pWnd == NULL || !(pWnd->GetStyle() & WS_VISIBLE))
-			continue;
-
-		// left position is relative to the right border
-		// of the parent window (negative value)
-		pWnd->GetWindowRect(&rectWnd);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
-		const int left = rectSheet.right - rectWnd.left;
-		const int right = rectSheet.right - rectWnd.right;
-		
-		if (left > max)
-			max = left;
-		if (right < min)
-			min = right;
+		if (pWnd != NULL && (pWnd->GetStyle() & WS_VISIBLE))
+		{
+			// left position is relative to the right border
+			// of the parent window (negative value)
+			pWnd->GetWindowRect(&rectWnd);
+			::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
+			const int left = rectSheet.right - rectWnd.left;
+			const int right = rectSheet.right - rectWnd.right;
+			
+			if (left > max)
+				max = left;
+			if (right < min)
+				min = right;
+		}
 	}
 
 	// sizing border width
