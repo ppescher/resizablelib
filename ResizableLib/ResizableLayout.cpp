@@ -128,13 +128,23 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBot
 	ASSERT(::IsWindow(hParent));
 
 	HWND hWnd = ::GetWindow(hParent, GW_CHILD);
-	while (hWnd != NULL)
+	for (; hWnd != NULL; hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT))
 	{
+		TCHAR szClassName[32];
+		if (::GetClassName(hWnd, szClassName, sizeof(szClassName)))
+		{
+			if (lstrcmp(szClassName, WC_SCROLLBAR) == 0)
+			{
+				// skip size grip (which is handled on its own)
+				DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
+				if ((dwStyle & (WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP)) == (WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP))
+					continue;
+			}
+		}
+
 		POSITION pos;
 		if (!m_mapLayout.Lookup(hWnd, pos))
 			AddAnchor(hWnd, anchorTopLeft, anchorBottomRight);
-
-		hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT);
 	}
 }
 
