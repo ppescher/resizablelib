@@ -126,7 +126,7 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBot
 	for (; hWnd != NULL; hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT))
 	{
 		TCHAR szClassName[32];
-		if (::GetClassName(hWnd, szClassName, sizeof(szClassName)))
+		if (::GetClassName(hWnd, szClassName, _countof(szClassName)))
 		{
 			if (lstrcmp(szClassName, WC_SCROLLBAR) == 0)
 			{

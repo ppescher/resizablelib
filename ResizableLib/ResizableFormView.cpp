@@ -128,16 +128,16 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 void CResizableFormView::GetTotalClientRect(LPRECT lpRect) const
 {
 	GetClientRect(lpRect);
+	// done, if there are no active scrollbars
+	if (!(GetStyle() & (WS_HSCROLL | WS_VSCROLL)))
+		return;
 
 	// get dialog template's size
 	// (this is set in CFormView::Create)
 	CSize sizeTotal, sizePage, sizeLine;
-	int nMapMode = 0;
+	int nMapMode;
 	GetDeviceScrollSizes(nMapMode, sizeTotal, sizePage, sizeLine);
-
-	// otherwise, give the correct size if scrollbars active
-
-	if (nMapMode < 0)	// scrollbars disabled
+	if (nMapMode <= 0)	// scrollbars disabled (invalid mapping mode)
 		return;
 
 	// enlarge reported client area when needed
