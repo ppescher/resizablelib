@@ -139,6 +139,12 @@
     <ClInclude Include="Docs\refman.h">
       <Filter>Documentation</Filter>
     </ClInclude>
+    <ClInclude Include="ResizableComboBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResizableComboLBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Docs\class.txt">
@@ -174,13 +180,5 @@
     <None Include="Docs\stylesheet.css">
       <Filter>Documentation</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="ResizableComboBox.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ResizableComboLBox.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>
