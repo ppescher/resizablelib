@@ -103,6 +103,23 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 	m_mapLayout.SetAt(hWnd, pos);
 }
 
+void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft)
+{
+  AddAnchor(hWnd, anchorTopLeft, anchorTopLeft);
+}
+
+void CResizableLayout::AddAnchor(UINT nID, ANCHOR anchorTopLeft, ANCHOR anchorBottomRight)
+{
+  AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+    anchorTopLeft, anchorBottomRight);
+}
+
+void CResizableLayout::AddAnchor(UINT nID, ANCHOR anchorTopLeft)
+{
+  AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
+    anchorTopLeft, anchorTopLeft);
+}
+
 /*!
  *  This function adds all the controls not yet added to the layout manager
  *  and sets anchor points for its top-left and bottom-right corners.
@@ -141,6 +158,21 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBot
 		if (!m_mapLayout.Lookup(hWnd, pos))
 			AddAnchor(hWnd, anchorTopLeft, anchorBottomRight);
 	}
+}
+
+void CResizableLayout::AddAllOtherAnchors(ANCHOR anchor)
+{
+	AddAllOtherAnchors(anchor, anchor);
+}
+
+void CResizableLayout::AddAllOtherAnchors()
+{
+  AddAllOtherAnchors(TOP_LEFT);
+}
+
+BOOL CResizableLayout::RemoveAnchor(UINT nID)
+{
+  return RemoveAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID));
 }
 
 /*!
