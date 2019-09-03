@@ -27,10 +27,11 @@
 #include "ResizableMinMax.h"
 #include "ResizableWndState.h"
 
+#define BASE_DIALOG_CLASS CDialog
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialog window
 
-class CResizableDialog : public CDialog, public CResizableLayout,
+class CResizableDialog : public BASE_DIALOG_CLASS, public CResizableLayout,
 						 public CResizableGrip, public CResizableMinMax,
 						 public CResizableWndState
 {
