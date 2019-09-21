@@ -321,7 +321,7 @@ void CResizableComboLBox::ApplyLimitsToPos(WINDOWPOS* lpwndpos)
 
 	// back to window rect
 	rect = CRect(0, 0, 1, sizeClient.cy);
-	DWORD dwStyle = GetStyle();
+	const DWORD dwStyle = GetStyle();
 	::AdjustWindowRectEx(&rect, dwStyle, FALSE, GetExStyle());
 	lpwndpos->cy = rect.Height();
 	if (dwStyle & WS_HSCROLL)

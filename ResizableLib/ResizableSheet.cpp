@@ -334,9 +334,6 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 	if (!GetAnchorMargins(pTab->m_hWnd, sizeChild, rectMargins))
 		return FALSE;
 
-	// get margin caused by tabcontrol
-	CRect rectTabMargins(0,0,0,0);
-
 	// get tab position after resizing and calc page rect
 	CRect rectPage, rectSheet;
 	GetTotalClientRect(&rectSheet);
@@ -345,7 +342,7 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 		return FALSE; // no page yet
 
 	// temporarily resize the tab control to calc page size
-	CRect rectSave;
+	CRect rectSave, rectTabMargins;
 	pTab->GetWindowRect(rectSave);
 	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
 	pTab->SetRedraw(FALSE);
@@ -355,9 +352,9 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 	pTab->SetRedraw(TRUE);
 
 	// add non-client size
-	::AdjustWindowRectEx(&rectTabMargins, GetStyle(), !(GetStyle() & WS_CHILD) &&
+	const DWORD dwStyle = GetStyle();
+	::AdjustWindowRectEx(&rectTabMargins, dwStyle, !(dwStyle & WS_CHILD) &&
 		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
-
 	// compute extra size
 	sizeExtra = rectMargins.TopLeft() + rectMargins.BottomRight() +
 		rectTabMargins.Size();
@@ -371,22 +368,20 @@ void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 	if (!GetTabControl())
 		return;
 
-	const int nCount = GetPageCount();
-	for (int idx = 0; idx < nCount; ++idx)
+	int idx = GetPageCount();
+	if (IsWizard())	// wizard mode
 	{
-		if (IsWizard())	// wizard mode
-		{
-			// use pre-calculated margins
-			CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
-			// add non-client size
-			::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
-				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+		CRect rectExtra(-CPoint(m_sizePageTL), -CPoint(m_sizePageBR));
+		const DWORD dwStyle = GetStyle();
+		::AdjustWindowRectEx(&rectExtra, dwStyle, !(dwStyle & WS_CHILD) &&
+			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+		while (--idx >= 0)
 			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
-		}
-		else	// tab mode
-		{
+	}
+	else	// tab mode
+	{
+		while (--idx >= 0)
 			ChainMinMaxInfoCB(lpMMI, *GetPage(idx));
-		}
 	}
 }
 

@@ -689,7 +689,8 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 		NeedsRefresh(layout, rectChild, rectNew) : layout.properties.bCachedNeedsRefresh;
 
 	// set flags
-	if (lpFlags) {
+	if (lpFlags)
+	{
 		*lpFlags = SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION;
 		if (bRefresh)
 			*lpFlags |= SWP_NOCOPYBITS;

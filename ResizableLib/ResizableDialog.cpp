@@ -82,14 +82,15 @@ BOOL CResizableDialog::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!CreateSizeGrip(!bChild))
 		return FALSE;
 
+	// Moved from behind if (!bChild) because user could resize the dialog smaller as in resource defined and that causes some static text to be clipped or dissapear.
+	MakeResizable(lpCreateStruct);
+
 	if (!bChild)
 	{
 		// set the initial size as the min track size
 		SetMinTrackSize(CSize(lpCreateStruct->cx, lpCreateStruct->cy));
 	}
 	
-	MakeResizable(lpCreateStruct);
-
 	return TRUE;
 }
 
