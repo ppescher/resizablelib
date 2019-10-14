@@ -393,7 +393,7 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
 {
 	CRect rect;
-	if (IsWizard97())
+	if (m_psh.dwFlags & PSH_IE4WIZARD97)
 	{
 		// get header area
 		GetHeaderRect(rect);
