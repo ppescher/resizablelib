@@ -79,7 +79,7 @@ void CResizableFormView::Dump(CDumpContext& dc) const
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFormView message handlers
 
-void CResizableFormView::OnSize(UINT nType, int cx, int cy) 
+void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 {
 	CFormView::OnSize(nType, cx, cy);
 
@@ -151,7 +151,7 @@ void CResizableFormView::GetTotalClientRect(LPRECT lpRect) const
 	*lpRect = rect;
 }
 
-BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC)
 {
 	ClipChildren(pDC, FALSE);
 
@@ -162,12 +162,12 @@ BOOL CResizableFormView::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
-void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableFormView::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 }
 
-void CResizableFormView::OnDestroy() 
+void CResizableFormView::OnDestroy()
 {
 	// reset instance data
 	RemoveAllAnchors();
@@ -177,7 +177,7 @@ void CResizableFormView::OnDestroy()
 	CFormView::OnDestroy();
 }
 
-LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WM_INITDIALOG)
 		return static_cast<LRESULT>(OnInitDialog());
@@ -193,7 +193,7 @@ LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	return lResult;
 }
 
-BOOL CResizableFormView::OnInitDialog() 
+BOOL CResizableFormView::OnInitDialog()
 {
 	const MSG* pMsg = GetCurrentMessage();
 
@@ -201,7 +201,7 @@ BOOL CResizableFormView::OnInitDialog()
 
 	// we need to associate member variables with control IDs
 	UpdateData(FALSE);
-	
+
 	// set default scroll size
 	CRect rectTemplate;
 	GetWindowRect(rectTemplate);
@@ -210,7 +210,7 @@ BOOL CResizableFormView::OnInitDialog()
 	return bRet;
 }
 
-BOOL CResizableFormView::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableFormView::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	return CFormView::OnNcCreate(lpCreateStruct) && CreateSizeGrip();	// create and init the size-grip
 }

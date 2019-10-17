@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableFrame message handlers
 
-void CResizableFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 
@@ -76,7 +76,7 @@ BOOL CResizableFrame::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	return LoadWindowRect(pszSection, bRectOnly);
 }
 
-void CResizableFrame::OnDestroy() 
+void CResizableFrame::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
@@ -89,7 +89,7 @@ void CResizableFrame::OnDestroy()
 	CFrameWnd::OnDestroy();
 }
 
-BOOL CResizableFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CFrameWnd::OnNcCreate(lpCreateStruct))
 		return FALSE;
@@ -99,7 +99,7 @@ BOOL CResizableFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 	return TRUE;
 }
 
-LRESULT CResizableFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0)
 		return CFrameWnd::WindowProc(message, wParam, lParam);
@@ -114,7 +114,7 @@ LRESULT CResizableFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 // TODO: implement this in CResizableMinMax
 // We definitely need pluggable message handlers ala WTL!
-void CResizableFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+void CResizableFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 {
 	if ((lpwndpos->flags & (SWP_NOSIZE|SWP_NOMOVE)) != (SWP_NOSIZE|SWP_NOMOVE))
 		CFrameWnd::OnWindowPosChanging(lpwndpos);

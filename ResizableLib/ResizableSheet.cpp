@@ -50,13 +50,13 @@ CResizableSheet::CResizableSheet()
 }
 
 CResizableSheet::CResizableSheet(UINT nIDCaption, CWnd *pParentWnd, UINT iSelectPage)
-	 : CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
+	: CPropertySheet(nIDCaption, pParentWnd, iSelectPage)
 {
 	PrivateConstruct();
 }
 
 CResizableSheet::CResizableSheet(LPCTSTR pszCaption, CWnd *pParentWnd, UINT iSelectPage)
-	 : CPropertySheet(pszCaption, pParentWnd, iSelectPage)
+	: CPropertySheet(pszCaption, pParentWnd, iSelectPage)
 {
 	PrivateConstruct();
 }
@@ -79,7 +79,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSheet message handlers
 
-BOOL CResizableSheet::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableSheet::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CPropertySheet::OnNcCreate(lpCreateStruct))
 		return FALSE;
@@ -93,11 +93,11 @@ BOOL CResizableSheet::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 		return FALSE;
 
 	MakeResizable(lpCreateStruct);
-	
+
 	return TRUE;
 }
 
-BOOL CResizableSheet::OnInitDialog() 
+BOOL CResizableSheet::OnInitDialog()
 {
 	BOOL bResult = CPropertySheet::OnInitDialog();
 
@@ -108,7 +108,7 @@ BOOL CResizableSheet::OnInitDialog()
 	return bResult;
 }
 
-void CResizableSheet::OnDestroy() 
+void CResizableSheet::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 	{
@@ -220,7 +220,7 @@ void CResizableSheet::PresetLayout()
 		// grow tab to the available sheet space
 		if (cyDiff > 0)
 			rectSheet.bottom = rectPage.bottom + cyDiff;
-		
+
 		if (GetStyle() & WS_CHILD)
 			GetTabControl()->MoveWindow(&rectSheet);
 
@@ -286,10 +286,10 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 	return TRUE;
 }
 
-void CResizableSheet::OnSize(UINT nType, int cx, int cy) 
+void CResizableSheet::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-	
+
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
@@ -312,7 +312,7 @@ BOOL CResizableSheet::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pResul
 	return FALSE;	// continue routing
 }
 
-BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizableSheet::OnEraseBkgnd(CDC* pDC)
 {
 	ClipChildren(pDC, FALSE);
 
@@ -361,7 +361,7 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 	return TRUE;
 }
 
-void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 
@@ -406,7 +406,7 @@ int CResizableSheet::GetMinWidth()
 			::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
 			const int left = rectSheet.right - rectWnd.left;
 			const int right = rectSheet.right - rectWnd.right;
-	
+
 			if (left > max)
 				max = left;
 			if (right < min)
@@ -416,7 +416,7 @@ int CResizableSheet::GetMinWidth()
 
 	// sizing border width
 	const int border = GetSystemMetrics(SM_CXSIZEFRAME);
-	
+
 	// compute total width
 	return max + min + 2*border;
 }
@@ -445,7 +445,7 @@ void CResizableSheet::RefreshLayout()
 	SendMessage(WM_SIZE);
 }
 
-LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
 		return CPropertySheet::WindowProc(message, wParam, lParam);

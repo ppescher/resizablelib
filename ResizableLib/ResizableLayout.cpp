@@ -29,6 +29,19 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 /*!
+ *  Definition of the standard anchors
+ */
+const ANCHOR TOP_LEFT(0, 0);
+const ANCHOR TOP_CENTER(50, 0);
+const ANCHOR TOP_RIGHT(100, 0);
+const ANCHOR MIDDLE_LEFT(0, 50);
+const ANCHOR MIDDLE_CENTER(50, 50);
+const ANCHOR MIDDLE_RIGHT(100, 50);
+const ANCHOR BOTTOM_LEFT(0, 100);
+const ANCHOR BOTTOM_CENTER(50, 100);
+const ANCHOR BOTTOM_RIGHT(100, 100);
+
+/*!
  *  @internal Constant used to detect clipping and refresh properties
  *
  *  @note In August 2002 Platform SDK, some guy at MS thought it was time
@@ -350,7 +363,7 @@ void CResizableLayout::GetClippingRegion(CRgn* pRegion) const
 		if (::IsWindowVisible(layout.hWnd))
 			ClipChildWindow(layout, pRegion);
 	}
-	
+
 	for (POSITION pos = m_listLayoutCB.GetHeadPosition(); pos != NULL;)
 	{
 		// get layout info
@@ -599,7 +612,7 @@ BOOL CResizableLayout::LikesClipping(const LAYOUTINFO& layout) const
 			return clipping.bLikesClipping;
 	}
 
-	LONG_PTR style = ::GetWindowLongPtr(layout.hWnd, GWL_STYLE);
+	const LONG_PTR style = ::GetWindowLongPtr(layout.hWnd, GWL_STYLE);
 
 	// skip windows that wants background repainted
 	if (0 == lstrcmp(layout.sWndClass, WC_BUTTON))
@@ -727,10 +740,10 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
 	const LAYOUTINFO& layout = m_listLayout.GetAt(pos);
 
 	// augmented size, relative to anchor points
-	CSize size = sizeChild + layout.marginTopLeft - layout.marginBottomRight;
+	const CSize size = sizeChild + layout.marginTopLeft - layout.marginBottomRight;
 
 	// percent of parent size occupied by this control
-	CSize percent(layout.anchorBottomRight.cx - layout.anchorTopLeft.cx,
+	const CSize percent(layout.anchorBottomRight.cx - layout.anchorTopLeft.cx,
 		layout.anchorBottomRight.cy - layout.anchorTopLeft.cy);
 
 	// calculate total margins

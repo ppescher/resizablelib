@@ -62,17 +62,17 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizablePageEx message handlers
 
-void CResizablePageEx::OnSize(UINT nType, int cx, int cy) 
+void CResizablePageEx::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-	
+
 	ArrangeLayout();
 
 	if (m_psp.dwFlags & PSP_HIDEHEADER)
 		Invalidate();
 }
 
-BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC)
 {
 	ClipChildren(pDC, FALSE);
 
@@ -83,15 +83,15 @@ BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
-void CResizablePageEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizablePageEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 }
 
-BOOL CResizablePageEx::OnInitDialog() 
+BOOL CResizablePageEx::OnInitDialog()
 {
 	CPropertyPageEx::OnInitDialog();
-	
+
 	// set the initial size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
@@ -108,11 +108,11 @@ BOOL CResizablePageEx::OnInitDialog()
 		Post_SheetPageExHack(pParent->GetSafeHwnd(), m_hWnd);
 	}
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	return TRUE; // return TRUE unless you set the focus to a control
+				 // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CResizablePageEx::OnDestroy() 
+void CResizablePageEx::OnDestroy()
 {
 	// remove child windows
 	RemoveAllAnchors();
@@ -121,7 +121,7 @@ void CResizablePageEx::OnDestroy()
 	CPropertyPageEx::OnDestroy();
 }
 
-HBRUSH CResizablePageEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) 
+HBRUSH CResizablePageEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	// NOTE: this message couldn't be catched without the above hack
 
@@ -144,7 +144,7 @@ HBRUSH CResizablePageEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return hbr;
 }
 
-LRESULT CResizablePageEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizablePageEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0)
 		return CPropertyPageEx::WindowProc(message, wParam, lParam);

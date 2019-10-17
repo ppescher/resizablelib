@@ -70,10 +70,9 @@ public:
 	};
 
 // Overrides
+	virtual BOOL OnInitDialog();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableSheetEx)
-	public:
-	virtual BOOL OnInitDialog();
 	protected:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
