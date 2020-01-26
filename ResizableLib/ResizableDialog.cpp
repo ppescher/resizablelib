@@ -40,13 +40,13 @@ CResizableDialog::CResizableDialog()
 }
 
 CResizableDialog::CResizableDialog(UINT nIDTemplate, CWnd* pParentWnd)
-	: CDialog(nIDTemplate, pParentWnd)
+	: BASE_DIALOG_CLASS(nIDTemplate, pParentWnd)
 {
 	PrivateConstruct();
 }
 
 CResizableDialog::CResizableDialog(LPCTSTR lpszTemplateName, CWnd* pParentWnd)
-	: CDialog(lpszTemplateName, pParentWnd)
+	: BASE_DIALOG_CLASS(lpszTemplateName, pParentWnd)
 {
 	PrivateConstruct();
 }
@@ -56,7 +56,7 @@ CResizableDialog::~CResizableDialog()
 }
 
 
-BEGIN_MESSAGE_MAP(CResizableDialog, CDialog)
+BEGIN_MESSAGE_MAP(CResizableDialog, BASE_DIALOG_CLASS)
 	//{{AFX_MSG_MAP(CResizableDialog)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SIZE()
@@ -71,7 +71,7 @@ END_MESSAGE_MAP()
 
 BOOL CResizableDialog::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (!CDialog::OnNcCreate(lpCreateStruct))
+	if (!BASE_DIALOG_CLASS::OnNcCreate(lpCreateStruct))
 		return FALSE;
 
 	// child dialogs don't want resizable border or size grip,
@@ -104,12 +104,12 @@ void CResizableDialog::OnDestroy()
 	ResetAllRects();
 	PrivateConstruct();
 
-	CDialog::OnDestroy();
+	BASE_DIALOG_CLASS::OnDestroy();
 }
 
 void CResizableDialog::OnSize(UINT nType, int cx, int cy) 
 {
-	CDialog::OnSize(nType, cx, cy);
+	BASE_DIALOG_CLASS::OnSize(nType, cx, cy);
 	
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
@@ -146,7 +146,7 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 {
 	ClipChildren(pDC, FALSE);
 
-	BOOL bRet = CDialog::OnEraseBkgnd(pDC);
+	BOOL bRet = BASE_DIALOG_CLASS::OnEraseBkgnd(pDC);
 
 	ClipChildren(pDC, TRUE);
 
@@ -156,11 +156,11 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 LRESULT CResizableDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CDialog::WindowProc(message, wParam, lParam);
+		return BASE_DIALOG_CLASS::WindowProc(message, wParam, lParam);
 
 	LRESULT lResult = 0;
 	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CDialog::WindowProc(message, wParam, lParam);
+	lResult = BASE_DIALOG_CLASS::WindowProc(message, wParam, lParam);
 	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
 	return lResult;
 }
