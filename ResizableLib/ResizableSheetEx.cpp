@@ -262,8 +262,9 @@ void CResizableSheetEx::PresetLayout()
 		if (IsWizard97())	// add header line for wizard97 dialogs
 			AddAnchor(ID_WIZLINEHDR, TOP_LEFT, TOP_RIGHT);
 
-		// hide tab control
+		// hide tab control and keep it hidden
 		GetTabControl()->ShowWindow(SW_HIDE);
+		AddAnchor(AFX_IDC_TAB_CONTROL, TOP_LEFT);
 
 		// pre-calculate margins
 		m_sizePageTL = rectPage.TopLeft() - rectSheet.TopLeft();
