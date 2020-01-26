@@ -142,6 +142,12 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	LoadWindowRect(pszSection, bRectOnly);
 }
 
+/*virtual*/ CWnd* CResizableDialog::GetResizableWnd() const
+{
+  // make the layout know its parent window
+  return CWnd::FromHandle(m_hWnd);
+};
+
 BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC) 
 {
 	ClipChildren(pDC, FALSE);

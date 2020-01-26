@@ -186,37 +186,21 @@ protected:
 	//! @brief Add anchor points for the specified control to the layout
 	void AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorBottomRight);
 
-	void AddAnchor(HWND hWnd, ANCHOR anchorTopLeft)
-	{
-		AddAnchor(hWnd, anchorTopLeft, anchorTopLeft);
-	}
+	void AddAnchor(HWND hWnd, ANCHOR anchorTopLeft);
 
-	void AddAnchor(UINT nID, ANCHOR anchorTopLeft, ANCHOR anchorBottomRight)
-	{
-		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
-			anchorTopLeft, anchorBottomRight);
-	}
+	void AddAnchor(UINT nID, ANCHOR anchorTopLeft, ANCHOR anchorBottomRight);
 
-	void AddAnchor(UINT nID, ANCHOR anchorTopLeft)
-	{
-		AddAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID),
-			anchorTopLeft, anchorTopLeft);
-	}
+	void AddAnchor(UINT nID, ANCHOR anchorTopLeft);
 	//@}
 
 	//@{
 	//! @brief Add anchor points for all the remaining controls to the layout
 	void AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBottomRight);
 	
-	void AddAllOtherAnchors(ANCHOR anchor)
-	{
-		AddAllOtherAnchors(anchor, anchor);
-	}
+	void AddAllOtherAnchors(ANCHOR anchor);
 
-	void AddAllOtherAnchors()
-	{
-		AddAllOtherAnchors(TOP_LEFT);
-	}
+
+	void AddAllOtherAnchors();
 	//@}
 
 	//! @brief Add a callback slot to the layout for dynamic controls or anchor points
@@ -266,10 +250,7 @@ protected:
 		return m_mapLayout.RemoveKey(hWnd);
 	}
 
-	BOOL RemoveAnchor(UINT nID)
-	{
-		return RemoveAnchor(::GetDlgItem(GetResizableWnd()->GetSafeHwnd(), nID));
-	}
+	BOOL RemoveAnchor(UINT nID);
 	//@}
 
 	//! @brief Reset the layout content
