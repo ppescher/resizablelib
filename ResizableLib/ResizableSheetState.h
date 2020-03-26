@@ -38,14 +38,14 @@
  *  This class is used in the provided resizable counterparts of
  *  the standard MFC property sheet classes.
  */
-class CResizableSheetState : public CResizableWndState  
+class CResizableSheetState : public CResizableWndState
 {
 protected:
 
-	//! @brief Load and set the active property page 
+	//! @brief Load and set the active property page
 	BOOL LoadPage(LPCTSTR pszName);
 
-	//! @brief Save the current active property page 
+	//! @brief Save the current active property page
 	BOOL SavePage(LPCTSTR pszName);
 
 	//! @brief Override to provide the parent window

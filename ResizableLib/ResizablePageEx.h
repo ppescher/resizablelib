@@ -46,6 +46,7 @@ public:
 public:
 
 // Overrides
+	virtual BOOL OnInitDialog();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizablePageEx)
 	protected:
@@ -71,7 +72,6 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
-	virtual BOOL OnInitDialog();
 	afx_msg void OnDestroy();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG

@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableMDIFrame message handlers
 
-void CResizableMDIFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableMDIFrame::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	// MDI should call default implementation
 	CMDIFrameWnd::OnGetMinMaxInfo(lpMMI);
@@ -78,7 +78,7 @@ BOOL CResizableMDIFrame::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	return LoadWindowRect(pszSection, bRectOnly);
 }
 
-void CResizableMDIFrame::OnDestroy() 
+void CResizableMDIFrame::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
@@ -91,17 +91,17 @@ void CResizableMDIFrame::OnDestroy()
 	CMDIFrameWnd::OnDestroy();
 }
 
-BOOL CResizableMDIFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableMDIFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CMDIFrameWnd::OnNcCreate(lpCreateStruct))
 		return FALSE;
 
 	MakeResizable(lpCreateStruct);
-	
+
 	return TRUE;
 }
 
-LRESULT CResizableMDIFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableMDIFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0)
 		return CMDIFrameWnd::WindowProc(message, wParam, lParam);
@@ -114,7 +114,7 @@ LRESULT CResizableMDIFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	return lResult;
 }
 
-void CResizableMDIFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+void CResizableMDIFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 {
 	CMDIFrameWnd::OnWindowPosChanging(lpwndpos);
 

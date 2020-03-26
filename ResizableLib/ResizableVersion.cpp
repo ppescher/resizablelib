@@ -53,7 +53,7 @@ static DLLVERSIONINFO g_dviCommCtrls;
 static OSVERSIONINFOEX g_osviWindows;
 
 #pragma warning(push)
-#pragma warning(disable:4996) 
+#pragma warning(disable:4996)
 static void CheckOsVersion()
 {
 	// Try calling GetVersionEx using the OSVERSIONINFOEX structure.
@@ -61,7 +61,7 @@ static void CheckOsVersion()
 	g_osviWindows.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	if (GetVersionEx((LPOSVERSIONINFO)&g_osviWindows))
 		return;
-	
+
 	// If that fails, try using the OSVERSIONINFO structure.
 	g_osviWindows.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
 	if (GetVersionEx((LPOSVERSIONINFO)&g_osviWindows))

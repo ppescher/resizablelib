@@ -59,7 +59,7 @@ CResizableSheetEx::CResizableSheetEx(UINT nIDCaption, CWnd* pParentWnd,
 	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
 	HBITMAP hbmHeader)
 : CPropertySheetEx(nIDCaption, pParentWnd, iSelectPage,
-				  hbmWatermark, hpalWatermark, hbmHeader)
+				   hbmWatermark, hpalWatermark, hbmHeader)
 {
 	PrivateConstruct();
 }
@@ -68,7 +68,7 @@ CResizableSheetEx::CResizableSheetEx(LPCTSTR pszCaption, CWnd* pParentWnd,
 	UINT iSelectPage, HBITMAP hbmWatermark, HPALETTE hpalWatermark,
 	HBITMAP hbmHeader)
 : CPropertySheetEx(pszCaption, pParentWnd, iSelectPage,
-					  hbmWatermark, hpalWatermark, hbmHeader)
+				   hbmWatermark, hpalWatermark, hbmHeader)
 {
 	PrivateConstruct();
 }
@@ -93,7 +93,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSheetEx message handlers
 
-BOOL CResizableSheetEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableSheetEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CPropertySheetEx::OnNcCreate(lpCreateStruct))
 		return FALSE;
@@ -107,14 +107,14 @@ BOOL CResizableSheetEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 		return FALSE;
 
 	MakeResizable(lpCreateStruct);
-	
+
 	return TRUE;
 }
 
-BOOL CResizableSheetEx::OnInitDialog() 
+BOOL CResizableSheetEx::OnInitDialog()
 {
 	const BOOL bResult = CPropertySheetEx::OnInitDialog();
-	
+
 	// initialize layout
 	PresetLayout();
 	m_bLayoutDone = TRUE;
@@ -158,7 +158,7 @@ LRESULT CResizableSheetEx::OnResizeSupport(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-void CResizableSheetEx::OnDestroy() 
+void CResizableSheetEx::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 	{
@@ -275,7 +275,7 @@ void CResizableSheetEx::PresetLayout()
 		// grow tab to the available sheet space
 		if (cyDiff > 0)
 			rectSheet.bottom = rectPage.bottom + cyDiff;
-		
+
 		if (GetStyle() & WS_CHILD)
 			GetTabControl()->MoveWindow(&rectSheet);
 
@@ -357,10 +357,10 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 	return TRUE;
 }
 
-void CResizableSheetEx::OnSize(UINT nType, int cx, int cy) 
+void CResizableSheetEx::OnSize(UINT nType, int cx, int cy)
 {
 	CWnd::OnSize(nType, cx, cy);
-	
+
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
@@ -391,7 +391,7 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 	return FALSE;	// continue routing
 }
 
-BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 {
 	CRect rect;
 	if (m_psh.dwFlags & PSH_IE4WIZARD97)
@@ -583,7 +583,7 @@ int CResizableSheetEx::GetMinWidth()
 			::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectWnd, 2);
 			const int left = rectSheet.right - rectWnd.left;
 			const int right = rectSheet.right - rectWnd.right;
-			
+
 			if (left > max)
 				max = left;
 			if (right < min)
@@ -593,7 +593,7 @@ int CResizableSheetEx::GetMinWidth()
 
 	// sizing border width
 	const int border = GetSystemMetrics(SM_CXSIZEFRAME);
-	
+
 	// compute total width
 	return max + min + 2*border;
 }
@@ -622,7 +622,7 @@ void CResizableSheetEx::RefreshLayout()
 	SendMessage(WM_SIZE);
 }
 
-LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
 		return CPropertySheetEx::WindowProc(message, wParam, lParam);

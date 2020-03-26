@@ -46,7 +46,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableSplitterWnd message handlers
 
-void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	if ((GetStyle() & SPLS_DYNAMIC_SPLIT) &&
 		GetRowCount() == 1 && GetColumnCount() == 1)

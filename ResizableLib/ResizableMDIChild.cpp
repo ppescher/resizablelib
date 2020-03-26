@@ -52,7 +52,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableMDIChild message handlers
 
-void CResizableMDIChild::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableMDIChild::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	// MDI should call default implementation
 	CMDIChildWnd::OnGetMinMaxInfo(lpMMI);
@@ -64,7 +64,7 @@ void CResizableMDIChild::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 		ChainMinMaxInfo(lpMMI, this, pView);
 }
 
-void CResizableMDIChild::OnSize(UINT nType, int cx, int cy) 
+void CResizableMDIChild::OnSize(UINT nType, int cx, int cy)
 {
 	CMDIChildWnd::OnSize(nType, cx, cy);
 
@@ -96,7 +96,7 @@ BOOL CResizableMDIChild::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	return LoadWindowRect(pszSection, bRectOnly);
 }
 
-void CResizableMDIChild::OnDestroy() 
+void CResizableMDIChild::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
@@ -110,7 +110,7 @@ void CResizableMDIChild::OnDestroy()
 }
 
 
-LRESULT CResizableMDIChild::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableMDIChild::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message != WM_NCCALCSIZE || wParam == 0)
 		return CMDIChildWnd::WindowProc(message, wParam, lParam);
@@ -123,7 +123,7 @@ LRESULT CResizableMDIChild::WindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	return lResult;
 }
 
-BOOL CResizableMDIChild::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableMDIChild::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CMDIChildWnd::OnNcCreate(lpCreateStruct))
 		return FALSE;

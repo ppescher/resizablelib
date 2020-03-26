@@ -40,7 +40,7 @@ CResizableWndState::~CResizableWndState()
 // depending on your application settings
 
 #define PLACEMENT_ENT	_T("WindowPlacement")
-#define PLACEMENT_FMT 	_T("%ld,%ld,%ld,%ld,%u,%u,%ld,%ld")
+#define PLACEMENT_FMT	_T("%ld,%ld,%ld,%ld,%u,%u,%ld,%ld")
 
 /*!
  *  This function saves the current window position and size using the base
@@ -57,7 +57,8 @@ CResizableWndState::~CResizableWndState()
  */
 BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
-	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	WINDOWPLACEMENT wp;
+	wp.length = sizeof(WINDOWPLACEMENT);
 
 	if (!GetResizableWnd()->GetWindowPlacement(&wp))
 		return FALSE;
@@ -69,7 +70,7 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 	if (bRectOnly)	// save size/pos only (normal state)
 	{
 		data.Format(PLACEMENT_FMT, rc.left, rc.top,
-			rc.right, rc.bottom, SW_SHOWNORMAL, 0U, 0L, 0L);
+			rc.right, rc.bottom, (unsigned)SW_SHOWNORMAL, 0U, 0L, 0L);
 	}
 	else	// save also min/max state
 	{
@@ -97,7 +98,8 @@ BOOL CResizableWndState::SaveWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 BOOL CResizableWndState::LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly)
 {
 	CString data;
-	WINDOWPLACEMENT wp = {sizeof(WINDOWPLACEMENT)};
+	WINDOWPLACEMENT wp;
+	wp.length = sizeof(WINDOWPLACEMENT);
 
 	if (!ReadState(CString(pszName) + PLACEMENT_ENT, data))	// never saved before
 		return FALSE;

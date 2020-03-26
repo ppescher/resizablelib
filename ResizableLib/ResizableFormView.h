@@ -32,7 +32,7 @@
 #include <afxext.h>
 
 class CResizableFormView : public CFormView, public CResizableLayout,
-						 public CResizableGrip, public CResizableMinMax
+						   public CResizableGrip, public CResizableMinMax
 {
 	DECLARE_DYNAMIC(CResizableFormView)
 
@@ -74,6 +74,7 @@ public:
 
 // Overrides
 public:
+	virtual BOOL OnInitDialog();
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CResizableFormView)
 	protected:
@@ -94,7 +95,6 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI);
 	afx_msg void OnDestroy();
-	virtual BOOL OnInitDialog();
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
