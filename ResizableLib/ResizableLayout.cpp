@@ -397,7 +397,7 @@ inline CWnd* GetRootParentWnd(CWnd* pWnd)
  *  area to avoid flickering.
  *
  *  @param pDC Pointer to the target device context
- *  @param bUndo Flag that specifies wether to restore the clipping region
+ *  @param bUndo Flag that specifies whether to restore the clipping region
  *
  *  @return The return value is @c TRUE if the clipping region has been
  *          modified, @c FALSE otherwise
@@ -774,10 +774,10 @@ BOOL CResizableLayout::GetAnchorMargins(HWND hWnd, const CSize &sizeChild, CRect
  *           @c LikesClipping only once, and the @a refresh property as
  *           dynamic, causing @c NeedsRefresh to be called every time.
  *        @n This should be right for most situations, as the need for
- *           @a refresh usually depends on the size fo a control, while the
+ *           @a refresh usually depends on the size of the control, while the
  *           support for @a clipping is usually linked to the specific type
  *           of control, which is unlikely to change at run-time, but you can
- *           still override this function if a different beahvior is needed.
+ *           still override this function if a different behaviour is needed.
  *
  *  @sa LikesClipping NeedsRefresh LAYOUTINFO RESIZEPROPERTIES
  */
@@ -846,7 +846,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
  *  This function should be called inside the parent window @c WM_NCCALCSIZE
  *  message handler to help eliminate flickering.
  *
- *  @param bAfterDefault Flag that specifies wether the call is made before
+ *  @param bAfterDefault Flag that specifies whether the call is made before
  *         or after the default handler
  *  @param lpncsp Pointer to the @c NCCALCSIZE_PARAMS structure that is
  *         passed to the message handler

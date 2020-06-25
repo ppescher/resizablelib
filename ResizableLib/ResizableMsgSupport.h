@@ -24,7 +24,7 @@
 
 typedef struct tagRESIZEPROPERTIES
 {
-	// wether to ask for resizing properties every time
+	// whether to ask for resizing properties every time
 	BOOL bAskClipping;
 	BOOL bAskRefresh;
 	// otherwise, use the cached properties

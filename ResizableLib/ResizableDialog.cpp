@@ -82,7 +82,7 @@ BOOL CResizableDialog::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!CreateSizeGrip(!bChild))
 		return FALSE;
 
-	// Moved from behind if (!bChild) because user could resize the dialog smaller as in resource defined and that causes some static text to be clipped or dissapear.
+	// Moved from behind if (!bChild) because user could resize the dialog smaller as in resource defined and that causes some static text to be clipped or disappear.
 	MakeResizable(lpCreateStruct);
 
 	if (!bChild)
