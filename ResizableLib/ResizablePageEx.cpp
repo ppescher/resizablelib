@@ -123,7 +123,7 @@ void CResizablePageEx::OnDestroy()
 
 HBRUSH CResizablePageEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-	// NOTE: this message couldn't be catched without the above hack
+	// NOTE: this message couldn't be caught without the above hack
 
 	HBRUSH hbr = CPropertyPageEx::OnCtlColor(pDC, pWnd, nCtlColor);
 	if (hbr && (m_psp.dwFlags & PSP_HIDEHEADER))

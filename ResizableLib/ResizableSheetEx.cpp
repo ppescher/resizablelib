@@ -135,7 +135,7 @@ LRESULT CResizableSheetEx::OnResizeSupport(WPARAM wParam, LPARAM lParam)
 			if (pWnd == NULL)
 				return 0;
 
-			// suclass the window again and refresh page and sheet
+			// subclass the window again and refresh page and sheet
 			pWnd->SubclassWindow(pWnd->Detach());
 			RefreshLayout();
 			pWnd->SendMessage(WM_SIZE);

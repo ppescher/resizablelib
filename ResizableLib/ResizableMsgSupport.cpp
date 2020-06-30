@@ -27,7 +27,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // Registered message to communicate with the library
 
-// static intializer must be called before user code
+// static initializer must be called before user code
 #pragma warning(disable:4073)
 #pragma init_seg(lib)
 
