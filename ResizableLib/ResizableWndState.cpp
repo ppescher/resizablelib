@@ -51,7 +51,7 @@ CResizableWndState::~CResizableWndState()
  *  GetWindowPlacement and SetWindowPlacement.
  *
  *  @param pszName String that identifies stored settings
- *  @param bRectOnly Flag that specifies wether to ignore min/max state
+ *  @param bRectOnly Flag that specifies whether to ignore min/max state
  *
  *  @return Returns @a TRUE if successful, @a FALSE otherwise
  */

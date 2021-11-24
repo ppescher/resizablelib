@@ -197,7 +197,7 @@ void InitThemeSettings()
 	typedef BOOL (STDAPICALLTYPE * IS_APP_THEMED)(VOID);
 	typedef DWORD (STDAPICALLTYPE * GET_THEME_APP_PROPERTIES)(VOID);
 
-	// check dll is in place, themes can't work without
+	// check DLL is in place, themes can't work without
 	HMODULE hLib = GetModuleHandle(_T("uxtheme.dll"));
 	if (hLib == NULL)
 		return;
