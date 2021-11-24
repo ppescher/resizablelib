@@ -47,7 +47,7 @@ OUTPUT_LANGUAGE        = English
 # The encoding is not always determined by the language that is chosen, 
 # but also whether or not the output is meant for Windows or non-Windows users. 
 # In case there is a difference, setting the USE_WINDOWS_ENCODING tag to YES 
-# forces the Windows enconding, (this is the default for the Windows binary), 
+# forces the Windows encoding, (this is the default for the Windows binary), 
 # whereas setting the tag to NO uses a Unix-style encoding (the default for the 
 # all platforms other than Windows).
 
@@ -358,7 +358,7 @@ WARN_LOGFILE           = Wanings.log
 INPUT                  = .
 
 # If the value of the INPUT tag contains directories, you can use the 
-# FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
+# FILE_PATTERNS tag to specify one or more wild card pattern (like *.cpp 
 # and *.h) to filter out the source-files in the directories. If left 
 # blank the following patterns are tested: 
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp 
@@ -389,7 +389,7 @@ EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
 
 # If the value of the INPUT tag contains directories, you can use the 
-# EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
+# EXCLUDE_PATTERNS tag to specify one or more wild card patterns to exclude 
 # certain files from those directories.
 
 EXCLUDE_PATTERNS       = */CVS/* \
@@ -404,7 +404,7 @@ EXCLUDE_PATTERNS       = */CVS/* \
 EXAMPLE_PATH           = .
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
-# EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
+# EXAMPLE_PATTERNS tag to specify one or more wild card pattern (like *.cpp 
 # and *.h) to filter out the source-files in the directories. If left 
 # blank all files are included.
 
@@ -706,7 +706,7 @@ COMPACT_RTF            = NO
 # contain links (just like the HTML output) instead of page references. 
 # This makes the output suitable for online browsing using WORD or other 
 # programs which support those fields. 
-# Note: wordpad (write) and others do not support links.
+# Note: Wordpad (Write) and others do not support links.
 
 RTF_HYPERLINKS         = NO
 
@@ -855,7 +855,7 @@ INCLUDE_PATH           = C:\SDK\Windows\include \
                          C:\VS6\VC\ATL\INCLUDE \
                          C:\SDK\WTL70\include
 
-# You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard 
+# You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wild card 
 # patterns (like *.h and *.hpp) to filter out the header-files in the 
 # directories. If left blank, the patterns specified with FILE_PATTERNS will 
 # be used.
@@ -1071,13 +1071,13 @@ MAX_DOT_GRAPH_DEPTH    = 0
 GENERATE_LEGEND        = YES
 
 # If the DOT_CLEANUP tag is set to YES (the default) Doxygen will 
-# remove the intermedate dot files that are used to generate 
+# remove the intermediate dot files that are used to generate 
 # the various graphs.
 
 DOT_CLEANUP            = YES
 
 #---------------------------------------------------------------------------
-# Configuration::addtions related to the search engine   
+# Configuration::additions related to the search engine   
 #---------------------------------------------------------------------------
 
 # The SEARCHENGINE tag specifies whether or not a search engine should be 

@@ -158,7 +158,7 @@ void CResizableLayout::AddAllOtherAnchors(ANCHOR anchorTopLeft, ANCHOR anchorBot
 
 /*!
  *  This function adds a placeholder to the layout manager, that will be
- *  dinamically set by a callback function whenever required.
+ *  dynamically set by a callback function whenever required.
  *
  *  @return The return value is an integer used to distinguish between
  *          different placeholders in the callback implementation.
@@ -214,7 +214,7 @@ BOOL CResizableLayout::ArrangeLayoutCallback(LAYOUTINFO& layout) const
  *  controls layout should be updated, usually after a resize operation.
  *
  *  @remarks All the controls added to the layout are moved and resized at
- *           once for performace reasons, so all the controls are in their
+ *           once for performance reasons, so all the controls are in their
  *           old position when AddAnchorCallback is called.
  *           To know where a control will be placed use GetAnchorPosition.
  *
