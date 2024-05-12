@@ -14,14 +14,15 @@
 
 [Dd]ebug/
 [Rr]elease/
-[Dd]ebug_[Uu]nicode/
-[Rr]elease_[Uu]nicode/
-[Dd]ebug_[Ss]tatic/
-[Rr]elease_[Ss]tatic/
-[Dd]ebug_[Uu]nicode/
-[Rr]elease_[Uu]nicode/
-[Dd]ebug_[Ss]tatic_[Uu]nicode/
-[Rr]elease_[Ss]tatic_[Uu]nicode/
+[Dd]ebug[_ ][Uu]nicode/
+[Rr]elease[_ ][Uu]nicode/
+[Dd]ebug[_ ][Ss]tatic/
+[Rr]elease[_ ][Ss]tatic/
+[Dd]ebug[_ ][Uu]nicode/
+[Rr]elease[_ ][Uu]nicode/
+[Dd]ebug[_ ][Ss]tatic[_ ][Uu]nicode/
+[Rr]elease[_ ][Ss]tatic[_ ][Uu]nicode/
+Win32/
 x64/
 build/
 [Bb]in/
