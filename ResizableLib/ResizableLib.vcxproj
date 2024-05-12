@@ -759,6 +759,7 @@
     <ClCompile Include="ResizableComboBox.cpp" />
     <ClCompile Include="ResizableComboLBox.cpp" />
     <ClCompile Include="ResizableDialog.cpp" />
+    <ClCompile Include="ResizableDialogEx.cpp" />
     <ClCompile Include="ResizableFormView.cpp" />
     <ClCompile Include="ResizableFrame.cpp" />
     <ClCompile Include="ResizableGrip.cpp" />
@@ -800,6 +801,7 @@
     <ClInclude Include="ResizableComboBox.h" />
     <ClInclude Include="ResizableComboLBox.h" />
     <ClInclude Include="ResizableDialog.h" />
+    <ClInclude Include="ResizableDialogEx.h" />
     <ClInclude Include="ResizableFormView.h" />
     <ClInclude Include="ResizableFrame.h" />
     <ClInclude Include="ResizableGrip.h" />
