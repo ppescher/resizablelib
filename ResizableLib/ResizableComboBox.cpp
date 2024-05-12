@@ -5,7 +5,7 @@
 // This file is part of ResizableLib
 // https://github.com/ppescher/resizablelib
 //
-// Copyright (C) 2000-2015 by Paolo Messina
+// Copyright (C) 2000-2024 by Paolo Messina
 // mailto:ppescher@hotmail.com
 //
 // The contents of this file are subject to the Artistic License 2.0
@@ -49,7 +49,6 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CResizableComboBox message handlers
-
 HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CComboBox::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -59,7 +58,7 @@ HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		if ((GetStyle() & CBS_DROPDOWNLIST) != CBS_SIMPLE
 			&& (m_ctrlListBox.m_hWnd == NULL))
 		{
-			TRACE("ComboLBox: 0x%08X\n", pWnd->m_hWnd);
+			//TRACE("ComboLBox: 0x%08"PRIXPTR"\n", pWnd->m_hWnd);
 
 			// attach to the owned listbox
 			m_ctrlListBox.m_pOwnerCombo = this;
