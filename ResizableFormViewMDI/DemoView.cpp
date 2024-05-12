@@ -64,7 +64,7 @@ void CDemoView::OnInitialUpdate()
 	CheckRadioButton(IDC_RADIO1, IDC_RADIO2, IDC_RADIO1);
 
 	// change icon and disable buttons
-	m_icon1.SetIcon((HICON)::GetClassLong(GetParentFrame()->GetSafeHwnd(), GCL_HICON));
+	m_icon1.SetIcon((HICON)::GetClassLongPtr(GetParentFrame()->GetSafeHwnd(), GCLP_HICON));
 	if (GetParentFrame() != GetParent())
 	{
 		GetDlgItem(IDC_BUTTON1)->EnableWindow(FALSE);
