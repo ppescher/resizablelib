@@ -263,15 +263,8 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 		if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
 			return FALSE; // no page yet
 
-		// temporarily resize the tab control to calc page size
-		CRect rectSave;
-		pTab->GetWindowRect(rectSave);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
-		pTab->SetRedraw(FALSE);
-		pTab->MoveWindow(rectPage, FALSE);
-		pTab->AdjustRect(FALSE, &rectPage);
-		pTab->MoveWindow(rectSave, FALSE);
-		pTab->SetRedraw(TRUE);
+		// calculate page size/position from tab rect
+		AdjustTabRects(rectPage);
 
 		// set margins
 		layout.marginTopLeft = rectPage.TopLeft() - rectSheet.TopLeft();
@@ -341,15 +334,8 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 	if (!GetAnchorPosition(pTab->m_hWnd, rectSheet, rectPage))
 		return FALSE; // no page yet
 
-	// temporarily resize the tab control to calc page size
-	CRect rectSave, rectTabMargins;
-	pTab->GetWindowRect(rectSave);
-	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
-	pTab->SetRedraw(FALSE);
-	pTab->MoveWindow(rectPage, FALSE);
-	pTab->AdjustRect(TRUE, &rectTabMargins);
-	pTab->MoveWindow(rectSave, FALSE);
-	pTab->SetRedraw(TRUE);
+	// calculate tab margins
+	CRect rectTabMargins = AdjustTabRects(rectPage);
 
 	// add non-client size
 	const DWORD dwStyle = GetStyle();
@@ -359,6 +345,37 @@ BOOL CResizableSheet::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, 
 	sizeExtra = rectMargins.TopLeft() + rectMargins.BottomRight() +
 		rectTabMargins.Size();
 	return TRUE;
+}
+
+CRect CResizableSheet::AdjustTabRects(CRect &rectPage) const
+{
+	CTabCtrl* pTab = GetTabControl();
+	CRect rectTabMargins;
+	if (m_rectLastPage == rectPage)
+	{
+		// use cached rects to avoid flickering while moving the window
+		rectPage = m_rectLastAjustedPage;
+		rectTabMargins = m_rectLastTabMargins;
+	}
+	else
+	{
+		m_rectLastPage = rectPage;
+
+		// temporarily resize the tab control to calc page size
+		CRect rectSave;
+		pTab->GetWindowRect(rectSave);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&rectSave, 2);
+		pTab->SetRedraw(FALSE);
+		pTab->MoveWindow(rectPage, FALSE);
+		pTab->AdjustRect(FALSE, &rectPage);
+		pTab->AdjustRect(TRUE, &rectTabMargins);
+		pTab->MoveWindow(rectSave, FALSE);
+		pTab->SetRedraw(TRUE);
+
+		m_rectLastAjustedPage = rectPage;
+		m_rectLastTabMargins = rectTabMargins;
+	}
+	return rectTabMargins;
 }
 
 void CResizableSheet::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)

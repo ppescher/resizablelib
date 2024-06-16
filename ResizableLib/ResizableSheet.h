@@ -59,6 +59,9 @@ private:
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
 
+	// cached tab rects
+	mutable CRect m_rectLastPage, m_rectLastAjustedPage, m_rectLastTabMargins;
+
 // Operations
 public:
 
@@ -79,6 +82,7 @@ private:
 	void PrivateConstruct();
 
 	BOOL IsWizard() const;
+	CRect AdjustTabRects(CRect &rectPage) const;
 
 // callable from derived classes
 protected:
