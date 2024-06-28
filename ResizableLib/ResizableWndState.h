@@ -44,6 +44,7 @@ class CResizableWndState : public CResizableState
 {
 protected:
 
+	bool showOnWindowPlacement = true;
 	//! @brief Load and set the window position and size
 	BOOL LoadWindowRect(LPCTSTR pszName, BOOL bRectOnly);
 
