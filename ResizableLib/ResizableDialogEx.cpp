@@ -186,7 +186,7 @@ LRESULT CResizableDialogEx::WindowProc(UINT message, WPARAM wParam, LPARAM lPara
 	return lResult;
 }
 
-HBRUSH CResizableDialogEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+HBRUSH CResizableDialogEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT /*nCtlColor*/)
 {
 	if (m_hBkgrBitmap)
 	{
