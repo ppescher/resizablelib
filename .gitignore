@@ -149,3 +149,5 @@ App_Data/*.ldf
 *.VC.opendb
 *.VC.db-shm
 *.VC.db-wal
+
+.vs/
