@@ -33,13 +33,14 @@
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
-#include <afxwin.h>         // MFC core and standard components
-#include <afxext.h>         // MFC extensions
+#include <afxwin.h>			// MFC core and standard components
+#include <afxext.h>			// MFC extensions
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #include <shlwapi.h>		// DLL Version support
 #if _WIN32_WINNT >= 0x0501
 #include <uxtheme.h>		// Windows XP Visual Style API support
 #endif
+#include <inttypes.h>		// Standard format specifier macros
 
 #ifndef WS_EX_LAYOUTRTL
 #pragma message("Please update your Windows header files, get the latest SDK")

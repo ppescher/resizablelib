@@ -58,7 +58,7 @@ HBRUSH CResizableComboBox::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 		if ((GetStyle() & CBS_DROPDOWNLIST) != CBS_SIMPLE
 			&& (m_ctrlListBox.m_hWnd == NULL))
 		{
-			//TRACE("ComboLBox: 0x%08"PRIXPTR"\n", pWnd->m_hWnd);
+			TRACE("ComboLBox: 0x%08" PRIXPTR "\n", pWnd->m_hWnd);
 
 			// attach to the owned listbox
 			m_ctrlListBox.m_pOwnerCombo = this;
