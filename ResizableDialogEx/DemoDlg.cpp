@@ -14,7 +14,7 @@
 
 // CAboutDlg dialog used for App About
 
-class CAboutDlg : public CResizableDialogEx
+class CAboutDlg : public CDialogEx
 {
 public:
 	CAboutDlg();
@@ -32,16 +32,16 @@ protected:
 	DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CResizableDialogEx(IDD_ABOUTBOX)
+CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
 {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CResizableDialogEx::DoDataExchange(pDX);
+	CDialogEx::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CResizableDialogEx)
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
