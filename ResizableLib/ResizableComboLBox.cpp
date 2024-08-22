@@ -168,7 +168,8 @@ void CResizableComboLBox::OnLButtonUp(UINT nFlags, CPoint point)
 
 LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 {
-	CRect rcClient;
+	CRect rcClient, rcWindow;
+	GetWindowRect(&rcWindow);
 	GetClientRect(&rcClient);
 	MapWindowPoints(NULL, &rcClient);
 
@@ -217,17 +218,41 @@ LRESULT CResizableComboLBox::OnNcHitTest(CPoint point)
 		ht = HTBORDER;
 	}
 
+	CSize border(GetSystemMetrics(SM_CXFRAME), GetSystemMetrics(SM_CYFRAME));
 	if (!IsRTL())
+		rcWindow.right += border.cx;
+	else
+		rcWindow.left += border.cx;
+	rcWindow.bottom += border.cy;
+
+	if (point.x > rcClient.right && point.y > rcClient.bottom &&
+		point.x <= rcWindow.right && point.y <= rcWindow.bottom)
 	{
-		if (point.x > rcClient.right && point.y > rcClient.bottom)
-			ht = HTBOTTOMRIGHT;
+		ht = IsRTL() ? HTBOTTOMLEFT : HTBOTTOMRIGHT;
 	}
 	else
 	{
-		if (point.x < rcClient.left && point.y > rcClient.bottom)
-			ht = HTBOTTOMLEFT;
+		if (rcWindow.PtInRect(point))
+		{
+			if (point.y >= rcWindow.bottom - border.cy && point.y <= rcWindow.bottom)
+			{
+				ht = HTBOTTOM;
+			}
+			else
+			{
+				if (!IsRTL())
+				{
+					if (point.x >= rcWindow.right - border.cx && point.x <= rcWindow.right)
+						ht = HTRIGHT;
+				}
+				else
+				{
+					if (point.x >= rcWindow.left - border.cx && point.x <= rcWindow.left)
+						ht = HTLEFT;
+				}
+			}
+		}
 	}
-
 	return ht;
 }
 
