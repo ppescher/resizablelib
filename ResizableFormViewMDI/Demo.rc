@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,51 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Italian (Italy) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
-LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 16, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#endif //_WIN32\r\n"
-    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""l.ita\\afxres.rc""          // Standard components\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -66,17 +26,21 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
-IDR_DEMOTYPE            ICON    DISCARDABLE     "res\\DemoDoc0.ico"
-IDR_DEMOTYPE1           ICON    DISCARDABLE     "res\\DemoDoc1.ico"
-IDR_DEMOTYPE2           ICON    DISCARDABLE     "res\\DemoDoc2.ico"
+IDR_MAINFRAME           ICON                    "res\\Demo.ico"
+
+IDR_DEMOTYPE            ICON                    "res\\DemoDoc0.ico"
+
+IDR_DEMOTYPE1           ICON                    "res\\DemoDoc1.ico"
+
+IDR_DEMOTYPE2           ICON                    "res\\DemoDoc2.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -95,44 +59,7 @@ BEGIN
     END
 END
 
-IDR_DEMOTYPE MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
-        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
-        MENUITEM "&Chiudi",                     ID_FILE_CLOSE
-        MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
-        MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
-        MENUITEM SEPARATOR
-        MENUITEM "&Esci",                       ID_APP_EXIT
-    END
-    POPUP "&Modifica"
-    BEGIN
-        MENUITEM "&Annulla\tCtrl+Z",            ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Tag&lia\tCtrl+X",             ID_EDIT_CUT
-        MENUITEM "&Copia\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "&Incolla\tCtrl+V",            ID_EDIT_PASTE
-    END
-    POPUP "&Visualizza"
-    BEGIN
-        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
-    END
-    POPUP "Fi&nestra"
-    BEGIN
-        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
-        MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
-        MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
-        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&?"
-    BEGIN
-        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
-    END
-END
-
-IDR_DEMOTYPE1 MENU PRELOAD DISCARDABLE 
+IDR_DEMOTYPE MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -169,7 +96,44 @@ BEGIN
     END
 END
 
-IDR_DEMOTYPE2 MENU PRELOAD DISCARDABLE 
+IDR_DEMOTYPE1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Nuovo\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Apri...\tCtrl+A",            ID_FILE_OPEN
+        MENUITEM "&Chiudi",                     ID_FILE_CLOSE
+        MENUITEM "&Salva\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "Sa&lva con nome...",          ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "&Esci",                       ID_APP_EXIT
+    END
+    POPUP "&Modifica"
+    BEGIN
+        MENUITEM "&Annulla\tCtrl+Z",            ID_EDIT_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Tag&lia\tCtrl+X",             ID_EDIT_CUT
+        MENUITEM "&Copia\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "&Incolla\tCtrl+V",            ID_EDIT_PASTE
+    END
+    POPUP "&Visualizza"
+    BEGIN
+        MENUITEM "Barra di st&ato",             ID_VIEW_STATUS_BAR
+    END
+    POPUP "Fi&nestra"
+    BEGIN
+        MENUITEM "&Nuova finestra",             ID_WINDOW_NEW
+        MENUITEM "&Sovrapponi",                 ID_WINDOW_CASCADE
+        MENUITEM "&Affianca",                   ID_WINDOW_TILE_HORZ
+        MENUITEM "&Disponi icone",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&?"
+    BEGIN
+        MENUITEM "Infor&mazioni su Demo...",    ID_APP_ABOUT
+    END
+END
+
+IDR_DEMOTYPE2 MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -212,7 +176,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
@@ -235,8 +199,8 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Informazioni su Demo"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -247,32 +211,24 @@ BEGIN
 END
 
 IDD_DEMO_FORM DIALOGEX 0, 0, 200, 130
-STYLE WS_CHILD
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "Static label",IDC_STATIC2,"Static",SS_SIMPLE | WS_GROUP,
-                    7,7,63,8
-    EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    WS_VSCROLL
+    CONTROL         "Static label",IDC_STATIC2,"Static",SS_SIMPLE | WS_GROUP,7,7,63,8
+    EDITTEXT        IDC_EDIT1,7,19,73,68,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL
     PUSHBUTTON      "&Freeze to Dialog!",IDC_BUTTON2,7,94,73,14
     PUSHBUTTON      "&UnFreeze!",IDC_BUTTON1,7,109,73,14
     GROUPBOX        "Group",IDC_GROUP1,87,7,106,116
-    COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    ICON            IDR_DEMOTYPE,IDC_ICON1,95,38,20,20,SS_CENTERIMAGE | 
-                    SS_SUNKEN
-    CONTROL         "SetMinTrackSize",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,118,37,66,10
-    CONTROL         "Free Size",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,
-                    49,66,10
-    CONTROL         "No Scrollbars",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,
-                    118,61,66,10
-    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT | WS_GROUP,95,78,89,
-                    37,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_COMBO1,95,19,89,43,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    ICON            IDR_DEMOTYPE,IDC_ICON1,95,38,20,20,SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "SetMinTrackSize",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,118,37,66,10
+    CONTROL         "Free Size",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,118,49,66,10
+    CONTROL         "No Scrollbars",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,118,61,66,10
+    CONTROL         "",IDC_STATIC1,"Static",SS_GRAYRECT | WS_GROUP,95,78,89,37,WS_EX_CLIENTEDGE
 END
 
-IDD_NEWFORM DIALOG DISCARDABLE  0, 0, 186, 140
-STYLE WS_CHILD
+IDD_NEWFORM DIALOG 0, 0, 186, 140
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Some text...",IDC_TEXT,7,7,76,8
@@ -280,47 +236,39 @@ BEGIN
 END
 
 IDD_PROPPAGE1 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 1 - very long title here hope it's enough"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "Button1",IDC_BUTTON1,144,4,36,86,0,WS_EX_CLIENTEDGE
     EDITTEXT        IDC_EDIT1,4,4,135,86,ES_MULTILINE | ES_AUTOVSCROLL
 END
 
 IDD_PROPPAGE2 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 2"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LISTBOX         IDC_LIST1,4,4,85,49,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
-                    WS_HSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_PICTURE1,"Static",SS_GRAYRECT,95,4,85,49,
-                    WS_EX_CLIENTEDGE
-    CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,11,70,39,10
-    CONTROL         "Radio1",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,87,70,36,
-                    10
-    COMBOBOX        IDC_COMBO1,138,59,42,40,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST1,4,4,85,49,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_PICTURE1,"Static",SS_GRAYRECT,95,4,85,49,WS_EX_CLIENTEDGE
+    CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,70,39,10
+    CONTROL         "Radio1",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,87,70,36,10
+    COMBOBOX        IDC_COMBO1,138,59,42,40,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Button1",IDC_BUTTON1,138,76,42,14
     GROUPBOX        "Group",IDC_GROUP1,4,55,129,35
 END
 
 IDD_PROPPAGE3 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 3"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    WS_TABSTOP,4,76,176,14
+    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,4,76,176,14
     LTEXT           "Do you like resizable dialogs?",IDC_LABEL1,4,4,100,9
-    EDITTEXT        IDC_EDIT1,4,15,176,59,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    WS_VSCROLL,WS_EX_DLGMODALFRAME
+    EDITTEXT        IDC_EDIT1,4,15,176,59,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL,WS_EX_DLGMODALFRAME
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -343,15 +291,13 @@ BEGIN
     BEGIN
         BLOCK "041004B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Demo Applicazione MFC\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "Demo\0"
-            VALUE "LegalCopyright", "Copyright (C) 2001\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "Demo.EXE\0"
-            VALUE "ProductName", "Demo Applicazione\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "Demo Applicazione MFC"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "Demo"
+            VALUE "LegalCopyright", "Copyright (C) 2001"
+            VALUE "OriginalFilename", "Demo.EXE"
+            VALUE "ProductName", "Demo Applicazione"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -360,8 +306,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -369,7 +313,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -452,12 +396,50 @@ BEGIN
 END
 
 
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""      // Standard components\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxribbon.rc""   // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Demo"
     IDR_DEMOTYPE            "\nDemo\nDemo\n\n\nDemo.Document0\nDemo Document 0"
@@ -465,13 +447,13 @@ BEGIN
     IDR_DEMOTYPE2           "\nStatSplit\nStatSplit\n\n\nDemo.Document2\nDemo Document 2"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "Demo"
     AFX_IDS_IDLEMESSAGE     "Pronto"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EST"
     ID_INDICATOR_CAPS       "MA"
@@ -481,7 +463,7 @@ BEGIN
     ID_INDICATOR_REC        "REG"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Crea un nuovo documento\nNuovo"
     ID_FILE_OPEN            "Apre un documento esistente\nApri"
@@ -490,13 +472,13 @@ BEGIN
     ID_FILE_SAVE_AS         "Salva il documento attivo con un nuovo nome\nSalva con nome"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Visualizza le informazioni sul programma, il numero di versione e le informazioni di copyright\nInformazioni su"
     ID_APP_EXIT             "Esce dall'applicazione e chiede di salvare i documenti\nEsci"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Apre questo documento"
     ID_FILE_MRU_FILE2       "Apre questo documento"
@@ -516,13 +498,13 @@ BEGIN
     ID_FILE_MRU_FILE16      "Apre questo documento"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Passa al riquadro della finestra successivo\nRiquadro successivo"
     ID_PREV_PANE            "Ritorna al riquadro della finestra precedente\nRiquadro precedente"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Apre un'altra finestra per il documento attivo\nNuova finestra"
     ID_WINDOW_ARRANGE       "Dispone le icone nella parte inferiore della finestra\nDisponi icone"
@@ -532,7 +514,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Divide la finestra attiva in riquadri\nDividi"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Cancella la selezione\nCancella"
     ID_EDIT_CLEAR_ALL       "Cancella tutto\nCancella tutto"
@@ -547,12 +529,12 @@ BEGIN
     ID_EDIT_REDO            "Ripristina l'azione precedentemente annullata\nRipristina"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_STATUS_BAR      "Mostra o nasconde la barra di stato\nMostra/nascondi barra di stato"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Modifica le dimensioni della finestra"
     AFX_IDS_SCMOVE          "Modifica la posizione della finestra"
@@ -563,14 +545,14 @@ BEGIN
     AFX_IDS_SCCLOSE         "Chiude la finestra attiva e chiede di salvare i documenti"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Ripristina la finestra alle dimensioni normali"
     AFX_IDS_SCTASKLIST      "Attiva l'Elenco dei task"
     AFX_IDS_MDICHILD        "Attiva questa finestra"
 END
 
-#endif    // Italian (Italy) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -585,13 +567,13 @@ END
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
-LANGUAGE 16, 1
-#pragma code_page(1252)
-#endif //_WIN32
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
 #include "res\Demo.rc2"  // non-Microsoft Visual C++ edited resources
-#include "l.ita\afxres.rc"          // Standard components
+#include "afxres.rc"      // Standard components
+#if !defined(_AFXDLL)
+#include "afxribbon.rc"   // MFC ribbon and control bar resources
+#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

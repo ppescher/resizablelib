@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,51 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Italian (Italy) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
-LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 16, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#endif //_WIN32\r\n"
-    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""l.ita\\afxres.rc""          // Standard components\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -66,9 +26,9 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Demo.ico"
+IDR_MAINFRAME           ICON                    "res\\Demo.ico"
 
-#ifndef _MAC
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -91,15 +51,13 @@ BEGIN
     BEGIN
         BLOCK "041004B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Demo Applicazione MFC\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "Demo\0"
-            VALUE "LegalCopyright", "Copyright (C) 2000\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "Demo.EXE\0"
-            VALUE "ProductName", "Demo Applicazione\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "Demo Applicazione MFC"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "Demo"
+            VALUE "LegalCopyright", "Copyright (C) 2000"
+            VALUE "OriginalFilename", "Demo.EXE"
+            VALUE "ProductName", "Demo Applicazione"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -108,8 +66,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -117,7 +73,7 @@ END
 //
 
 IDD_PROPPAGE1 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 1 - very long title here hope it's enough"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -126,45 +82,37 @@ BEGIN
 END
 
 IDD_PROPPAGE2 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 2"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LISTBOX         IDC_LIST1,4,4,85,49,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
-                    WS_HSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_PICTURE1,"Static",SS_GRAYRECT,95,4,85,49,
-                    WS_EX_CLIENTEDGE
-    CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,11,70,39,10
-    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,87,70,36,
-                    10
-    COMBOBOX        IDC_COMBO1,138,59,42,40,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST1,4,4,85,49,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_PICTURE1,"Static",SS_GRAYRECT,95,4,85,49,WS_EX_CLIENTEDGE
+    CONTROL         "Check1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,70,39,10
+    CONTROL         "Radio1",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,87,70,36,10
+    COMBOBOX        IDC_COMBO1,138,59,42,40,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Button1",IDC_BUTTON1,138,76,42,14
     GROUPBOX        "Group",IDC_GROUP1,4,55,129,35
 END
 
 IDD_PROPPAGE3 DIALOGEX 0, 0, 184, 94
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_THICKFRAME
 CAPTION "My Page 3"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    WS_TABSTOP,4,76,176,14
+    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,4,76,176,14
     LTEXT           "Do you like resizable dialogs?",IDC_LABEL1,4,4,100,9
-    EDITTEXT        IDC_EDIT1,4,15,176,59,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    WS_VSCROLL,WS_EX_DLGMODALFRAME
+    EDITTEXT        IDC_EDIT1,4,15,176,59,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL,WS_EX_DLGMODALFRAME
 END
 
-IDD_MAINDIALOG DIALOG DISCARDABLE  0, 0, 151, 70
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_MAINDIALOG DIALOG 0, 0, 151, 70
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ResizableProperties Demo"
 FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "Close",IDCANCEL,48,49,50,14
     PUSHBUTTON      "Wizard Mode (with Help button)",IDC_BUTTON1,7,7,137,14
-    PUSHBUTTON      "Property Sheet (without Help button)",IDC_BUTTON2,7,25,
-                    137,14
+    PUSHBUTTON      "Property Sheet (without Help button)",IDC_BUTTON2,7,25,137,14
 END
 
 
@@ -174,7 +122,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_PROPPAGE1, DIALOG
     BEGIN
@@ -228,18 +176,56 @@ BEGIN
 END
 
 
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#include ""res\\Demo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""      // Standard components\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxribbon.rc""   // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_PROPSHT_CAPTION     "Property Sheet"
     IDS_PROPSHT_CAPTION1    "Wizard"
 END
 
-#endif    // Italian (Italy) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -254,13 +240,13 @@ END
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
-LANGUAGE 16, 1
-#pragma code_page(1252)
-#endif //_WIN32
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
 #include "res\Demo.rc2"  // non-Microsoft Visual C++ edited resources
-#include "l.ita\afxres.rc"          // Standard components
+#include "afxres.rc"      // Standard components
+#if !defined(_AFXDLL)
+#include "afxribbon.rc"   // MFC ribbon and control bar resources
+#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
