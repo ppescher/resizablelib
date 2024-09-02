@@ -51,6 +51,7 @@ private:
 	// flags
 	BOOL m_bEnableSaveRestore;
 	BOOL m_bRectOnly;
+	BOOL m_bRestoreAfterVisible;
 
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
@@ -99,6 +100,7 @@ protected:
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
