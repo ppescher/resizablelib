@@ -50,7 +50,9 @@ protected:
 	afx_msg void OnRadio3();
 	afx_msg void OnRadio4();
 	afx_msg void OnRadio5();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnClose();
+	afx_msg void OnCancel();
+	afx_msg void OnOk();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

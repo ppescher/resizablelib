@@ -88,6 +88,8 @@ BOOL CSecondDialog::OnInitDialog()
 	// enable transparent grip
 	SetSizeGripBkMode(TRANSPARENT);
 
+	EnableSaveRestore(_T("SecondDlg"), TRUE);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
