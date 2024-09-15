@@ -41,7 +41,9 @@ BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	ON_BN_CLICKED(IDC_RADIO3, OnRadio3)
 	ON_BN_CLICKED(IDC_RADIO4, OnRadio4)
 	ON_BN_CLICKED(IDC_RADIO5, OnRadio5)
-	ON_WM_CREATE()
+	ON_WM_CLOSE()
+	ON_COMMAND(IDCANCEL, &CDemoDlg::OnCancel)
+	ON_COMMAND(IDOK, &CDemoDlg::OnOk)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -229,14 +231,17 @@ void CDemoDlg::OnRadio5()
 	SetThemeProperties(0);
 }
 
-#define WS_EX_LAYOUT_RTL	0x00400000
-
-int CDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) 
+afx_msg void CDemoDlg::OnClose()
 {
-//	ModifyStyleEx(0, WS_EX_LAYOUT_RTL);
+	DestroyWindow();
+}
 
-	if (CResizableDialog::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	
-	return 0;
+void CDemoDlg::OnCancel()
+{
+	DestroyWindow();
+}
+
+void CDemoDlg::OnOk()
+{
+	DestroyWindow();
 }
