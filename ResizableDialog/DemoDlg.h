@@ -38,7 +38,9 @@ protected:
 	HICON m_hIcon;
 
 	static BOOL CALLBACK SendThemeChangedProc(HWND hwnd, LPARAM lParam);
+	static DWORD GetThemeProperties();
 	void SetThemeProperties(DWORD dwFlags);
+	void UpdateMaxSize();
 
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)

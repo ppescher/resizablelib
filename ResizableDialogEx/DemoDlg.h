@@ -30,7 +30,9 @@ protected:
 	DWORD m_dwGripTempState;
 
 	static BOOL CALLBACK SendThemeChangedProc(HWND hwnd, LPARAM lParam);
+	static DWORD GetThemeProperties();
 	void SetThemeProperties(DWORD dwFlags);
+	void UpdateMaxSize();
 
 	static LRESULT WINAPI EditSubclassProc(
 		HWND hWnd,

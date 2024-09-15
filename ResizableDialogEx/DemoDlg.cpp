@@ -148,27 +148,64 @@ BOOL CDemoDlg::OnInitDialog()
 
 
 	// min/max size settings
-
-	// get desktop size
-	CRect rc;
-	GetDesktopWindow()->GetClientRect(&rc);
-
-	// set max tracking size to half a screen
-	SetMaxTrackSize(CSize(rc.Width(), rc.Height() / 2));
-
-	// maximized position and size on top of the screen
-	rc.bottom = 100;
-	SetMaximizedRect(rc);
-
-	// enable transparent grip
-	//SetSizeGripBkMode(TRANSPARENT);
+	UpdateMaxSize();
 
 	// save/restore
 	// (for dialog based app, default is a .INI file with
 	// the application's name in the Windows directory)
 	EnableSaveRestore(_T("DemoDlg"));
 
-	return TRUE;  // restituisce TRUE a meno che non venga impostato lo stato attivo su un controllo.
+	return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+void CDemoDlg::UpdateMaxSize()
+{
+	ResetMaxTrackSize();
+	ResetMaximizedRect();
+
+	// get desktop size
+	CRect rcMax;
+	GetDesktopWindow()->GetClientRect(&rcMax);
+
+	if (GetThemeAppProperties() & STAP_ALLOW_NONCLIENT)
+	{
+		// modern style windows use the borders for drop-shadow effects but window size appears smaller when maximized
+		// try to determine the correct size for maximized state, based on the current style
+		CRect rcWnd, rcClient, rcMargins;
+		GetWindowRect(&rcWnd);
+		GetClientRect(&rcClient);
+		::MapWindowPoints(GetSafeHwnd(), NULL, (LPPOINT)&rcClient, 2);
+
+		rcMargins.left = rcClient.left - rcWnd.left;
+		rcMargins.top = rcClient.top - rcWnd.top - GetSystemMetrics(GetExStyle() & WS_EX_TOOLWINDOW ? SM_CYSMCAPTION : SM_CYCAPTION);
+		rcMargins.right = rcWnd.right - rcClient.right;
+		rcMargins.bottom = rcWnd.bottom - rcClient.bottom;
+
+		rcMax.InflateRect(&rcMargins);
+	}
+	// use half height for tracking size limits
+	int half = rcMax.Height() / 2;
+	// clip maximized size to the top 100 pixels
+	rcMax.bottom = 100;
+
+	// maximized position and size on top of the screen
+	SetMaximizedRect(rcMax);
+
+	// limit max tracking size to half a screen vertically
+	SetMaxTrackSize(CSize(rcMax.Width(), half));
+
+	if (IsZoomed())
+	{
+		// window already maximized needs to be refreshed, but we try to avoid flickering
+		// when you disable redraw the window loses WS_VISIBLE but stay displayed on the screen
+		// so the only chance is to use SW_HIDE to change the maximized state without affecting visibility
+		// (any other show command would make the window appear again and flash, or it won't refresh the maximized state)
+		// then we maximize again, which implies the window will also be visible and then we restore redraw
+		SetRedraw(FALSE);
+		ShowWindow(SW_HIDE);
+		ShowWindow(SW_SHOWMAXIMIZED);
+		SetRedraw(TRUE);
+	}
 }
 
 void CDemoDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -189,6 +226,7 @@ void CDemoDlg::OnRadio1()
 	ModifyStyle(WS_THICKFRAME, 0, SWP_FRAMECHANGED | SWP_DRAWFRAME);
 	HideSizeGrip(&m_dwGripTempState);
 	UpdateSizeGrip();
+	UpdateMaxSize();
 }
 
 void CDemoDlg::OnRadio2()
@@ -196,12 +234,27 @@ void CDemoDlg::OnRadio2()
 	ModifyStyle(0, WS_THICKFRAME, SWP_FRAMECHANGED | SWP_DRAWFRAME);
 	ShowSizeGrip(&m_dwGripTempState);
 	UpdateSizeGrip();
+	UpdateMaxSize();
 }
 
 BOOL CALLBACK CDemoDlg::SendThemeChangedProc(HWND hwnd, LPARAM /*lParam*/)
 {
 	::SendMessage(hwnd, WM_THEMECHANGED, 0, 0);
 	return TRUE;
+}
+
+DWORD CDemoDlg::GetThemeProperties()
+{
+	static HMODULE hThemeLib = GetModuleHandle(_T("UxTheme.dll"));
+	typedef DWORD(STDAPICALLTYPE* LPFNGETTHEMEAPPPROPERTIES)();
+	static LPFNGETTHEMEAPPPROPERTIES lpfnGetThemeAppProperties = (hThemeLib == NULL) ? NULL :
+		(LPFNGETTHEMEAPPPROPERTIES)GetProcAddress(hThemeLib, "GetThemeAppProperties");
+
+	if (lpfnGetThemeAppProperties == NULL)
+		return 0; // do nothing if no theme support
+
+	// return theme settings
+	return lpfnGetThemeAppProperties();
 }
 
 void CDemoDlg::SetThemeProperties(DWORD dwFlags)
@@ -220,6 +273,7 @@ void CDemoDlg::SetThemeProperties(DWORD dwFlags)
 	EnumChildWindows(m_hWnd, SendThemeChangedProc, 0);
 	InvalidateRect(NULL);
 	UpdateWindow();
+	UpdateMaxSize();
 }
 
 void CDemoDlg::OnRadio3()
