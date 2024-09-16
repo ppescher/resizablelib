@@ -860,6 +860,13 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
  */
 void CResizableLayout::HandleNcCalcSize(BOOL bAfterDefault, LPNCCALCSIZE_PARAMS lpncsp, LRESULT &lResult)
 {
+#ifdef DISABLE_ELIMINATE_FLICKERING
+// 3-Feb-09: Disable help eliminate flickering, because of e.g. VISTA redraw problems.
+// Paolo posted that it is not really necessary (only on old systems with slow graphic cards for redrawing/anti flickering)
+  UNREFERENCED_PARAMETER( bAfterDefault );
+  UNREFERENCED_PARAMETER( lpncsp );
+  UNREFERENCED_PARAMETER( lResult );
+#else
 	// prevent useless complication when size is not changing
 	// prevent recursion when resetting the window region (see below)
 	if ((lpncsp->lppos->flags & SWP_NOSIZE)
