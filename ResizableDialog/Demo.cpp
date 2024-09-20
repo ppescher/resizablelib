@@ -40,15 +40,21 @@ CDemoApp theApp;
 
 BOOL CDemoApp::InitInstance()
 {
-	CDemoDlg dlg;
+	SetRegistryKey(_T("Demo"));
+
+	CDemoDlg* dlg = new CDemoDlg();
 	CSecondDialog dlg2;
 	CTestDialog dlg3;
 
-	dlg.DoModal();
+	// first dialog is created modeless and initially hidden
+	dlg->Create(dlg->IDD);
+	// after the second modal dialog is dismissed, show the first
 	dlg2.DoModal();
+	dlg->ShowWindow(SW_SHOW);
+	// show the last modal dialog
 	dlg3.DoModal();
-
-	// Since the dialog has been closed, return FALSE so that we exit the
-	//  application, rather than start the application's message pump.
-	return FALSE;
+	// keep running until the first modeless dialog is closed
+	m_pMainWnd = dlg;
+	// start the application's message pump
+	return TRUE;
 }

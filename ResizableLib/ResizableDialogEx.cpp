@@ -32,6 +32,7 @@ inline void CResizableDialogEx::PrivateConstruct()
 	m_bEnableSaveRestore = FALSE;
 	m_dwGripTempState = 1;
 	m_bRectOnly = FALSE;
+	m_bRestoreAfterVisible = TRUE;
 }
 
 CResizableDialogEx::CResizableDialogEx()
@@ -84,6 +85,7 @@ BEGIN_MESSAGE_MAP(CResizableDialogEx, CDialogEx)
 	ON_WM_ERASEBKGND()
 	ON_WM_NCCREATE()
 	ON_WM_CTLCOLOR()
+	ON_WM_SHOWWINDOW()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -159,8 +161,18 @@ void CResizableDialogEx::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	m_bEnableSaveRestore = TRUE;
 	m_bRectOnly = bRectOnly;
 
-	// restore immediately
-	LoadWindowRect(pszSection, bRectOnly);
+	// do not restore immediately, but only after the window is made visible
+}
+
+void CResizableDialogEx::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	if (m_bEnableSaveRestore && m_bRestoreAfterVisible && bShow)
+	{
+		// restore when the window is made visible for the first time
+		m_bRestoreAfterVisible = FALSE;
+		LoadWindowRect(m_sSection, m_bRectOnly);
+	}
+	CDialog::OnShowWindow(bShow, nStatus);
 }
 
 BOOL CResizableDialogEx::OnEraseBkgnd(CDC* pDC) 
