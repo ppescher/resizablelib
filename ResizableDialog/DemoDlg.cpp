@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	ON_COMMAND(IDCANCEL, &CDemoDlg::OnCancel)
 	ON_COMMAND(IDOK, &CDemoDlg::OnOk)
 	//}}AFX_MSG_MAP
+	ON_WM_NCDESTROY()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -244,4 +245,18 @@ void CDemoDlg::OnCancel()
 void CDemoDlg::OnOk()
 {
 	DestroyWindow();
+}
+
+void CDemoDlg::OnNcDestroy()
+{
+	// we are the main window if we were created modeless
+	// in that case we need to free memory allocated by new
+	// but main window is cleared inside default message handler
+	// so we catch it here and delete later
+	BOOL needsDelete = (AfxGetMainWnd() == this);
+
+	CResizableDialog::OnNcDestroy();
+	
+	if (needsDelete)
+		delete this;
 }

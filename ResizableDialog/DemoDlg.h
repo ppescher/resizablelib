@@ -53,6 +53,7 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnCancel();
 	afx_msg void OnOk();
+	afx_msg void OnNcDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
