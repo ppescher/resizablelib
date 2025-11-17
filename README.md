@@ -7,7 +7,7 @@ Legacy project home and CVS repository:
 http://sourceforge.net/projects/resizablelib/
 
 Articles on CodeProject:
-+ http://www.codeproject.com/Articles/1175/ResizableLib
-+ http://www.codeproject.com/Articles/568/CResizableDialog
-+ http://www.codeproject.com/Articles/1243/ResizableFormView
-+ http://www.codeproject.com/Articles/653/CResizableSheet-and-CResizablePage
++ [ResizableLib - A Set of Classes to Ease the Development of Resizable Windows with MFC](https://www.codeproject.com/articles/ResizableLib-A-Set-of-Classes-to-Ease-the-Developm)
++ [CResizableDialog](https://www.codeproject.com/articles/CResizableDialog)
++ [ResizableFormView](https://www.codeproject.com/articles/ResizableFormView)
++ [CResizableSheet and CResizablePage](https://www.codeproject.com/articles/CResizableSheet-and-CResizablePage)
