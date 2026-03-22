@@ -83,7 +83,7 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 	// and child control's rect
 	CRect rectChild;
 	::GetWindowRect(hWnd, &rectChild);
-	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
+	::MapWindowPoints(NULL, pParent->m_hWnd, &rectChild.TopLeft(), 2);
 
 	// adjust position, if client area has been scrolled
 	rectChild.OffsetRect(-rectParent.TopLeft());
@@ -296,7 +296,7 @@ void CResizableLayout::ClipChildWindow(const LAYOUTINFO& layout,
 	// if (real_WIN32_WINNT >= 0x501)
 	//	::SendMessage(layout.hWnd, WM_NCCALCSIZE, FALSE, (LPARAM)&rect);
 #endif
-	::MapWindowPoints(NULL, GetResizableWnd()->m_hWnd, (LPPOINT)&rect, 2);
+	::MapWindowPoints(NULL, GetResizableWnd()->m_hWnd, &rect.TopLeft(), 2);
 
 	// use window region if any
 	CRgn rgn;
@@ -682,7 +682,7 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 	const CWnd* pParent = GetResizableWnd();
 
 	::GetWindowRect(layout.hWnd, &rectChild);
-	::MapWindowPoints(NULL, pParent->m_hWnd, (LPPOINT)&rectChild, 2);
+	::MapWindowPoints(NULL, pParent->m_hWnd, &rectChild.TopLeft(), 2);
 
 	CRect rectNew;
 

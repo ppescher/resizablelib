@@ -215,7 +215,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			CRect rect;
 			GetWindowRect(rect);
 			rect.InflateRect(m_size.cx - sizeOld.cx, m_size.cy - sizeOld.cy, 0, 0);
-			::MapWindowPoints(NULL, GetParent()->GetSafeHwnd(), (LPPOINT)&rect, 2);
+			::MapWindowPoints(NULL, GetParent()->GetSafeHwnd(), &rect.TopLeft(), 2);
 			MoveWindow(rect, TRUE);
 		}
 		break;

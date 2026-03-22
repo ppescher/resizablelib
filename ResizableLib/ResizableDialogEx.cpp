@@ -92,7 +92,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CResizableDialogEx message handlers
 
-BOOL CResizableDialogEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct) 
+BOOL CResizableDialogEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (!CDialogEx::OnNcCreate(lpCreateStruct))
 		return FALSE;
@@ -113,11 +113,11 @@ BOOL CResizableDialogEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 		// set the initial size as the min track size
 		SetMinTrackSize(CSize(lpCreateStruct->cx, lpCreateStruct->cy));
 	}
-	
+
 	return TRUE;
 }
 
-void CResizableDialogEx::OnDestroy() 
+void CResizableDialogEx::OnDestroy()
 {
 	if (m_bEnableSaveRestore)
 		SaveWindowRect(m_sSection, m_bRectOnly);
@@ -130,10 +130,10 @@ void CResizableDialogEx::OnDestroy()
 	CDialogEx::OnDestroy();
 }
 
-void CResizableDialogEx::OnSize(UINT nType, int cx, int cy) 
+void CResizableDialogEx::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
-	
+
 	if (nType == SIZE_MAXHIDE || nType == SIZE_MAXSHOW)
 		return;		// arrangement not needed
 
@@ -147,7 +147,7 @@ void CResizableDialogEx::OnSize(UINT nType, int cx, int cy)
 	ArrangeLayout();
 }
 
-void CResizableDialogEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI) 
+void CResizableDialogEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 {
 	MinMaxInfo(lpMMI);
 }
@@ -175,7 +175,7 @@ void CResizableDialogEx::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDialog::OnShowWindow(bShow, nStatus);
 }
 
-BOOL CResizableDialogEx::OnEraseBkgnd(CDC* pDC) 
+BOOL CResizableDialogEx::OnEraseBkgnd(CDC* pDC)
 {
 	ClipChildren(pDC, FALSE);
 
@@ -186,7 +186,7 @@ BOOL CResizableDialogEx::OnEraseBkgnd(CDC* pDC)
 	return bRet;
 }
 
-LRESULT CResizableDialogEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CResizableDialogEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_hBkgrBitmap != NULL || message != WM_NCCALCSIZE || wParam == 0)
 		return CDialogEx::WindowProc(message, wParam, lParam);
