@@ -128,9 +128,6 @@ void CResizableFormView::OnSize(UINT nType, int cx, int cy)
 void CResizableFormView::GetTotalClientRect(LPRECT lpRect) const
 {
 	GetClientRect(lpRect);
-	// done, if there are no active scrollbars
-	if (!(GetStyle() & (WS_HSCROLL | WS_VSCROLL)))
-		return;
 
 	// get dialog template's size
 	// (this is set in CFormView::Create)
