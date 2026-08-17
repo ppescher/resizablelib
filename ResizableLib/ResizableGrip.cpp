@@ -28,6 +28,40 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////
+// DPI awareness support
+//////////////////////////////////////////////////////////////////////
+
+// sent to child windows after the parent handled WM_DPICHANGED
+#ifndef WM_DPICHANGED_AFTERPARENT
+#define WM_DPICHANGED_AFTERPARENT 0x02E3
+#endif
+
+// System metrics are only available per-monitor through the DPI aware API added
+// in Windows 10, version 1607. Bind to it at run-time, so that older systems keep
+// using GetSystemMetrics, which is the best answer available there.
+static CSize GetSizeGripMetrics(HWND hWnd)
+{
+	typedef UINT (WINAPI * PFNGETDPIFORWINDOW)(HWND);
+	typedef int (WINAPI * PFNGETSYSTEMMETRICSFORDPI)(int, UINT);
+
+	static HMODULE hUser32 = ::GetModuleHandle(_T("user32.dll"));
+	static PFNGETDPIFORWINDOW pfnGetDpiForWindow =
+		(PFNGETDPIFORWINDOW)::GetProcAddress(hUser32, "GetDpiForWindow");
+	static PFNGETSYSTEMMETRICSFORDPI pfnGetSystemMetricsForDpi =
+		(PFNGETSYSTEMMETRICSFORDPI)::GetProcAddress(hUser32, "GetSystemMetricsForDpi");
+
+	if (hWnd != NULL && pfnGetDpiForWindow != NULL && pfnGetSystemMetricsForDpi != NULL)
+	{
+		const UINT nDpi = pfnGetDpiForWindow(hWnd);
+		if (nDpi != 0)
+			return CSize(pfnGetSystemMetricsForDpi(SM_CXVSCROLL, nDpi),
+				pfnGetSystemMetricsForDpi(SM_CYHSCROLL, nDpi));
+	}
+
+	return CSize(::GetSystemMetrics(SM_CXVSCROLL), ::GetSystemMetrics(SM_CYHSCROLL));
+}
+
+//////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
@@ -56,8 +90,9 @@ void CResizableGrip::UpdateSizeGrip()
 	rect.top = rect.bottom - m_wndGrip.m_size.cy;
 
 	// must stay below other children
-	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
-		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION
+	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top,
+		m_wndGrip.m_size.cx, m_wndGrip.m_size.cy,
+		SWP_NOACTIVATE | SWP_NOREPOSITION
 		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
 
@@ -158,8 +193,7 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// set window size
-	m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+	m_size = GetSizeGripMetrics(cs.hwndParent);
 
 	cs.cx = m_size.cx;
 	cs.cy = m_size.cy;
@@ -186,35 +220,30 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		// choose proper cursor shape
 		return IsRTL() ? HTBOTTOMLEFT : HTBOTTOMRIGHT;
 
+	case WM_SIZE:
+		// the shape follows the window size, and the owner may resize the grip
+		// itself (for example to match the DPI of the monitor it is on)
+		if (m_bTriangular)
+			SetTriangularShape(m_bTriangular);
+		break;
+
+	case WM_DPICHANGED_AFTERPARENT:
 	case WM_SETTINGCHANGE:
 		{
 			// update grip's size
-			CSize sizeOld = m_size;
-			m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
-			m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+			m_size = GetSizeGripMetrics(m_hWnd);
 
 			// resize transparency bitmaps
 			if (m_bTransparent)
-			{
-				CClientDC dc(this);
+				CreateTransparencyBitmaps(m_size);
 
-				// destroy bitmaps
-				m_bmGrip.DeleteObject();
-				m_bmMask.DeleteObject();
-
-				// re-create bitmaps
-				m_bmGrip.CreateCompatibleBitmap(&dc, m_size.cx, m_size.cy);
-				m_bmMask.CreateBitmap(m_size.cx, m_size.cy, 1, 1, NULL);
-			}
-
-			// re-calc shape
-			if (m_bTriangular)
-				SetTriangularShape(m_bTriangular);
-
-			// reposition the grip
+			// resize the grip, keeping the bottom right corner where it is: the
+			// owner may already have resized it, so set the size instead of
+			// growing the window by the difference
 			CRect rect;
 			GetWindowRect(rect);
-			rect.InflateRect(m_size.cx - sizeOld.cx, m_size.cy - sizeOld.cy, 0, 0);
+			rect.left = rect.right - m_size.cx;
+			rect.top = rect.bottom - m_size.cy;
 			::MapWindowPoints(NULL, GetParent()->GetSafeHwnd(), &rect.TopLeft(), 2);
 			MoveWindow(rect, TRUE);
 		}
@@ -234,19 +263,31 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			CDC* pDC = (message == WM_PAINT && wParam == 0) ?
 				BeginPaint(&ps) : CDC::FromHandle((HDC)wParam);
 
+			// the owner may have given us a window larger than the size box the
+			// control draws, which always goes in the bottom right corner, so work
+			// out where it is instead of assuming it fills the client area
+			CRect rectClient;
+			GetClientRect(rectClient);
+			if (rectClient.Size() != m_sizeBitmaps)
+				CreateTransparencyBitmaps(rectClient.Size());
+
+			const CSize size(__min(rectClient.Width(), m_size.cx),
+				__min(rectClient.Height(), m_size.cy));
+			const CPoint pt(rectClient.right - size.cx, rectClient.bottom - size.cy);
+
 			// select bitmaps
 			CBitmap *pOldGrip = m_dcGrip.SelectObject(&m_bmGrip);
 			CBitmap *pOldMask = m_dcMask.SelectObject(&m_bmMask);
 
 			// obtain original grip bitmap, make the mask and prepare masked bitmap
 			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
-			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
-			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
-			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
+			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(pt.x, pt.y));
+			m_dcMask.BitBlt(pt.x, pt.y, size.cx, size.cy, &m_dcGrip, pt.x, pt.y, SRCCOPY);
+			m_dcGrip.BitBlt(pt.x, pt.y, size.cx, size.cy, &m_dcMask, pt.x, pt.y, 0x00220326);
 
 			// draw transparently
-			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, SRCAND);
-			pDC->BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCPAINT);
+			pDC->BitBlt(pt.x, pt.y, size.cx, size.cy, &m_dcMask, pt.x, pt.y, SRCAND);
+			pDC->BitBlt(pt.x, pt.y, size.cx, size.cy, &m_dcGrip, pt.x, pt.y, SRCPAINT);
 
 			// unselect bitmaps
 			m_dcGrip.SelectObject(pOldGrip);
@@ -274,10 +315,9 @@ void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 
 		// create memory DCs and bitmaps
 		m_dcGrip.CreateCompatibleDC(&dc);
-		m_bmGrip.CreateCompatibleBitmap(&dc, m_size.cx, m_size.cy);
-
 		m_dcMask.CreateCompatibleDC(&dc);
-		m_bmMask.CreateBitmap(m_size.cx, m_size.cy, 1, 1, NULL);
+
+		CreateTransparencyBitmaps(m_size);
 	}
 	else if (!bActivate && m_bTransparent)
 	{
@@ -289,7 +329,24 @@ void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 
 		m_dcMask.DeleteDC();
 		m_bmMask.DeleteObject();
+
+		m_sizeBitmaps = CSize(0, 0);
 	}
+}
+
+void CResizableGrip::CSizeGrip::CreateTransparencyBitmaps(CSize size)
+{
+	CClientDC dc(this);
+
+	// destroy bitmaps
+	m_bmGrip.DeleteObject();
+	m_bmMask.DeleteObject();
+
+	// re-create bitmaps
+	m_bmGrip.CreateCompatibleBitmap(&dc, size.cx, size.cy);
+	m_bmMask.CreateBitmap(size.cx, size.cy, 1, 1, NULL);
+
+	m_sizeBitmaps = size;
 }
 
 void CResizableGrip::CSizeGrip::SetTriangularShape(BOOL bEnable)
