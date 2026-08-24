@@ -49,7 +49,6 @@ private:
 
 		void SetTriangularShape(BOOL bEnable);
 		void SetTransparency(BOOL bActivate);
-		void CreateTransparencyBitmaps(CSize size);
 
 		BOOL IsRTL();			// right-to-left layout support
 
@@ -59,6 +58,7 @@ private:
 
 	protected:
 		virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+		void CreateTransparencyBitmaps(CSize size);
 
 		BOOL m_bTriangular;		// triangular shape active
 		BOOL m_bTransparent;	// transparency active
