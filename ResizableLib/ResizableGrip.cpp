@@ -225,6 +225,9 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		// itself (for example to match the DPI of the monitor it is on)
 		if (m_bTriangular)
 			SetTriangularShape(m_bTriangular);
+		// the transparency bitmaps must follow the size too
+		if (m_bTransparent)
+			CreateTransparencyBitmaps();
 		break;
 
 	case WM_DPICHANGED_AFTERPARENT:
@@ -232,10 +235,6 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		{
 			// update grip's size
 			m_size = GetSizeGripMetrics(m_hWnd);
-
-			// resize transparency bitmaps
-			if (m_bTransparent)
-				CreateTransparencyBitmaps(m_size);
 
 			// resize the grip, keeping the bottom right corner where it is: the
 			// owner may already have resized it, so set the size instead of
@@ -268,8 +267,6 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			// out where it is instead of assuming it fills the client area
 			CRect rectClient;
 			GetClientRect(rectClient);
-			if (rectClient.Size() != m_sizeBitmaps)
-				CreateTransparencyBitmaps(rectClient.Size());
 
 			const CSize size(__min(rectClient.Width(), m_size.cx),
 				__min(rectClient.Height(), m_size.cy));
@@ -317,7 +314,7 @@ void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 		m_dcGrip.CreateCompatibleDC(&dc);
 		m_dcMask.CreateCompatibleDC(&dc);
 
-		CreateTransparencyBitmaps(m_size);
+		CreateTransparencyBitmaps();
 	}
 	else if (!bActivate && m_bTransparent)
 	{
@@ -329,24 +326,25 @@ void CResizableGrip::CSizeGrip::SetTransparency(BOOL bActivate)
 
 		m_dcMask.DeleteDC();
 		m_bmMask.DeleteObject();
-
-		m_sizeBitmaps = CSize(0, 0);
 	}
 }
 
-void CResizableGrip::CSizeGrip::CreateTransparencyBitmaps(CSize size)
+void CResizableGrip::CSizeGrip::CreateTransparencyBitmaps()
 {
 	CClientDC dc(this);
+
+	// bitmaps cover the whole client area, because the size box is drawn
+	// wherever it falls when the owner resizes the grip itself
+	CRect rectClient;
+	GetClientRect(rectClient);
 
 	// destroy bitmaps
 	m_bmGrip.DeleteObject();
 	m_bmMask.DeleteObject();
 
 	// re-create bitmaps
-	m_bmGrip.CreateCompatibleBitmap(&dc, size.cx, size.cy);
-	m_bmMask.CreateBitmap(size.cx, size.cy, 1, 1, NULL);
-
-	m_sizeBitmaps = size;
+	m_bmGrip.CreateCompatibleBitmap(&dc, rectClient.Width(), rectClient.Height());
+	m_bmMask.CreateBitmap(rectClient.Width(), rectClient.Height(), 1, 1, NULL);
 }
 
 void CResizableGrip::CSizeGrip::SetTriangularShape(BOOL bEnable)

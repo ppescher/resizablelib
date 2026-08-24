@@ -41,7 +41,6 @@ private:
 	public:
 		CSizeGrip()
 			: m_size()
-			, m_sizeBitmaps(0, 0)
 		{
 			m_bTransparent = FALSE;
 			m_bTriangular = FALSE;
@@ -58,7 +57,7 @@ private:
 
 	protected:
 		virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-		void CreateTransparencyBitmaps(CSize size);
+		void CreateTransparencyBitmaps();
 
 		BOOL m_bTriangular;		// triangular shape active
 		BOOL m_bTransparent;	// transparency active
@@ -66,7 +65,6 @@ private:
 		// memory DCs and bitmaps for transparent grip
 		CDC m_dcGrip, m_dcMask;
 		CBitmap m_bmGrip, m_bmMask;
-		CSize m_sizeBitmaps;	// size of the transparency bitmaps
 	};
 
 	CSizeGrip m_wndGrip;		// grip control
