@@ -24,6 +24,7 @@ CDemoDlg::CDemoDlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_dwGripTempState = 1;
+	m_hCurrentMonitor = NULL;
 }
 
 void CDemoDlg::DoDataExchange(CDataExchange* pDX)
@@ -44,8 +45,9 @@ BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	ON_WM_CLOSE()
 	ON_COMMAND(IDCANCEL, &CDemoDlg::OnCancel)
 	ON_COMMAND(IDOK, &CDemoDlg::OnOk)
-	//}}AFX_MSG_MAP
 	ON_WM_NCDESTROY()
+	ON_WM_WINDOWPOSCHANGED()
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -101,15 +103,36 @@ BOOL CDemoDlg::OnInitDialog()
 		_T("Try to maximize and then to restore the dialog!\r\n")
 		_T("Isn't it cool?"));
 
-	// min/max size settings
-	UpdateMaxSize();
-
 	// save/restore
 	// (for dialog based app, default is a .INI file with
 	// the application's name in the Windows directory)
 	EnableSaveRestore(_T("DemoDlg"));
 
+	// min/max size settings
+	UpdateCurrentMonitor();
+	UpdateMaxSize();
+
 	return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+void CDemoDlg::OnWindowPosChanged(WINDOWPOS* lpwndpos)
+{
+	CResizableDialog::OnWindowPosChanged(lpwndpos);
+
+	// update min/max size settings when monitor changes
+	if (UpdateCurrentMonitor())
+		UpdateMaxSize();
+}
+
+BOOL CDemoDlg::UpdateCurrentMonitor()
+{
+	HMONITOR hMon = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+	if (m_hCurrentMonitor != hMon)
+	{
+		m_hCurrentMonitor = hMon;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 void CDemoDlg::UpdateMaxSize()
@@ -118,10 +141,13 @@ void CDemoDlg::UpdateMaxSize()
 	ResetMaximizedRect();
 
 	// get desktop size
-	CRect rcMax;
-	GetDesktopWindow()->GetClientRect(&rcMax);
+	MONITORINFO mi = { sizeof(mi) };
+	GetMonitorInfo(m_hCurrentMonitor, &mi);
 
 	if (GetThemeAppProperties() & STAP_ALLOW_NONCLIENT)
+	CRect rcMax = mi.rcMonitor; // correct area based on monitor DPI and app DPI awareness
+	rcMax.MoveToXY(0, 0); // maximized rect wants zero offset (relative to current monitor)
+
 	{
 		// modern style windows use the borders for drop-shadow effects but window size appears smaller when maximized
 		// try to determine the correct size for maximized state, based on the current style

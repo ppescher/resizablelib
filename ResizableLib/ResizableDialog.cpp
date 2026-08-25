@@ -140,7 +140,9 @@ void CResizableDialog::EnableSaveRestore(LPCTSTR pszSection, BOOL bRectOnly)
 	m_bEnableSaveRestore = TRUE;
 	m_bRectOnly = bRectOnly;
 
-	// do not restore immediately, but only after the window is made visible
+	// do not restore maximized immediately, but only after the window is made visible
+	// move window to target monitor to maximize correctly later
+	LoadWindowRect(m_sSection, TRUE);
 }
 
 void CResizableDialog::OnShowWindow(BOOL bShow, UINT nStatus)

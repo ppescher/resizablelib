@@ -36,11 +36,13 @@ protected:
 	DWORD m_dwGripTempState;
 
 	HICON m_hIcon;
+	HMONITOR m_hCurrentMonitor;
 
 	static BOOL CALLBACK SendThemeChangedProc(HWND hwnd, LPARAM lParam);
 	static DWORD GetThemeProperties();
 	void SetThemeProperties(DWORD dwFlags);
 	void UpdateMaxSize();
+	BOOL UpdateCurrentMonitor();
 
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)
@@ -54,6 +56,7 @@ protected:
 	afx_msg void OnCancel();
 	afx_msg void OnOk();
 	afx_msg void OnNcDestroy();
+	afx_msg void OnWindowPosChanged(WINDOWPOS* lpwndpos);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
