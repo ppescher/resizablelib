@@ -17,6 +17,9 @@
 #define IDC_LINE1                       1006
 #define IDC_GROUP2                      1006
 #define IDC_PICTURE1                    1007
+#define IDC_RADIO6                      1007
+#define IDC_RADIO7                      1008
+#define IDC_GROUP3                      1009
 #define IDC_STATIC1                     1010
 #define IDC_STATIC2                     1011
 #define IDC_CHECK_CENTERIMAGE           1012

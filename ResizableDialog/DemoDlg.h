@@ -37,12 +37,13 @@ protected:
 
 	HICON m_hIcon;
 	HMONITOR m_hCurrentMonitor;
+	HMODULE m_hDwmLib;
 
-	static BOOL CALLBACK SendThemeChangedProc(HWND hwnd, LPARAM lParam);
-	static DWORD GetThemeProperties();
+	static BOOL CALLBACK SetChildThemeProc(HWND hwnd, LPARAM lParam);
 	void SetThemeProperties(DWORD dwFlags);
 	void UpdateMaxSize();
 	BOOL UpdateCurrentMonitor();
+	BOOL SetDwmAttribute(DWORD attr, int value);
 
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)
@@ -52,6 +53,8 @@ protected:
 	afx_msg void OnRadio3();
 	afx_msg void OnRadio4();
 	afx_msg void OnRadio5();
+	afx_msg void OnRadio6();
+	afx_msg void OnRadio7();
 	afx_msg void OnClose();
 	afx_msg void OnCancel();
 	afx_msg void OnOk();
