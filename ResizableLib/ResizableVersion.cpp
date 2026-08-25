@@ -181,7 +181,10 @@ void InitRealVersions()
 			real_WIN32_IE = 0x0500;
 		break;
 	case 6:
-		real_WIN32_IE = 0x0600;	// includes checks for 0x0560 (IE6)
+		if (g_dviCommCtrls.dwMinorVersion > 0)
+			real_WIN32_IE = 0x0700;	// since Vista
+		else
+			real_WIN32_IE = 0x0600;	// includes checks for 0x0560 (IE6)
 		break;
 	default:
 		real_WIN32_IE = 0;
