@@ -56,8 +56,9 @@ void CResizableGrip::UpdateSizeGrip()
 	rect.top = rect.bottom - m_wndGrip.m_size.cy;
 
 	// must stay below other children
-	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top, 0, 0,
-		SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOREPOSITION
+	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top,
+		m_wndGrip.m_size.cx, m_wndGrip.m_size.cy,
+		SWP_NOACTIVATE | SWP_NOREPOSITION
 		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
 
@@ -213,9 +214,9 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 
 			// reposition the grip
 			CRect rect;
-			GetWindowRect(rect);
-			rect.InflateRect(m_size.cx - sizeOld.cx, m_size.cy - sizeOld.cy, 0, 0);
-			::MapWindowPoints(NULL, GetParent()->GetSafeHwnd(), &rect.TopLeft(), 2);
+			GetParent()->GetClientRect(rect);
+			rect.left = rect.right - m_size.cx;
+			rect.top = rect.bottom - m_size.cy;
 			MoveWindow(rect, TRUE);
 		}
 		break;
