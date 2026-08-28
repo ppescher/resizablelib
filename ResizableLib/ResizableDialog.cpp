@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableDialog.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -169,12 +170,25 @@ BOOL CResizableDialog::OnEraseBkgnd(CDC* pDC)
 
 LRESULT CResizableDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CDialog::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_DPICHANGED:
+		// update grip and layout
+		ArrangeLayout();
+		UpdateSizeGrip();
+		break;
 
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CDialog::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CDialog::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CDialog::WindowProc(message, wParam, lParam);
 }

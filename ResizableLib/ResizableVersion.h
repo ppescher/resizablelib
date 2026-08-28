@@ -42,14 +42,39 @@ extern DWORD real_WIN32_IE;
 
 extern DWORD real_ThemeSettings;
 
+extern INT_PTR real_DpiAwareness;
+
 // called automatically by a static initializer
 // (if not appropriate can be called later)
 // to setup global version numbers
 
 void InitRealVersions();
 
-// check for visual style settings
+// check for visual style and DPI settings
 
-void InitThemeSettings();
+void InitAppSettings();
+
+// DPI Awareness helpers
+
+#ifndef WM_DPICHANGED
+#define WM_DPICHANGED				0x02E0
+#endif
+
+// sent to child windows after the parent handled WM_DPICHANGED
+#ifndef WM_DPICHANGED_AFTERPARENT
+#define WM_DPICHANGED_AFTERPARENT	0x02E3
+#endif
+
+#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2	34
+#endif
+
+#ifndef USER_DEFAULT_SCREEN_DPI
+#define USER_DEFAULT_SCREEN_DPI		96
+#endif
+
+UINT GetWindowDpi(HWND hWnd);
+BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect);
+CSize GetSizeGripMetrics(HWND hWnd);
 
 #endif // !defined(AFX_RESIZABLEVERSION_H__INCLUDED_)

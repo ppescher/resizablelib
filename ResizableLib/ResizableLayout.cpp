@@ -54,6 +54,66 @@ const ANCHOR BOTTOM_RIGHT(100, 100);
  */
 #define _BS_TYPEMASK 0x0000000FL
 
+ /*!
+  *  @internal This function is called at the beginning of layout construction
+  *  to resize the parent dialog and child controls like PerMonitorV2 does
+  */
+void CResizableLayout::ResizeForHighDpi() const
+{
+	CWnd* pParent = GetResizableWnd();
+	HWND hParent = pParent->GetSafeHwnd();
+	if (hParent == NULL || (LPTSTR)::GetClassLongPtr(hParent, GCW_ATOM) != WC_DIALOG)
+		return; // not a dialog
+
+	// apply high DPI scaling (this assume that dialog is loaded at default screen DPI of 96)
+	const UINT nDpi = GetWindowDpi(hParent);
+	if (nDpi == USER_DEFAULT_SCREEN_DPI || real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+		return;
+
+	// Only V2 DPI aware system will resize the dialog automatically
+	// For other High DPI modes let's do it manually!
+	CRect rect;
+	pParent->GetClientRect(rect);
+	CSize size = rect.Size();
+	size.cx = MulDiv(size.cx, nDpi, USER_DEFAULT_SCREEN_DPI);
+	size.cy = MulDiv(size.cy, nDpi, USER_DEFAULT_SCREEN_DPI);
+	rect = CRect(rect.TopLeft(), size);
+	::MapWindowPoints(hParent, NULL, &rect.TopLeft(), 2);
+	::AdjustWindowRectEx(&rect, pParent->GetStyle(),
+		::IsMenu(pParent->GetMenu()->GetSafeHmenu()), pParent->GetExStyle());
+	
+	// resize/move to new scaled rect
+	pParent->SetWindowPos(NULL, rect.left, rect.top, rect.Width(), rect.Height(),
+		SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
+	
+	// update child controls
+	HWND hWnd = ::GetWindow(hParent, GW_CHILD);
+	for (; hWnd != NULL; hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT))
+	{
+		TCHAR szClassName[32];
+		if (::GetClassName(hWnd, szClassName, _countof(szClassName)))
+		{
+			if (lstrcmp(szClassName, WC_SCROLLBAR) == 0)
+			{
+				// skip size grip (which is handled on its own)
+				DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
+				if ((dwStyle & (WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP)) == (WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP))
+					continue;
+			}
+		}
+
+		// apply DPI scaling
+		::GetWindowRect(hWnd, &rect);
+		::MapWindowPoints(NULL, hParent, &rect.TopLeft(), 2);
+		rect.left = MulDiv(rect.left, nDpi, USER_DEFAULT_SCREEN_DPI);
+		rect.top = MulDiv(rect.top, nDpi, USER_DEFAULT_SCREEN_DPI);
+		rect.right = MulDiv(rect.right, nDpi, USER_DEFAULT_SCREEN_DPI);
+		rect.bottom = MulDiv(rect.bottom, nDpi, USER_DEFAULT_SCREEN_DPI);
+		::SetWindowPos(hWnd, NULL, rect.left, rect.top, rect.Width(), rect.Height(),
+			SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
+	}
+}
+
 /*!
  *  This function adds a new control to the layout manager and sets anchor
  *  points for its top-left and bottom-right corners.
@@ -76,6 +136,12 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 	ASSERT(::IsWindow(hWnd));
 	// must be child of parent window
 	ASSERT(::IsChild(pParent->GetSafeHwnd(), hWnd));
+
+	if (!m_bLayoutStart)
+	{
+		ResizeForHighDpi();
+		m_bLayoutStart = TRUE;
+	}
 
 	// get parent window's rect
 	CRect rectParent;
@@ -102,6 +168,9 @@ void CResizableLayout::AddAnchor(HWND hWnd, ANCHOR anchorTopLeft, ANCHOR anchorB
 
 	// get control's window class
 	GetClassName(hWnd, layout.sWndClass, MAX_PATH);
+
+	// initial DPI settings
+	layout.nDPI = GetWindowDpi(pParent->m_hWnd);
 
 	// initialize resize properties (overridable)
 	InitResizeProperties(layout);
@@ -685,14 +754,32 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 	::MapWindowPoints(NULL, pParent->m_hWnd, &rectChild.TopLeft(), 2);
 
 	CRect rectNew;
+	CSize sizeParent = rectParent.Size();
+	
+	// pre-adjust for the initial DPI
+	UINT nDPI = GetWindowDpi(layout.hWnd);
+	if (nDPI != 0 && layout.nDPI != 0 && nDPI != layout.nDPI)
+	{
+		sizeParent.cx = MulDiv(sizeParent.cx, layout.nDPI, nDPI);
+		sizeParent.cy = MulDiv(sizeParent.cy, layout.nDPI, nDPI);
+	}
 
 	// calculate new top-left corner
-	rectNew.left = layout.marginTopLeft.cx + rectParent.Width() * layout.anchorTopLeft.cx / 100;
-	rectNew.top = layout.marginTopLeft.cy + rectParent.Height() * layout.anchorTopLeft.cy / 100;
+	rectNew.left = layout.marginTopLeft.cx + sizeParent.cx * layout.anchorTopLeft.cx / 100;
+	rectNew.top = layout.marginTopLeft.cy + sizeParent.cy * layout.anchorTopLeft.cy / 100;
 
 	// calculate new bottom-right corner
-	rectNew.right = layout.marginBottomRight.cx + rectParent.Width() * layout.anchorBottomRight.cx / 100;
-	rectNew.bottom = layout.marginBottomRight.cy + rectParent.Height() * layout.anchorBottomRight.cy / 100;
+	rectNew.right = layout.marginBottomRight.cx + sizeParent.cx * layout.anchorBottomRight.cx / 100;
+	rectNew.bottom = layout.marginBottomRight.cy + sizeParent.cy * layout.anchorBottomRight.cy / 100;
+
+	// post-adjust for current DPI
+	if (nDPI != 0 && layout.nDPI != 0 && nDPI != layout.nDPI)
+	{
+		rectNew.left = MulDiv(rectNew.left, nDPI, layout.nDPI);
+		rectNew.top = MulDiv(rectNew.top, nDPI, layout.nDPI);
+		rectNew.right = MulDiv(rectNew.right, nDPI, layout.nDPI);
+		rectNew.bottom = MulDiv(rectNew.bottom, nDPI, layout.nDPI);
+	}
 
 	// adjust position, if client area has been scrolled
 	rectNew.OffsetRect(rectParent.TopLeft());
@@ -814,7 +901,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 	if (lpCreateStruct->style & WS_CHILD)
 		return;
 
-	InitThemeSettings(); //! @todo move theme check in more appropriate place
+	InitAppSettings(); //! @todo move theme check in more appropriate place
 
 	CWnd* pWnd = GetResizableWnd();
 
@@ -832,13 +919,17 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 		// set resizable style
 		pWnd->ModifyStyle(DS_MODALFRAME, WS_THICKFRAME);
 		// adjust size to reflect new style
-		::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
-			::IsMenu(pWnd->GetMenu()->GetSafeHmenu()), pWnd->GetExStyle());
+		if (real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+			AdjustWindowForDpi(pWnd->GetSafeHwnd(), rect);
+		else
+			::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
+				::IsMenu(pWnd->GetMenu()->GetSafeHmenu()), pWnd->GetExStyle());
 		pWnd->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 			SWP_NOSENDCHANGING|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
 		// update dimensions
 		lpCreateStruct->cx = rect.Width();
 		lpCreateStruct->cy = rect.Height();
+		lpCreateStruct->style = pWnd->GetStyle();
 	}
 }
 

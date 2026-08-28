@@ -128,6 +128,8 @@ DWORD real_WIN32_IE = 0;
 
 DWORD real_ThemeSettings = 0;
 
+INT_PTR real_DpiAwareness = 0;
+
 // macro to convert version numbers to hex format
 #define CNV_OS_VER(x) ((BYTE)(((BYTE)(x) / 10 * 16) | ((BYTE)(x) % 10)))
 
@@ -193,28 +195,109 @@ void InitRealVersions()
 }
 
 // Whether non-client area is using XP Visual Style
-void InitThemeSettings()
+void InitAppSettings()
 {
 	real_ThemeSettings = 0;
+	real_DpiAwareness = 0;
 
 	typedef BOOL (STDAPICALLTYPE * IS_APP_THEMED)(VOID);
 	typedef DWORD (STDAPICALLTYPE * GET_THEME_APP_PROPERTIES)(VOID);
+	typedef INT_PTR (STDAPICALLTYPE* GET_THREAD_DPI_AWARENESS_CONTEXT)(VOID);
+
+	// check DPI awareness (assume per process)
+	static HMODULE hUser32 = GetModuleHandle(_T("user32.dll"));
+	static GET_THREAD_DPI_AWARENESS_CONTEXT pfnGetThreadDpiAwarenessContext = 
+		(GET_THREAD_DPI_AWARENESS_CONTEXT) GetProcAddress(hUser32, "GetThreadDpiAwarenessContext");
+
+	if (pfnGetThreadDpiAwarenessContext != NULL)
+	{
+		real_DpiAwareness = pfnGetThreadDpiAwarenessContext();
+	}
 
 	// check DLL is in place, themes can't work without
-	HMODULE hLib = GetModuleHandle(_T("uxtheme.dll"));
-	if (hLib == NULL)
-		return;
+	static HMODULE hThemeLib = GetModuleHandle(_T("uxtheme.dll"));
+	static IS_APP_THEMED pfnIsAppThemed =
+		(IS_APP_THEMED) GetProcAddress(hThemeLib, "IsAppThemed");
+	static GET_THEME_APP_PROPERTIES pfnGetThemeAppProperties =
+		(GET_THEME_APP_PROPERTIES) GetProcAddress(hThemeLib, "GetThemeAppProperties");
 
 	// check calling process has themes enabled
-	IS_APP_THEMED pfnIsAppThemed =
-		(IS_APP_THEMED) GetProcAddress(hLib, "IsAppThemed");
-	ASSERT(pfnIsAppThemed);
-	if (!pfnIsAppThemed())
-		return;
-
 	// check application theme includes non-client area
-	GET_THEME_APP_PROPERTIES pfnGetThemeAppProperties =
-		(GET_THEME_APP_PROPERTIES) GetProcAddress(hLib, "GetThemeAppProperties");
-	ASSERT(pfnGetThemeAppProperties);
-	real_ThemeSettings = pfnGetThemeAppProperties();
+	if (pfnIsAppThemed != NULL && pfnGetThemeAppProperties != NULL)
+	{
+		if (pfnIsAppThemed())
+			real_ThemeSettings = pfnGetThemeAppProperties();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////
+// DPI awareness support
+//////////////////////////////////////////////////////////////////////
+
+CSize GetSizeGripMetrics(HWND hWnd)
+{
+	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);
+	typedef int (WINAPI* PFNGETSYSTEMMETRICSFORDPI)(int, UINT);
+
+	static HMODULE hUser32 = ::GetModuleHandle(_T("user32.dll"));
+	static PFNGETDPIFORWINDOW pfnGetDpiForWindow =
+		(PFNGETDPIFORWINDOW)::GetProcAddress(hUser32, "GetDpiForWindow");
+	static PFNGETSYSTEMMETRICSFORDPI pfnGetSystemMetricsForDpi =
+		(PFNGETSYSTEMMETRICSFORDPI)::GetProcAddress(hUser32, "GetSystemMetricsForDpi");
+
+	if (hWnd != NULL && pfnGetDpiForWindow != NULL && pfnGetSystemMetricsForDpi != NULL)
+	{
+		const UINT nDpi = pfnGetDpiForWindow(hWnd);
+		if (nDpi != 0)
+			return CSize(pfnGetSystemMetricsForDpi(SM_CXVSCROLL, nDpi),
+				pfnGetSystemMetricsForDpi(SM_CYHSCROLL, nDpi));
+	}
+
+	return CSize(::GetSystemMetrics(SM_CXVSCROLL), ::GetSystemMetrics(SM_CYHSCROLL));
+}
+
+UINT GetWindowDpi(HWND hWnd)
+{
+	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);
+	typedef int (WINAPI* PFNGETSYSTEMMETRICSFORDPI)(int, UINT);
+
+	static HMODULE hUser32 = ::GetModuleHandle(_T("user32.dll"));
+	static PFNGETDPIFORWINDOW pfnGetDpiForWindow =
+		(PFNGETDPIFORWINDOW)::GetProcAddress(hUser32, "GetDpiForWindow");
+
+	if (hWnd != NULL && pfnGetDpiForWindow != NULL)
+	{
+		const UINT nDpi = pfnGetDpiForWindow(hWnd);
+		if (nDpi != 0)
+			return nDpi;
+	}
+
+	return USER_DEFAULT_SCREEN_DPI;
+}
+
+BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect)
+{
+	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);
+	typedef BOOL(WINAPI* PFNADJUSTWINDOWRECTEXFORDPI)(
+		LPRECT lpRect,
+		DWORD  dwStyle,
+		BOOL   bMenu,
+		DWORD  dwExStyle,
+		UINT   dpi
+		);
+
+	static HMODULE hUser32 = ::GetModuleHandle(_T("user32.dll"));
+	static PFNADJUSTWINDOWRECTEXFORDPI pfnAdjustWindowRectExForDpi =
+		(PFNADJUSTWINDOWRECTEXFORDPI)::GetProcAddress(hUser32, "AdjustWindowRectExForDpi");
+
+	if (hWnd != NULL && pfnAdjustWindowRectExForDpi != NULL)
+	{
+		const UINT nDpi = GetWindowDpi(hWnd);
+		if (pfnAdjustWindowRectExForDpi(lpRect, ::GetWindowLong(hWnd, GWL_STYLE),
+			::IsMenu(::GetMenu(hWnd)), ::GetWindowLong(hWnd, GWL_EXSTYLE), nDpi))
+			return TRUE;
+	}
+
+	return ::AdjustWindowRectEx(lpRect, ::GetWindowLong(hWnd, GWL_STYLE),
+		::IsMenu(::GetMenu(hWnd)), ::GetWindowLong(hWnd, GWL_EXSTYLE));
 }

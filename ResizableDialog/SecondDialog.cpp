@@ -60,8 +60,10 @@ BOOL CSecondDialog::OnInitDialog()
 	rect.left = rc.left;
 	ScreenToClient(&rect);
 	m_wndToolBar.GetToolBarCtrl().GetMaxSize(&size);
-	rect.right = rect.left + size.cx;
-	rect.bottom = rect.top + size.cy;
+	// enlarge a bit to fix shrinked size when first created on high DPI display
+	// and then moved to smaller DPI screen
+	rect.right = rect.left + size.cx + 2;
+	rect.bottom = rect.top + size.cy + 4;
 
 	m_wndToolBar.SetBarStyle(CBRS_ALIGN_TOP | CBRS_TOOLTIPS | CBRS_FLYBY);
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, 
@@ -77,10 +79,8 @@ BOOL CSecondDialog::OnInitDialog()
 	AddAnchor(IDOK, BOTTOM_RIGHT);
 	AddAnchor(IDCANCEL, BOTTOM_RIGHT);
 
-	// these should be equivalent, as long as you leave the
-	// default control ID for the toolbar in the Create() call
-	//AddAnchor(AFX_IDW_TOOLBAR, BOTTOM_LEFT);
-	AddAnchor(m_wndToolBar.GetSafeHwnd(), BOTTOM_LEFT);
+	// align also the bottom right corner to support resize due to DPI changes
+	AddAnchor(m_wndToolBar.GetSafeHwnd(), BOTTOM_LEFT, BOTTOM_RIGHT);
 
 	// allow any size
 	ResetMinTrackSize();

@@ -20,6 +20,7 @@
 
 #include "stdafx.h"
 #include "ResizableGrip.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -46,18 +47,24 @@ void CResizableGrip::UpdateSizeGrip()
 	if (!::IsWindow(m_wndGrip.m_hWnd))
 		return;
 
+	CWnd* pParent = GetResizableWnd();
+
+	CSize size = m_wndGrip.m_size;
+	if (real_DpiAwareness != DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+		size = GetSizeGripMetrics(pParent->GetSafeHwnd());
+
 	// size-grip goes bottom right in the client area
 	// (any right-to-left adjustment should go here)
 
 	RECT rect;
-	GetResizableWnd()->GetClientRect(&rect);
+	pParent->GetClientRect(&rect);
 
-	rect.left = rect.right - m_wndGrip.m_size.cx;
-	rect.top = rect.bottom - m_wndGrip.m_size.cy;
+	rect.left = rect.right - size.cx;
+	rect.top = rect.bottom - size.cy;
 
 	// must stay below other children
 	m_wndGrip.SetWindowPos(&CWnd::wndBottom, rect.left, rect.top,
-		m_wndGrip.m_size.cx, m_wndGrip.m_size.cy,
+		size.cx, size.cy,
 		SWP_NOACTIVATE | SWP_NOREPOSITION
 		| (IsSizeGripVisible() ? SWP_SHOWWINDOW : SWP_HIDEWINDOW));
 }
@@ -129,8 +136,8 @@ void CResizableGrip::SetSizeGripShape(BOOL bTriangular)
 BOOL CResizableGrip::CreateSizeGrip(BOOL bVisible /*= TRUE*/,
 		BOOL bTriangular /*= TRUE*/, BOOL bTransparent /*= FALSE*/)
 {
-	// create grip
-	CRect rect(0 , 0, m_wndGrip.m_size.cx, m_wndGrip.m_size.cy);
+	// create grip (size is adjusted during creation)
+	CRect rect;
 	BOOL bRet = m_wndGrip.Create(WS_CHILD | WS_CLIPSIBLINGS
 		| SBS_SIZEGRIP, rect, GetResizableWnd(), 0);
 
@@ -159,8 +166,10 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// set window size
-	m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
-	m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+	if (real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+		m_size = GetSizeGripMetrics(cs.hwndParent);
+	else
+		m_size = CSize(::GetSystemMetrics(SM_CXVSCROLL), ::GetSystemMetrics(SM_CYHSCROLL));
 
 	cs.cx = m_size.cx;
 	cs.cy = m_size.cy;
@@ -187,12 +196,14 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 		// choose proper cursor shape
 		return IsRTL() ? HTBOTTOMLEFT : HTBOTTOMRIGHT;
 
-	case WM_SETTINGCHANGE:
+	case WM_SIZE:
 		{
 			// update grip's size
 			CSize sizeOld = m_size;
-			m_size.cx = GetSystemMetrics(SM_CXVSCROLL);
-			m_size.cy = GetSystemMetrics(SM_CYHSCROLL);
+			m_size.cx = LOWORD(lParam);
+			m_size.cy = HIWORD(lParam);
+			if (sizeOld == m_size)
+				break; // nothing to do if same size
 
 			// resize transparency bitmaps
 			if (m_bTransparent)
@@ -211,12 +222,21 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			// re-calc shape
 			if (m_bTriangular)
 				SetTriangularShape(m_bTriangular);
+		}
+		break;
 
-			// reposition the grip
+	case WM_DPICHANGED_AFTERPARENT:
+	case WM_SETTINGCHANGE:
+		{
+			// reposition/resize the grip
+			CWnd* pParent = GetParent();
+			CSize size = GetSizeGripMetrics(pParent->GetSafeHwnd());
+			if (size == m_size)
+				break;
 			CRect rect;
-			GetParent()->GetClientRect(rect);
-			rect.left = rect.right - m_size.cx;
-			rect.top = rect.bottom - m_size.cy;
+			pParent->GetClientRect(rect);
+			rect.left = rect.right - size.cx;
+			rect.top = rect.bottom - size.cy;
 			MoveWindow(rect, TRUE);
 		}
 		break;
@@ -241,7 +261,17 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 
 			// obtain original grip bitmap, make the mask and prepare masked bitmap
 			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
-			m_dcGrip.SetBkColor(m_dcGrip.GetPixel(0, 0));
+			// get transparent color from the background (top left not always available)
+			COLORREF colorBack = m_dcGrip.GetPixel(m_size.cx / 2 - 1, m_size.cy / 2 - 1);
+			if (real_DpiAwareness != DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+			{
+				// scrollbar does not draw larger area on high DPI display
+				// but it's bottom-right aligned, let's fill it with background color
+				m_dcGrip.FillSolidRect(0, 0, m_size.cx, m_size.cy, colorBack);
+				CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
+			}
+			// prepare mask and the bitmap
+			m_dcGrip.SetBkColor(colorBack);
 			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
 			m_dcGrip.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcMask, 0, 0, 0x00220326);
 

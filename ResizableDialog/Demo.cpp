@@ -46,6 +46,8 @@ BOOL CDemoApp::InitInstance()
 	CSecondDialog dlg2;
 	CTestDialog dlg3;
 
+	//SetThemeAppProperties(STAP_ALLOW_NONCLIENT);
+
 	// first dialog is created modeless and initially hidden
 	dlg->Create(dlg->IDD);
 	// after the second modal dialog is dismissed, show the first

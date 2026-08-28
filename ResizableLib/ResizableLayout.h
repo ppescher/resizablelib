@@ -87,6 +87,8 @@ typedef struct tagLAYOUTINFO
 {
 	//! Handle of the window the layout of which is being defined
 	HWND hWnd;
+	//! DPI of parent window when layout was first added
+	UINT nDPI;
 	//! Identification number assigned to the callback slot
 	LRESULT nCallbackID;
 
@@ -108,8 +110,8 @@ typedef struct tagLAYOUTINFO
 	//! Redraw settings for anti-flickering and proper painting
 	RESIZEPROPERTIES properties;
 
-	tagLAYOUTINFO() : hWnd(NULL), nCallbackID(0)
-		, marginTopLeft(), marginBottomRight(), bMsgSupport(FALSE)
+	tagLAYOUTINFO() : hWnd(NULL), nDPI(0), nCallbackID(0),
+		marginTopLeft(), marginBottomRight(), bMsgSupport(FALSE)
 	{
 		sWndClass[0] = 0;
 	}
@@ -117,7 +119,7 @@ typedef struct tagLAYOUTINFO
 	tagLAYOUTINFO(HWND hwnd, ANCHOR tl_type, SIZE tl_margin,
 		ANCHOR br_type, SIZE br_margin)
 		:
-		hWnd(hwnd), nCallbackID(0),
+		hWnd(hwnd), nDPI(0), nCallbackID(0),
 		anchorTopLeft(tl_type), marginTopLeft(tl_margin),
 		anchorBottomRight(br_type), marginBottomRight(br_margin), bMsgSupport(FALSE)
 	{
@@ -161,6 +163,10 @@ private:
 	//! @brief Helper function to calculate new layout
 	void CalcNewChildPosition(const LAYOUTINFO &layout,
 		const CRect &rectParent, CRect &rectChild, UINT *lpFlags) const;
+
+	//! @brief Resize parent window and child controls according to current DPI settings
+	void ResizeForHighDpi() const;
+	BOOL m_bLayoutStart;
 
 protected:
 	//! @brief Override to initialize resize properties (clipping, refresh)
@@ -302,6 +308,7 @@ public:
 		m_bNoRecursion = FALSE;
 		m_hOldClipRgn = ::CreateRectRgn(0,0,0,0);
 		m_nOldClipRgn = 0;
+		m_bLayoutStart = FALSE;
 	}
 
 	virtual ~CResizableLayout()
