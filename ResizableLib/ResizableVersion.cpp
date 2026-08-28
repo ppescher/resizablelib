@@ -128,7 +128,7 @@ DWORD real_WIN32_IE = 0;
 
 DWORD real_ThemeSettings = 0;
 
-INT_PTR real_DpiAwareness = 0;
+BOOL real_DpiAwarenessV2 = FALSE;
 
 // macro to convert version numbers to hex format
 #define CNV_OS_VER(x) ((BYTE)(((BYTE)(x) / 10 * 16) | ((BYTE)(x) % 10)))
@@ -198,20 +198,25 @@ void InitRealVersions()
 void InitAppSettings()
 {
 	real_ThemeSettings = 0;
-	real_DpiAwareness = 0;
+	real_DpiAwarenessV2 = FALSE;
 
 	typedef BOOL (STDAPICALLTYPE * IS_APP_THEMED)(VOID);
 	typedef DWORD (STDAPICALLTYPE * GET_THEME_APP_PROPERTIES)(VOID);
 	typedef INT_PTR (STDAPICALLTYPE* GET_THREAD_DPI_AWARENESS_CONTEXT)(VOID);
+	typedef BOOL (STDAPICALLTYPE* ARE_DPI_AWARENESS_CONTEXTS_EQUAL)(INT_PTR, INT_PTR);
 
 	// check DPI awareness (assume per process)
 	static HMODULE hUser32 = GetModuleHandle(_T("user32.dll"));
 	static GET_THREAD_DPI_AWARENESS_CONTEXT pfnGetThreadDpiAwarenessContext = 
 		(GET_THREAD_DPI_AWARENESS_CONTEXT) GetProcAddress(hUser32, "GetThreadDpiAwarenessContext");
+	static ARE_DPI_AWARENESS_CONTEXTS_EQUAL pfnAreDpiAwarenessContextsEqual =
+		(ARE_DPI_AWARENESS_CONTEXTS_EQUAL) GetProcAddress(hUser32, "AreDpiAwarenessContextsEqual");
 
-	if (pfnGetThreadDpiAwarenessContext != NULL)
+	if (pfnGetThreadDpiAwarenessContext != NULL && pfnAreDpiAwarenessContextsEqual != NULL)
 	{
-		real_DpiAwareness = pfnGetThreadDpiAwarenessContext();
+		INT_PTR nDpiAwareCtx = pfnGetThreadDpiAwarenessContext();
+		// Is Per Monitor V2?
+		real_DpiAwarenessV2 = pfnAreDpiAwarenessContextsEqual(nDpiAwareCtx, (INT_PTR)(-4));
 	}
 
 	// check DLL is in place, themes can't work without

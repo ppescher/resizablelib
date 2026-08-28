@@ -42,7 +42,7 @@ extern DWORD real_WIN32_IE;
 
 extern DWORD real_ThemeSettings;
 
-extern INT_PTR real_DpiAwareness;
+extern BOOL real_DpiAwarenessV2;
 
 // called automatically by a static initializer
 // (if not appropriate can be called later)
@@ -63,10 +63,6 @@ void InitAppSettings();
 // sent to child windows after the parent handled WM_DPICHANGED
 #ifndef WM_DPICHANGED_AFTERPARENT
 #define WM_DPICHANGED_AFTERPARENT	0x02E3
-#endif
-
-#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2	34
 #endif
 
 #ifndef USER_DEFAULT_SCREEN_DPI

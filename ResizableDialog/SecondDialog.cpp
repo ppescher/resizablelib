@@ -62,8 +62,8 @@ BOOL CSecondDialog::OnInitDialog()
 	m_wndToolBar.GetToolBarCtrl().GetMaxSize(&size);
 	// enlarge a bit to fix shrinked size when first created on high DPI display
 	// and then moved to smaller DPI screen
-	rect.right = rect.left + size.cx + 2;
-	rect.bottom = rect.top + size.cy + 4;
+	rect.right = rect.left + size.cx + 4;
+	rect.bottom = rect.top + size.cy + 8;
 
 	m_wndToolBar.SetBarStyle(CBRS_ALIGN_TOP | CBRS_TOOLTIPS | CBRS_FLYBY);
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, 

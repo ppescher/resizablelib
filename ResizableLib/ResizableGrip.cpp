@@ -50,8 +50,8 @@ void CResizableGrip::UpdateSizeGrip()
 	CWnd* pParent = GetResizableWnd();
 
 	CSize size = m_wndGrip.m_size;
-	if (real_DpiAwareness != DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
-		size = GetSizeGripMetrics(pParent->GetSafeHwnd());
+	//if (!real_DpiAwarenessV2)
+	//	size = GetSizeGripMetrics(pParent->GetSafeHwnd());
 
 	// size-grip goes bottom right in the client area
 	// (any right-to-left adjustment should go here)
@@ -166,7 +166,7 @@ BOOL CResizableGrip::CSizeGrip::IsRTL()
 BOOL CResizableGrip::CSizeGrip::PreCreateWindow(CREATESTRUCT& cs)
 {
 	// set window size
-	if (real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+	if (real_DpiAwarenessV2)
 		m_size = GetSizeGripMetrics(cs.hwndParent);
 	else
 		m_size = CSize(::GetSystemMetrics(SM_CXVSCROLL), ::GetSystemMetrics(SM_CYHSCROLL));
@@ -263,7 +263,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
 			// get transparent color from the background (top left not always available)
 			COLORREF colorBack = m_dcGrip.GetPixel(m_size.cx / 2 - 1, m_size.cy / 2 - 1);
-			if (real_DpiAwareness != DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+			if (!real_DpiAwarenessV2)
 			{
 				// scrollbar does not draw larger area on high DPI display
 				// but it's bottom-right aligned, let's fill it with background color

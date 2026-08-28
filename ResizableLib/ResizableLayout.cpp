@@ -67,7 +67,7 @@ void CResizableLayout::ResizeForHighDpi() const
 
 	// apply high DPI scaling (this assume that dialog is loaded at default screen DPI of 96)
 	const UINT nDpi = GetWindowDpi(hParent);
-	if (nDpi == USER_DEFAULT_SCREEN_DPI || real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+	if (nDpi == USER_DEFAULT_SCREEN_DPI || real_DpiAwarenessV2)
 		return;
 
 	// Only V2 DPI aware system will resize the dialog automatically
@@ -919,7 +919,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 		// set resizable style
 		pWnd->ModifyStyle(DS_MODALFRAME, WS_THICKFRAME);
 		// adjust size to reflect new style
-		if (real_DpiAwareness == DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+		if (real_DpiAwarenessV2)
 			AdjustWindowForDpi(pWnd->GetSafeHwnd(), rect);
 		else
 			::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
