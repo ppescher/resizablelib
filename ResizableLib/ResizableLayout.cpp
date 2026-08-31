@@ -80,8 +80,8 @@ void CResizableLayout::ResizeForHighDpi() const
 	rect = CRect(rect.TopLeft(), size);
 	::MapWindowPoints(hParent, NULL, &rect.TopLeft(), 2);
 	::AdjustWindowRectEx(&rect, pParent->GetStyle(),
-		::IsMenu(pParent->GetMenu()->GetSafeHmenu()), pParent->GetExStyle());
 	
+			::IsMenu(::GetMenu(pParent->GetSafeHwnd())), pParent->GetExStyle());
 	// resize/move to new scaled rect
 	pParent->SetWindowPos(NULL, rect.left, rect.top, rect.Width(), rect.Height(),
 		SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
@@ -923,7 +923,7 @@ void CResizableLayout::MakeResizable(LPCREATESTRUCT lpCreateStruct) const
 			AdjustWindowForDpi(pWnd->GetSafeHwnd(), rect);
 		else
 			::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
-				::IsMenu(pWnd->GetMenu()->GetSafeHmenu()), pWnd->GetExStyle());
+				::IsMenu(::GetMenu(pWnd->GetSafeHwnd())), pWnd->GetExStyle());
 		pWnd->SetWindowPos(NULL, 0, 0, rect.Width(), rect.Height(),
 			SWP_NOSENDCHANGING|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREPOSITION);
 		// update dimensions

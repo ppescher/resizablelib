@@ -501,7 +501,7 @@ BOOL CResizableSheetEx::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild
 	// add non-client size
 	const DWORD dwStyle = GetStyle();
 	::AdjustWindowRectEx(&rectTabMargins, dwStyle, !(dwStyle & WS_CHILD) &&
-		::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+		::IsMenu(::GetMenu(m_hWnd)), GetExStyle());
 	// compute extra size
 	sizeExtra = rectMargins.TopLeft() + rectMargins.BottomRight() +
 		rectTabMargins.Size();
@@ -541,7 +541,7 @@ void CResizableSheetEx::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 			// add non-client size
 			const DWORD dwStyle = GetStyle();
 			::AdjustWindowRectEx(&rectExtra, dwStyle, !(dwStyle & WS_CHILD) &&
-				::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+				::IsMenu(::GetMenu(m_hWnd)), GetExStyle());
 			ChainMinMaxInfo(lpMMI, *GetPage(idx), rectExtra.Size());
 		}
 	}

@@ -125,7 +125,7 @@ void CResizableSplitterWnd::OnGetMinMaxInfo(MINMAXINFO FAR* lpMMI)
 		// add non-client size
 		CRect rectExtra(0,0,0,0);
 		::AdjustWindowRectEx(&rectExtra, GetStyle(), !(GetStyle() & WS_CHILD) &&
-			::IsMenu(GetMenu()->GetSafeHmenu()), GetExStyle());
+			::IsMenu(::GetMenu(m_hWnd)), GetExStyle());
 		sizeMax += rectExtra.Size();
 		sizeMin += rectExtra.Size();
 		// set minmax info
