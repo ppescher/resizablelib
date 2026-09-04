@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableMDIChild.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -33,6 +34,7 @@ CResizableMDIChild::CResizableMDIChild()
 {
 	m_bEnableSaveRestore = FALSE;
 	m_bRectOnly = FALSE;
+	m_nCurDpi = USER_DEFAULT_SCREEN_DPI; // MDI always starts at default DPI
 }
 
 CResizableMDIChild::~CResizableMDIChild()
@@ -105,22 +107,40 @@ void CResizableMDIChild::OnDestroy()
 	RemoveAllAnchors();
 	ResetAllRects();
 	m_bEnableSaveRestore = FALSE;
-
 	CMDIChildWnd::OnDestroy();
 }
 
 
 LRESULT CResizableMDIChild::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CMDIChildWnd::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_DPICHANGED:
+		{
+			// This is a forwarded message from the top-level window
+			// (only wParam makes sense, we calculate the new size manually)
+			UINT nNewDpi = LOWORD(wParam);
+			if (m_nCurDpi != nNewDpi)
+			{
+				ResizeWindowForDpi(m_hWnd, nNewDpi, m_nCurDpi);
+				m_nCurDpi = nNewDpi;
+			}
+		}
+		return 0;
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CMDIChildWnd::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CMDIChildWnd::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CMDIChildWnd::WindowProc(message, wParam, lParam);
 }
 
 BOOL CResizableMDIChild::OnNcCreate(LPCREATESTRUCT lpCreateStruct)

@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableMDIFrame.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -103,15 +104,30 @@ BOOL CResizableMDIFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CResizableMDIFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CMDIFrameWnd::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_DPICHANGED:
+		// forward to the view
+		for (HWND hWnd = ::GetWindow(MDIGetActive()->GetSafeHwnd(), GW_HWNDFIRST);
+			hWnd != NULL; hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT))
+		{
+			::SendMessage(hWnd, message, wParam, lParam);
+		}
+		break;
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CMDIFrameWnd::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CMDIFrameWnd::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CMDIFrameWnd::WindowProc(message, wParam, lParam);
 }
 
 void CResizableMDIFrame::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)

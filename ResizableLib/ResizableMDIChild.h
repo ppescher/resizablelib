@@ -68,6 +68,8 @@ private:
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
 
+	UINT m_nCurDpi;
+
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CResizableMDIChild)

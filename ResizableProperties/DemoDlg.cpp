@@ -17,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 CDemoDlg::CDemoDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CDemoDlg::IDD, pParent)
+	: CResizableDialog(CDemoDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CDemoDlg)
 		// NOTE: the ClassWizard will add member initialization here
@@ -27,14 +27,14 @@ CDemoDlg::CDemoDlg(CWnd* pParent /*=NULL*/)
 
 void CDemoDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	CResizableDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDemoDlg)
 		// NOTE: the ClassWizard will add DDX and DDV calls here
 	//}}AFX_DATA_MAP
 }
 
 
-BEGIN_MESSAGE_MAP(CDemoDlg, CDialog)
+BEGIN_MESSAGE_MAP(CDemoDlg, CResizableDialog)
 	//{{AFX_MSG_MAP(CDemoDlg)
 	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, OnButton2)
@@ -47,17 +47,33 @@ END_MESSAGE_MAP()
 void CDemoDlg::OnButton1() 
 {
 	// wizard mode (with help)
-	propSheet.m_psh.dwFlags |= PSH_HASHELP;
-	propSheet.m_psh.dwFlags |= PSH_WIZARD;
-	propSheet.DoModal();
+	propSheet = new CMyPropertySheet();
+	propSheet->m_psh.dwFlags |= PSH_HASHELP;
+	propSheet->m_psh.dwFlags |= PSH_WIZARD;
+	propSheet->DoModal();
+	delete propSheet;
 }
 
 void CDemoDlg::OnButton2() 
 {
 	// property sheet (without help)
-	propSheet.m_psh.dwFlags &= ~PSH_HASHELP;
-	propSheet.m_psh.dwFlags &= ~PSH_WIZARD;
-//	propSheet.EnableStackedTabs(FALSE);
-	propSheet.DoModal();
+	propSheet = new CMyPropertySheet();
+	propSheet->m_psh.dwFlags &= ~PSH_HASHELP;
+	propSheet->m_psh.dwFlags &= ~PSH_WIZARD;
+	//propSheet->EnableStackedTabs(FALSE);
+	propSheet->DoModal();
+	delete propSheet;
 }
 
+
+BOOL CDemoDlg::OnInitDialog()
+{
+	CResizableDialog::OnInitDialog();
+
+	AddAnchor(IDC_BUTTON1, TOP_CENTER);
+	AddAnchor(IDC_BUTTON2, TOP_CENTER);
+	AddAnchor(IDCANCEL, BOTTOM_CENTER);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
+}

@@ -72,20 +72,9 @@ void CResizableLayout::ResizeForHighDpi() const
 
 	// Only V2 DPI aware system will resize the dialog automatically
 	// For other High DPI modes let's do it manually!
-	CRect rect;
-	pParent->GetClientRect(rect);
-	CSize size = rect.Size();
-	size.cx = MulDiv(size.cx, nDpi, USER_DEFAULT_SCREEN_DPI);
-	size.cy = MulDiv(size.cy, nDpi, USER_DEFAULT_SCREEN_DPI);
-	rect = CRect(rect.TopLeft(), size);
-	::MapWindowPoints(hParent, NULL, &rect.TopLeft(), 2);
-	::AdjustWindowRectEx(&rect, pParent->GetStyle(),
-	
-			::IsMenu(::GetMenu(pParent->GetSafeHwnd())), pParent->GetExStyle());
-	// resize/move to new scaled rect
-	pParent->SetWindowPos(NULL, rect.left, rect.top, rect.Width(), rect.Height(),
-		SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
-	
+
+	ResizeWindowForDpi(hParent, nDpi, USER_DEFAULT_SCREEN_DPI);
+
 	// update child controls
 	HWND hWnd = ::GetWindow(hParent, GW_CHILD);
 	for (; hWnd != NULL; hWnd = ::GetNextWindow(hWnd, GW_HWNDNEXT))
@@ -102,13 +91,21 @@ void CResizableLayout::ResizeForHighDpi() const
 			}
 		}
 
-		// apply DPI scaling
+		// apply DPI scaling (avoid resizing thin objects, like lines)
+		CRect rect;
 		::GetWindowRect(hWnd, &rect);
 		::MapWindowPoints(NULL, hParent, &rect.TopLeft(), 2);
+		CSize size = rect.Size();
 		rect.left = MulDiv(rect.left, nDpi, USER_DEFAULT_SCREEN_DPI);
 		rect.top = MulDiv(rect.top, nDpi, USER_DEFAULT_SCREEN_DPI);
-		rect.right = MulDiv(rect.right, nDpi, USER_DEFAULT_SCREEN_DPI);
-		rect.bottom = MulDiv(rect.bottom, nDpi, USER_DEFAULT_SCREEN_DPI);
+		if (size.cx > 4)
+			rect.right = MulDiv(rect.right, nDpi, USER_DEFAULT_SCREEN_DPI);
+		else
+			rect.right = rect.left + size.cx;
+		if (size.cy > 4)
+			rect.bottom = MulDiv(rect.bottom, nDpi, USER_DEFAULT_SCREEN_DPI);
+		else
+			rect.bottom = rect.top + size.cy;
 		::SetWindowPos(hWnd, NULL, rect.left, rect.top, rect.Width(), rect.Height(),
 			SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
 	}
@@ -243,8 +240,18 @@ LRESULT CResizableLayout::AddAnchorCallback()
 	// size and/or position (they're updated all together at the end)
 	// it can however use a non-callback control, calling GetAnchorPosition()
 
-	// add to the list
+	if (!m_bLayoutStart)
+	{
+		ResizeForHighDpi();
+		m_bLayoutStart = TRUE;
+	}
+
 	LAYOUTINFO layout;
+
+	// initial DPI settings
+	layout.nDPI = GetWindowDpi(GetResizableWnd()->GetSafeHwnd());
+
+	// add to the list
 	layout.nCallbackID = m_listLayoutCB.GetCount() + 1;
 	m_listLayoutCB.AddTail(layout);
 	return layout.nCallbackID;
@@ -775,10 +782,17 @@ void CResizableLayout::CalcNewChildPosition(const LAYOUTINFO& layout,
 	// post-adjust for current DPI
 	if (nDPI != 0 && layout.nDPI != 0 && nDPI != layout.nDPI)
 	{
+		CSize size = rectNew.Size();
 		rectNew.left = MulDiv(rectNew.left, nDPI, layout.nDPI);
 		rectNew.top = MulDiv(rectNew.top, nDPI, layout.nDPI);
-		rectNew.right = MulDiv(rectNew.right, nDPI, layout.nDPI);
-		rectNew.bottom = MulDiv(rectNew.bottom, nDPI, layout.nDPI);
+		if (size.cx > 4)
+			rectNew.right = MulDiv(rectNew.right, nDPI, layout.nDPI);
+		else
+			rectNew.right = rectNew.left + size.cx;
+		if (size.cy > 4)
+			rectNew.bottom = MulDiv(rectNew.bottom, nDPI, layout.nDPI);
+		else
+			rectNew.bottom = rectNew.top + size.cy;
 	}
 
 	// adjust position, if client area has been scrolled

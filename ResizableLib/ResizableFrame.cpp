@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableFrame.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -101,15 +102,30 @@ BOOL CResizableFrame::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CResizableFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CFrameWnd::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_DPICHANGED:
+	{
+		// forward to the view
+		CView* pView = GetActiveView();
+		if (pView)
+			pView->SendMessage(message, wParam, lParam);
+		break;
+	}
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CFrameWnd::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CFrameWnd::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CFrameWnd::WindowProc(message, wParam, lParam);
 }
 
 // TODO: implement this in CResizableMinMax

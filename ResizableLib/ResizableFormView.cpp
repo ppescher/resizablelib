@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableFormView.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -176,18 +177,30 @@ void CResizableFormView::OnDestroy()
 
 LRESULT CResizableFormView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message == WM_INITDIALOG)
-		return static_cast<LRESULT>(OnInitDialog());
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return OnInitDialog();
 
-	if (message != WM_NCCALCSIZE || wParam == 0)
-		return CFormView::WindowProc(message, wParam, lParam);
+	case WM_DPICHANGED:
+		// update grip and layout
+		ArrangeLayout();
+		UpdateSizeGrip();
+		break;
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CFormView::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CFormView::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CFormView::WindowProc(message, wParam, lParam);
 }
 
 BOOL CResizableFormView::OnInitDialog()

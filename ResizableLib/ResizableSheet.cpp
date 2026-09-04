@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableSheet.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -93,6 +94,7 @@ BOOL CResizableSheet::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 		return FALSE;
 
 	MakeResizable(lpCreateStruct);
+	m_nCurDpi = GetWindowDpi(m_hWnd);
 
 	return TRUE;
 }
@@ -138,6 +140,12 @@ const int _propButtonsCount = sizeof(_propButtons)/sizeof(UINT);
 
 void CResizableSheet::PresetLayout()
 {
+	// add a callback for active page (which can change at run-time)
+	m_nCallbackID = AddAnchorCallback();
+
+	// this also starts layout and update DPI scaling before we do any
+	// other calculation based on the parent or child controls dimensions
+
 	// set the initial size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
@@ -227,9 +235,6 @@ void CResizableSheet::PresetLayout()
 		AddAnchor(AFX_IDC_TAB_CONTROL, TOP_LEFT, BOTTOM_RIGHT);
 	}
 
-	// add a callback for active page (which can change at run-time)
-	m_nCallbackID = AddAnchorCallback();
-
 	// prevent flickering
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 }
@@ -269,6 +274,9 @@ BOOL CResizableSheet::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 		// set margins
 		layout.marginTopLeft = rectPage.TopLeft() - rectSheet.TopLeft();
 		layout.marginBottomRight = rectPage.BottomRight() - rectSheet.BottomRight();
+
+		// do not apply DPI scaling, final rect is determined by the Tab control
+		layout.nDPI = 0;
 	}
 
 	// set anchor types
@@ -464,13 +472,40 @@ void CResizableSheet::RefreshLayout()
 
 LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
-		return CPropertySheet::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_GETDPISCALEDSIZE:
+		{
+			UINT nNewDpi = LOWORD(wParam);
+			if (nNewDpi == m_nCurDpi) 
+				break; // nothing to do
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CPropertySheet::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+			// Replace default rescaling for V2 DPI awareness
+			// (default calculated size is different from other DPI modes)
+			CRect rect = CalcResizedWindowForDpi(m_hWnd, nNewDpi, m_nCurDpi);
+			*(LPSIZE)lParam = rect.Size();
+		}
+		return TRUE;
+
+	case WM_DPICHANGED:
+		// update current DPI
+		m_nCurDpi = LOWORD(wParam);
+		// update grip and layout
+		ArrangeLayout();
+		UpdateSizeGrip();
+		break;
+
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE && m_bLayoutDone)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CPropertySheet::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CPropertySheet::WindowProc(message, wParam, lParam);
 }

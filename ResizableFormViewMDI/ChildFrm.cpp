@@ -64,12 +64,12 @@ void CChildFrame::Dump(CDumpContext& dc) const
 
 void CChildFrame::ActivateFrame(int nCmdShow) 
 {
-	if ( EnableSaveRestore(_T("Demo MDI Frame")) )
-	{
-		// if correctly restored, activate window and return
-		MDIActivate();
-		return;
-	}
+	//if ( EnableSaveRestore(_T("Demo MDI Frame")) )
+	//{
+	//	// if correctly restored, activate window and return
+	//	MDIActivate();
+	//	return;
+	//}
 
 	CResizableMDIChild::ActivateFrame(nCmdShow);
 }

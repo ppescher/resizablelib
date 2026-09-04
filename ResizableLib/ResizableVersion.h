@@ -58,6 +58,7 @@ void InitAppSettings();
 
 #ifndef WM_DPICHANGED
 #define WM_DPICHANGED				0x02E0
+#define WM_GETDPISCALEDSIZE			0x02E4
 #endif
 
 // sent to child windows after the parent handled WM_DPICHANGED
@@ -70,7 +71,9 @@ void InitAppSettings();
 #endif
 
 UINT GetWindowDpi(HWND hWnd);
-BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect);
+BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect, UINT nDpi = 0);
 CSize GetSizeGripMetrics(HWND hWnd);
+CRect CalcResizedWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi);
+void ResizeWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi);
 
 #endif // !defined(AFX_RESIZABLEVERSION_H__INCLUDED_)

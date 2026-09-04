@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizableDialogEx.h"
+#include "ResizableVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -190,14 +191,27 @@ BOOL CResizableDialogEx::OnEraseBkgnd(CDC* pDC)
 
 LRESULT CResizableDialogEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (m_hBkgrBitmap != NULL || message != WM_NCCALCSIZE || wParam == 0)
-		return CDialogEx::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_DPICHANGED:
+		// update grip and layout
+		ArrangeLayout();
+		UpdateSizeGrip();
+		break;
 
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CDialogEx::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE && m_hBkgrBitmap == NULL)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CDialogEx::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CDialogEx::WindowProc(message, wParam, lParam);
 }
 
 HBRUSH CResizableDialogEx::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT /*nCtlColor*/)

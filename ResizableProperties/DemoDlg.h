@@ -7,11 +7,12 @@
 // DemoDlg.h : header file
 //
 #include "MyPropertySheet.h"
+#include "ResizableDialog.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CDemoDlg dialog
 
-class CDemoDlg : public CDialog
+class CDemoDlg : public CResizableDialog
 {
 // Construction
 public:
@@ -33,7 +34,7 @@ public:
 
 // Implementation
 protected:
-	CMyPropertySheet propSheet;
+	CMyPropertySheet* propSheet;
 
 	// Generated message map functions
 	//{{AFX_MSG(CDemoDlg)
@@ -41,6 +42,8 @@ protected:
 	afx_msg void OnButton2();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	virtual BOOL OnInitDialog();
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -280,7 +280,7 @@ UINT GetWindowDpi(HWND hWnd)
 	return USER_DEFAULT_SCREEN_DPI;
 }
 
-BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect)
+BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect, UINT nDpi)
 {
 	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);
 	typedef BOOL(WINAPI* PFNADJUSTWINDOWRECTEXFORDPI)(
@@ -297,7 +297,8 @@ BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect)
 
 	if (hWnd != NULL && pfnAdjustWindowRectExForDpi != NULL)
 	{
-		const UINT nDpi = GetWindowDpi(hWnd);
+		if (nDpi == 0)
+			nDpi = GetWindowDpi(hWnd);
 		if (pfnAdjustWindowRectExForDpi(lpRect, ::GetWindowLong(hWnd, GWL_STYLE),
 			::IsMenu(::GetMenu(hWnd)), ::GetWindowLong(hWnd, GWL_EXSTYLE), nDpi))
 			return TRUE;
@@ -305,4 +306,99 @@ BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect)
 
 	return ::AdjustWindowRectEx(lpRect, ::GetWindowLong(hWnd, GWL_STYLE),
 		::IsMenu(::GetMenu(hWnd)), ::GetWindowLong(hWnd, GWL_EXSTYLE));
+}
+
+CRect CalcResizedWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi)
+{
+	CWnd* pWnd = CWnd::FromHandle(hWnd);
+	DWORD dwStyleEx = pWnd->GetExStyle();
+	DWORD dwChildStyleEx = ::GetWindowLong(pWnd->GetWindow(GW_CHILD)->GetSafeHwnd(), GWL_EXSTYLE);
+
+	CRect rect;
+	CRect rcBorder;
+	// fix automatic resize done by V2 DPI system
+	if (real_DpiAwarenessV2 && nNewDpi > nCurDpi)
+	{
+		// non-client area has been resized already, but we want to know
+		// the original client area before DPI changed, to correct calculation
+		AdjustWindowForDpi(hWnd, rect, nNewDpi);
+		AdjustWindowForDpi(hWnd, rcBorder, nCurDpi);
+		rcBorder.SetRect(rcBorder.left - rect.left, rcBorder.top - rect.top,
+			rect.right - rcBorder.right, rect.bottom - rcBorder.bottom);
+	}
+
+	// get position relative to parent
+	pWnd->GetWindowRect(rect);
+	if (dwStyleEx & WS_EX_MDICHILD)
+		::MapWindowPoints(NULL, ::GetParent(hWnd), &rect.TopLeft(), 2);
+	// keep aligned to top-left corner
+	CPoint pt = rect.TopLeft();
+
+	// get client area (correct for MDI frame client edge)
+	pWnd->GetClientRect(rect);
+	if ((dwStyleEx & WS_EX_MDICHILD) && (dwChildStyleEx & WS_EX_CLIENTEDGE))
+		rect.DeflateRect(2, 2);
+
+	// apply correction only to MDI child windows
+	if (dwStyleEx & WS_EX_MDICHILD)
+		rect.InflateRect(rcBorder);
+
+	// rescale for target DPI
+	CSize size = rect.Size();
+	size.cx = MulDiv(size.cx, nNewDpi, nCurDpi);
+	size.cy = MulDiv(size.cy, nNewDpi, nCurDpi);
+	rect = CRect(rect.TopLeft(), size);
+
+	// add frame borders for top-level window or MDI child
+	if (!(pWnd->GetStyle() & WS_CHILD))
+	{
+		::MapWindowPoints(hWnd, NULL, &rect.TopLeft(), 2);
+		::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
+			::IsMenu(::GetMenu(hWnd)), pWnd->GetExStyle());
+	}
+	else
+	{
+		if (dwStyleEx & WS_EX_MDICHILD)
+		{
+			// correct for MDI frame client edge
+			if (dwChildStyleEx & WS_EX_CLIENTEDGE)
+				rect.InflateRect(2, 2);
+			// add borders
+			::AdjustWindowRectEx(&rect, pWnd->GetStyle(),
+				::IsMenu(::GetMenu(hWnd)), dwStyleEx);
+			// keep top left position
+			rect.MoveToXY(pt);
+		}
+		else
+			::MapWindowPoints(hWnd, ::GetParent(hWnd), &rect.TopLeft(), 2);
+	}
+	return rect;
+}
+
+void ResizeWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi)
+{
+	CWnd* pWnd = CWnd::FromHandle(hWnd);
+
+	BOOL bMaximized = pWnd->IsZoomed();
+	if (bMaximized)
+	{
+		// window already maximized needs to be resized
+		// but we need to do it on the normal rect, so that it looks
+		// good also when restored to normal
+		pWnd->SetRedraw(FALSE);
+		pWnd->ShowWindow(SW_RESTORE);
+	}
+
+	CRect rect = CalcResizedWindowForDpi(hWnd, nNewDpi, nCurDpi);
+
+	// resize/move to new scaled rect
+	pWnd->SetWindowPos(NULL, rect.left, rect.top, rect.Width(), rect.Height(),
+		SWP_NOSENDCHANGING | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOREPOSITION);
+
+	if (bMaximized)
+	{
+		// back to maximized state if required
+		pWnd->ShowWindow(SW_SHOWMAXIMIZED);
+		pWnd->SetRedraw(TRUE);
+	}
 }

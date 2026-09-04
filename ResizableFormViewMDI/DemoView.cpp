@@ -104,12 +104,14 @@ CDemoDoc* CDemoView::GetDocument() // non-debug version is inline
 
 void CDemoView::OnButton2() 
 {
+	if (GetParentFrame()->IsZoomed()) return;
 	FormViewToDialog();
 	UpdateSizeGrip();
 }
 
 void CDemoView::OnButton1() 
 {
+	if (GetParentFrame()->IsZoomed()) return;
 	DialogToFormView();
 	UpdateSizeGrip();
 }
@@ -120,7 +122,7 @@ void CDemoView::FormViewToDialog()
 	// estimate new window's size
 	CRect rect;
 	GetTotalClientRect(&rect);	// uses GetTotalSize()
-	DWORD style = pParent->GetStyle() & ~WS_THICKFRAME | WS_DLGFRAME;
+	DWORD style = pParent->GetStyle() & ~(WS_CHILD | WS_THICKFRAME) | WS_DLGFRAME;
 	::AdjustWindowRect(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())));
 	// change style and size
 	pParent->ModifyStyle(WS_THICKFRAME, WS_DLGFRAME);
@@ -135,7 +137,7 @@ void CDemoView::DialogToFormView()
 	// estimate new window's size
 	CRect rect;
 	GetTotalClientRect(&rect);	// uses GetTotalSize()
-	DWORD style = pParent->GetStyle() & ~WS_DLGFRAME | WS_THICKFRAME|WS_CAPTION;
+	DWORD style = pParent->GetStyle() & ~(WS_CHILD | WS_DLGFRAME) | WS_THICKFRAME | WS_CAPTION;
 	::AdjustWindowRectEx(&rect, style, ::IsMenu(::GetMenu(pParent->GetSafeHwnd())),
 		WS_EX_CLIENTEDGE);
 	// change style and size

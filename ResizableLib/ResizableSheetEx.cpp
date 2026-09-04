@@ -107,6 +107,7 @@ BOOL CResizableSheetEx::OnNcCreate(LPCREATESTRUCT lpCreateStruct)
 		return FALSE;
 
 	MakeResizable(lpCreateStruct);
+	m_nCurDpi = GetWindowDpi(m_hWnd);
 
 	return TRUE;
 }
@@ -189,6 +190,12 @@ const int _propButtonsCount = sizeof(_propButtons)/sizeof(UINT);
 
 void CResizableSheetEx::PresetLayout()
 {
+	// add a callback for active page (which can change at run-time)
+	m_nCallbackID = AddAnchorCallback();
+
+	// this also starts layout and update DPI scaling before we do any
+	// other calculation based on the parent or child controls dimensions
+
 	// set the initial size as the min track size
 	CRect rc;
 	GetWindowRect(&rc);
@@ -264,6 +271,8 @@ void CResizableSheetEx::PresetLayout()
 
 		// hide tab control and keep it hidden
 		GetTabControl()->ShowWindow(SW_HIDE);
+		rect = CRect(); // zero size won't get DPI scaling
+		GetTabControl()->MoveWindow(rect, FALSE);
 		AddAnchor(AFX_IDC_TAB_CONTROL, TOP_LEFT);
 
 		// pre-calculate margins
@@ -282,9 +291,6 @@ void CResizableSheetEx::PresetLayout()
 		AddAnchor(AFX_IDC_TAB_CONTROL, TOP_LEFT, BOTTOM_RIGHT);
 	}
 
-	// add a callback for active page (which can change at run-time)
-	m_nCallbackID = AddAnchorCallback();
-
 	// prevent flickering
 	GetTabControl()->ModifyStyle(0, WS_CLIPSIBLINGS);
 }
@@ -298,6 +304,10 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 	layout.hWnd = (HWND)::SendMessage(GetSafeHwnd(), PSM_GETCURRENTPAGEHWND, 0, 0);
 	if (!::IsWindow(layout.hWnd))
 		return FALSE;
+
+	// set anchor types
+	layout.anchorTopLeft = TOP_LEFT;
+	layout.anchorBottomRight = BOTTOM_RIGHT;
 
 	// set margins
 	if (IsWizard())	// wizard mode
@@ -320,6 +330,13 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 			GetAnchorPosition(ID_WIZLINEHDR, rectSheet, rectLine);
 
 			layout.marginTopLeft.cy = rectLine.bottom;
+			
+			// pre-compensate for different DPI
+			UINT nDPI = GetWindowDpi(layout.hWnd);
+			if (nDPI != 0 && layout.nDPI != 0 && nDPI != layout.nDPI)
+			{
+				layout.marginTopLeft.cy = MulDiv(layout.marginTopLeft.cy, layout.nDPI, nDPI);
+			}
 		}
 	}
 	else	// tab mode
@@ -347,11 +364,10 @@ BOOL CResizableSheetEx::ArrangeLayoutCallback(LAYOUTINFO &layout) const
 		// set margins
 		layout.marginTopLeft = rectPage.TopLeft() - rectSheet.TopLeft();
 		layout.marginBottomRight = rectPage.BottomRight() - rectSheet.BottomRight();
-	}
 
-	// set anchor types
-	layout.anchorTopLeft = TOP_LEFT;
-	layout.anchorBottomRight = BOTTOM_RIGHT;
+		// do not apply DPI scaling, final rect is determined by the Tab control
+		layout.nDPI = 0;
+	}
 
 	// use this layout info
 	return TRUE;
@@ -624,13 +640,38 @@ void CResizableSheetEx::RefreshLayout()
 
 LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (message != WM_NCCALCSIZE || wParam == 0 || !m_bLayoutDone)
-		return CPropertySheetEx::WindowProc(message, wParam, lParam);
+	switch (message)
+	{
+	case WM_GETDPISCALEDSIZE:
+		{
+			// Replace default rescaling for V2 DPI awareness
+			// (calculated size is very different from other DPI modes)
+			UINT nNewDpi = LOWORD(wParam);
+			CRect rect = CalcResizedWindowForDpi(m_hWnd, nNewDpi, m_nCurDpi);
+			*(LPSIZE)lParam = rect.Size();
+		}
+		return TRUE;
 
-	// specifying valid rects needs controls already anchored
-	LRESULT lResult = 0;
-	HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	lResult = CPropertySheetEx::WindowProc(message, wParam, lParam);
-	HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
-	return lResult;
+	case WM_DPICHANGED:
+		// update current DPI
+		m_nCurDpi = LOWORD(wParam);
+		// update grip and layout
+		ArrangeLayout();
+		UpdateSizeGrip();
+		// don't process further to use calculated size (don't ask why)
+		return 0;
+
+	case WM_NCCALCSIZE:
+		// improve client area validation to reduce flickering
+		if (wParam != FALSE && m_bLayoutDone)
+		{
+			LRESULT lResult = 0;
+			HandleNcCalcSize(FALSE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			lResult = CPropertySheetEx::WindowProc(message, wParam, lParam);
+			HandleNcCalcSize(TRUE, (LPNCCALCSIZE_PARAMS)lParam, lResult);
+			return lResult;
+		}
+		break;
+	}
+	return CPropertySheetEx::WindowProc(message, wParam, lParam);
 }

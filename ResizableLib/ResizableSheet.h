@@ -59,6 +59,8 @@ private:
 	// internal status
 	CString m_sSection;			// section name (identifies a parent window)
 
+	UINT m_nCurDpi;
+
 	// cached tab rects
 	mutable CRect m_rectLastPage, m_rectLastAjustedPage, m_rectLastTabMargins;
 
