@@ -50,8 +50,6 @@ void CResizableGrip::UpdateSizeGrip()
 	CWnd* pParent = GetResizableWnd();
 
 	CSize size = m_wndGrip.m_size;
-	//if (!real_DpiAwarenessV2)
-	//	size = GetSizeGripMetrics(pParent->GetSafeHwnd());
 
 	// size-grip goes bottom right in the client area
 	// (any right-to-left adjustment should go here)
@@ -231,7 +229,7 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 			// reposition/resize the grip
 			CWnd* pParent = GetParent();
 			CSize size = GetSizeGripMetrics(pParent->GetSafeHwnd());
-			if (size == m_size)
+			if (size == m_size || !real_DpiAwarenessV2)
 				break;
 			CRect rect;
 			pParent->GetClientRect(rect);
@@ -261,15 +259,8 @@ LRESULT CResizableGrip::CSizeGrip::WindowProc(UINT message,
 
 			// obtain original grip bitmap, make the mask and prepare masked bitmap
 			CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
-			// get transparent color from the background (top left not always available)
-			COLORREF colorBack = m_dcGrip.GetPixel(m_size.cx / 2 - 1, m_size.cy / 2 - 1);
-			if (!real_DpiAwarenessV2)
-			{
-				// scrollbar does not draw larger area on high DPI display
-				// but it's bottom-right aligned, let's fill it with background color
-				m_dcGrip.FillSolidRect(0, 0, m_size.cx, m_size.cy, colorBack);
-				CScrollBar::WindowProc(message, (WPARAM)m_dcGrip.GetSafeHdc(), lParam);
-			}
+			// get transparent color from the background
+			COLORREF colorBack = m_dcGrip.GetPixel(0, 0);
 			// prepare mask and the bitmap
 			m_dcGrip.SetBkColor(colorBack);
 			m_dcMask.BitBlt(0, 0, m_size.cx, m_size.cy, &m_dcGrip, 0, 0, SRCCOPY);
