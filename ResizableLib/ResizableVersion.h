@@ -73,6 +73,7 @@ void InitAppSettings();
 UINT GetWindowDpi(HWND hWnd);
 BOOL AdjustWindowForDpi(HWND hWnd, LPRECT lpRect, UINT nDpi = 0);
 CSize GetSizeGripMetrics(HWND hWnd);
+BOOL GetSystemParametersInfo(HWND hWnd, UINT uiAction, LPNONCLIENTMETRICS pvParam);
 CRect CalcResizedWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi);
 void ResizeWindowForDpi(HWND hWnd, UINT nNewDpi, UINT nCurDpi);
 

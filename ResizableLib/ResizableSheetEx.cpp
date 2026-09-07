@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(CResizableSheetEx, CPropertySheetEx)
 	ON_WM_SIZE()
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
+	ON_WM_PAINT()
 	ON_WM_NCCREATE()
 	//}}AFX_MSG_MAP
 	ON_NOTIFY_REFLECT_EX(PSN_SETACTIVE, OnPageChanging)
@@ -407,6 +408,36 @@ BOOL CResizableSheetEx::OnPageChanging(NMHDR* /*pNotifyStruct*/, LRESULT* /*pRes
 	return FALSE;	// continue routing
 }
 
+void CResizableSheetEx::DrawHeaderText(CDC* pDC, const CRect& rect)
+{
+	// get system font
+	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
+	if (real_DpiAwarenessV2)
+		GetSystemParametersInfo(m_hWnd, SPI_GETNONCLIENTMETRICS, &ncm);
+	else
+		SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
+	// create fonts, with bold variant
+	CFont fontTitle, fontSubTitle;
+	fontSubTitle.CreateFontIndirect(&ncm.lfMenuFont);
+	ncm.lfMenuFont.lfWeight += 300;
+	fontTitle.CreateFontIndirect(&ncm.lfMenuFont);
+	// draw title and sub-title
+	CRect rc(14, 6, 0, 0);
+	MapDialogRect(rc);
+	rc.right = rect.right;
+	rc.bottom = rect.bottom;
+	pDC->SetBkMode(TRANSPARENT);
+	int idx = GetActiveIndex();
+	CFont* pOld = pDC->SelectObject(&fontTitle);
+	pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT | DT_CALCRECT);
+	pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT);
+	rc.OffsetRect(rc.left, rc.Height());
+	pDC->SelectObject(&fontSubTitle);
+	pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT | DT_CALCRECT);
+	pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT);
+	pDC->SelectObject(pOld);
+}
+
 BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 {
 	CRect rect;
@@ -444,29 +475,7 @@ BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 			{
 				pDC->FillSolidRect(&rect, ::GetSysColor(COLOR_WINDOW));
 			}
-			// get system font
-			NONCLIENTMETRICS ncm = {sizeof(NONCLIENTMETRICS)};
-			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
-			// create fonts, with bold variant
-			CFont fontTitle, fontSubTitle;
-			fontSubTitle.CreateFontIndirect(&ncm.lfMenuFont);
-			ncm.lfMenuFont.lfWeight += 300;
-			fontTitle.CreateFontIndirect(&ncm.lfMenuFont);
-			// draw title and sub-title
-			CRect rc(14, 6, 0, 0);
-			MapDialogRect(rc);
-			rc.right = rect.right;
-			rc.bottom = rect.bottom;
-			pDC->SetBkMode(TRANSPARENT);
-			int idx = GetActiveIndex();
-			CFont* pOld = pDC->SelectObject(&fontTitle);
-			pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT | DT_CALCRECT);
-			pDC->DrawText(m_psh.ppsp[idx].pszHeaderTitle, rc, DT_LEFT);
-			rc.OffsetRect(rc.left, rc.Height());
-			pDC->SelectObject(&fontSubTitle);
-			pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT | DT_CALCRECT);
-			pDC->DrawText(m_psh.ppsp[idx].pszHeaderSubTitle, rc, DT_LEFT);
-			pDC->SelectObject(pOld);
+			DrawHeaderText(pDC, rect);
 		}
 	}
 	if (ClipChildren(pDC, FALSE))
@@ -484,6 +493,45 @@ BOOL CResizableSheetEx::OnEraseBkgnd(CDC* pDC)
 	ClipChildren(pDC, TRUE);
 
 	return bRet;
+}
+
+void CResizableSheetEx::OnPaint()
+{
+	CPaintDC dcPaint(this);
+	CPaintDC* pDC = &dcPaint;
+
+	CRect rect;
+	if (m_psh.dwFlags & PSH_IE5WIZARD97)
+	{
+		// get header area
+		GetHeaderRect(rect);
+		// implement header rescaling
+		if (rect.Width() > 0)
+		{
+			pDC->FillSolidRect(&rect, ::GetSysColor(COLOR_WINDOW));
+			if (m_psh.dwFlags & PSH_USEHBMHEADER)
+			{
+				CBitmap* pHdr = CBitmap::FromHandle(m_psh.hbmHeader);
+				rect.DeflateRect(5, 5);
+				rect.left = rect.right - rect.Height() - 1;
+				rect.bottom += 1;
+
+				BITMAP bmp;
+				if (pHdr->GetBitmap(&bmp))
+				{
+					CDC dc;
+					dc.CreateCompatibleDC(pDC);
+					CBitmap* pOld = dc.SelectObject(pHdr);
+					int nOld = pDC->SetStretchBltMode(HALFTONE);
+					SetBrushOrgEx(pDC->GetSafeHdc(), 0, 0, NULL);
+					pDC->StretchBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+					pDC->SetStretchBltMode(nOld);
+					dc.SelectObject(pOld);
+				}
+			}
+			DrawHeaderText(pDC, rect);
+		}
+	}
 }
 
 BOOL CResizableSheetEx::CalcSizeExtra(HWND /*hWndChild*/, const CSize& sizeChild, CSize& sizeExtra)

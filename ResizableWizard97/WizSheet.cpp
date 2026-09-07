@@ -53,7 +53,7 @@ CWizard97Sheet::CWizard97Sheet(BOOL bOldStyle)
 		AddPage(&m_CompletionNew);
 
 	// use the right flag for Wizard97 style
-	m_psh.dwFlags |= bOldStyle ? PSH_IE4WIZARD97 | PSH_STRETCHWATERMARK : PSH_IE5WIZARD97 | PSH_STRETCHWATERMARK;
+	m_psh.dwFlags |= bOldStyle ? PSH_IE4WIZARD97|PSH_STRETCHWATERMARK : PSH_IE5WIZARD97;
 }
 
 CWizard97Sheet::~CWizard97Sheet()

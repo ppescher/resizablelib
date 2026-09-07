@@ -261,6 +261,102 @@ CSize GetSizeGripMetrics(HWND hWnd)
 	return CSize(::GetSystemMetrics(SM_CXVSCROLL), ::GetSystemMetrics(SM_CYHSCROLL));
 }
 
+static void CopyLogFontW2A(LPLOGFONTA lpFontA, LPLOGFONTW lpFontW)
+{
+	memcpy(lpFontA, lpFontW, (LPBYTE)&lpFontW->lfFaceName - (LPBYTE)lpFontW);
+	WideCharToMultiByte(CP_ACP, 0, lpFontW->lfFaceName, LF_FACESIZE, lpFontA->lfFaceName, LF_FACESIZE, NULL, NULL);
+}
+
+BOOL GetSystemParametersInfo(HWND hWnd, UINT uiAction, LPNONCLIENTMETRICS pvParam)
+{
+	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);
+	typedef int (WINAPI* PFNSYSTEMPARAMETERSINFOFORDPI)(UINT, UINT, PVOID, UINT, UINT);
+
+	static HMODULE hUser32 = ::GetModuleHandle(_T("user32.dll"));
+	static PFNGETDPIFORWINDOW pfnGetDpiForWindow =
+		(PFNGETDPIFORWINDOW)::GetProcAddress(hUser32, "GetDpiForWindow");
+	static PFNSYSTEMPARAMETERSINFOFORDPI pfnSystemParametersInfoForDpi =
+		(PFNSYSTEMPARAMETERSINFOFORDPI)::GetProcAddress(hUser32, "SystemParametersInfoForDpi");
+
+	if (hWnd != NULL && pfnGetDpiForWindow != NULL && pfnSystemParametersInfoForDpi != NULL)
+	{
+		const UINT nDpi = pfnGetDpiForWindow(hWnd);
+		if (nDpi != 0)
+		{
+			typedef struct tagNCMETRICSW
+			{
+				UINT    cbSize;
+				int     iBorderWidth;
+				int     iScrollWidth;
+				int     iScrollHeight;
+				int     iCaptionWidth;
+				int     iCaptionHeight;
+				LOGFONTW lfCaptionFont;
+				int     iSmCaptionWidth;
+				int     iSmCaptionHeight;
+				LOGFONTW lfSmCaptionFont;
+				int     iMenuWidth;
+				int     iMenuHeight;
+				LOGFONTW lfMenuFont;
+				LOGFONTW lfStatusFont;
+				LOGFONTW lfMessageFont;
+				int     iPaddedBorderWidth;
+			}   NCMETRICSW;
+			NCMETRICSW ncm = { 0 };
+			ncm.cbSize = sizeof(ncm);
+			if (pfnSystemParametersInfoForDpi(uiAction, ncm.cbSize, &ncm, 0, nDpi))
+			{
+				switch (pvParam->cbSize)
+				{
+#ifdef UNICODE
+					case sizeof(NONCLIENTMETRICSW) :
+					pvParam->iBorderWidth = ncm.iBorderWidth;
+					pvParam->iScrollWidth = ncm.iScrollWidth;
+					pvParam->iScrollHeight = ncm.iScrollHeight;
+					pvParam->iCaptionWidth = ncm.iCaptionWidth;
+					pvParam->iCaptionHeight = ncm.iCaptionHeight;
+					pvParam->iSmCaptionWidth = ncm.iSmCaptionWidth;
+					pvParam->iSmCaptionHeight = ncm.iSmCaptionHeight;
+					pvParam->iMenuWidth = ncm.iMenuWidth;
+					pvParam->iMenuHeight = ncm.iMenuHeight;
+#if(WINVER >= 0x0600)
+					pvParam->iPaddedBorderWidth = ncm.iPaddedBorderWidth;
+#endif
+					pvParam->lfCaptionFont = ncm.lfCaptionFont;
+					pvParam->lfSmCaptionFont = ncm.lfSmCaptionFont;
+					pvParam->lfMenuFont = ncm.lfMenuFont;
+					pvParam->lfStatusFont = ncm.lfStatusFont;
+					pvParam->lfMessageFont = ncm.lfMessageFont;
+					return TRUE;
+#else
+				case sizeof(NONCLIENTMETRICSA) :
+					pvParam->iBorderWidth = ncm.iBorderWidth;
+					pvParam->iScrollWidth = ncm.iScrollWidth;
+					pvParam->iScrollHeight = ncm.iScrollHeight;
+					pvParam->iCaptionWidth = ncm.iCaptionWidth;
+					pvParam->iCaptionHeight = ncm.iCaptionHeight;
+					pvParam->iSmCaptionWidth = ncm.iSmCaptionWidth;
+					pvParam->iSmCaptionHeight = ncm.iSmCaptionHeight;
+					pvParam->iMenuWidth = ncm.iMenuWidth;
+					pvParam->iMenuHeight = ncm.iMenuHeight;
+#if(WINVER >= 0x0600)
+					pvParam->iPaddedBorderWidth = ncm.iPaddedBorderWidth;
+#endif
+					CopyLogFontW2A(&pvParam->lfCaptionFont, &ncm.lfCaptionFont);
+					CopyLogFontW2A(&pvParam->lfSmCaptionFont, &ncm.lfSmCaptionFont);
+					CopyLogFontW2A(&pvParam->lfMenuFont, &ncm.lfMenuFont);
+					CopyLogFontW2A(&pvParam->lfStatusFont, &ncm.lfStatusFont);
+					CopyLogFontW2A(&pvParam->lfMessageFont, &ncm.lfMessageFont);
+					return TRUE;
+#endif
+				}
+			}
+		} 
+	}
+
+	return SystemParametersInfo(uiAction, pvParam->cbSize, pvParam, 0);
+}
+
 UINT GetWindowDpi(HWND hWnd)
 {
 	typedef UINT(WINAPI* PFNGETDPIFORWINDOW)(HWND);

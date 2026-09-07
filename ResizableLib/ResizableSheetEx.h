@@ -90,6 +90,8 @@ private:
 	BOOL IsWizard() const;
 	BOOL IsWizard97() const;
 
+	void DrawHeaderText(CDC* pDC, const CRect& rect);
+
 // callable from derived classes
 protected:
 	void RefreshLayout();
@@ -117,6 +119,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDestroy();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnPaint();
 	afx_msg BOOL OnNcCreate(LPCREATESTRUCT lpCreateStruct);
 	//}}AFX_MSG
 	afx_msg BOOL OnPageChanging(NMHDR* pNotifyStruct, LRESULT* pResult);
