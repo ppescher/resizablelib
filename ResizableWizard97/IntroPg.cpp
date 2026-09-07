@@ -73,17 +73,26 @@ BOOL CIntroPage::OnInitDialog()
 	AddAnchor(IDC_TRANSPARENT3, BOTTOM_LEFT);
 	AddAnchor(IDC_EDIT1, BOTTOM_LEFT, BOTTOM_RIGHT);
 
+	OnDpiChanged(0); // update fonts to bold style
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+}
+
+void CIntroPage::OnDpiChanged(UINT nDpi)
+{
+	UNREFERENCED_PARAMETER(nDpi);
+
 	LOGFONT lf;
 	GetDlgItem(IDC_BOLDTITLE)->GetFont()->GetLogFont(&lf);
-	
+
 	lf.lfWeight = FW_BOLD;
+	m_fontTitle.DeleteObject();
 	m_fontTitle.CreateFontIndirect(&lf);
 	GetDlgItem(IDC_BOLDTITLE)->SetFont(&m_fontTitle);
 
 	lf.lfWeight = FW_BOLD;
 	lf.lfHeight *= 2;
+	m_fontBig.DeleteObject();
 	m_fontBig.CreateFontIndirect(&lf);
 	GetDlgItem(IDC_BIGBOLDTITLE)->SetFont(&m_fontBig);
-
-	return TRUE;  // return TRUE unless you set the focus to a control
 }

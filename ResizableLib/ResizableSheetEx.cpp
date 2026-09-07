@@ -692,9 +692,12 @@ LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam
 	{
 	case WM_GETDPISCALEDSIZE:
 		{
-			// Replace default rescaling for V2 DPI awareness
-			// (calculated size is very different from other DPI modes)
 			UINT nNewDpi = LOWORD(wParam);
+			if (nNewDpi == m_nCurDpi)
+				break; // nothing to do
+
+			// Replace default rescaling for V2 DPI awareness
+			// (default calculated size is different from other DPI modes)
 			CRect rect = CalcResizedWindowForDpi(m_hWnd, nNewDpi, m_nCurDpi);
 			*(LPSIZE)lParam = rect.Size();
 		}
@@ -703,10 +706,18 @@ LRESULT CResizableSheetEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam
 	case WM_DPICHANGED:
 		// update current DPI
 		m_nCurDpi = LOWORD(wParam);
+		OnDpiChanged(m_nCurDpi);
+		for (int i = 0; i < m_pages.GetSize(); i++)
+		{
+			// check page[i] for a match
+			CPropertyPage* pPage = GetPage(i);
+			if (::IsWindow(pPage->GetSafeHwnd()))
+				pPage->SendMessage(message, wParam, lParam);
+		}
 		// update grip and layout
 		ArrangeLayout();
 		UpdateSizeGrip();
-		// don't process further to use calculated size (don't ask why)
+		// don't process further to use correct size (don't ask why)
 		return 0;
 
 	case WM_NCCALCSIZE:
