@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "ResizablePageEx.h"
+#include "ResizableSheetEx.h"
 #include "ResizableVersion.h"
 
 #ifdef _DEBUG
@@ -78,6 +79,35 @@ BOOL CResizablePageEx::OnEraseBkgnd(CDC* pDC)
 	ClipChildren(pDC, FALSE);
 
 	BOOL bRet = CPropertyPageEx::OnEraseBkgnd(pDC);
+
+	// resize watermark bitmap on High DPI (overwrite)
+	CPropertySheet* pSheet = DYNAMIC_DOWNCAST(CPropertySheet, GetParent());
+	if ((pSheet->m_psh.dwFlags & CResizableSheetEx::PSH_IE5WIZARD97) 
+		&& (pSheet->m_psh.dwFlags & PSH_USEHBMWATERMARK)
+		&& (m_psp.dwFlags & PSP_HIDEHEADER))
+	{
+		UINT nDPI = GetWindowDpi(m_hWnd);
+		CBitmap* pBitmap = CBitmap::FromHandle(pSheet->m_psh.hbmWatermark);
+		if (nDPI != 0 && nDPI != USER_DEFAULT_SCREEN_DPI && pBitmap != NULL)
+		{
+			BITMAP bmp;
+			if (pBitmap->GetBitmap(&bmp))
+			{
+				CSize size;
+				size.cx = MulDiv(bmp.bmWidth, nDPI, USER_DEFAULT_SCREEN_DPI);
+				size.cy = MulDiv(bmp.bmHeight, nDPI, USER_DEFAULT_SCREEN_DPI);
+
+				CDC dc;
+				dc.CreateCompatibleDC(pDC);
+				CBitmap* pOld = dc.SelectObject(pBitmap);
+				int nOld = pDC->SetStretchBltMode(HALFTONE);
+				SetBrushOrgEx(pDC->GetSafeHdc(), 0, 0, NULL);
+				pDC->StretchBlt(0, 0, size.cx, size.cy, &dc, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+				pDC->SetStretchBltMode(nOld);
+				dc.SelectObject(pOld);
+			}
+		}
+	}
 
 	ClipChildren(pDC, TRUE);
 
