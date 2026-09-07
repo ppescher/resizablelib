@@ -493,7 +493,8 @@ LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		// update grip and layout
 		ArrangeLayout();
 		UpdateSizeGrip();
-		break;
+		// don't process further to use correct size (don't ask why)
+		return 0;
 
 	case WM_NCCALCSIZE:
 		// improve client area validation to reduce flickering
