@@ -490,6 +490,14 @@ LRESULT CResizableSheet::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DPICHANGED:
 		// update current DPI
 		m_nCurDpi = LOWORD(wParam);
+		OnDpiChanged(m_nCurDpi);
+		for (int i = 0; i < m_pages.GetSize(); i++)
+		{
+			// check page[i] for a match
+			CPropertyPage* pPage = GetPage(i);
+			if (::IsWindow(pPage->GetSafeHwnd()))
+				pPage->SendMessage(message, wParam, lParam);
+		}
 		// update grip and layout
 		ArrangeLayout();
 		UpdateSizeGrip();

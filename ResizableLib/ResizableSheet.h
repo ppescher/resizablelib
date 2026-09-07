@@ -96,6 +96,7 @@ protected:
 		BOOL bWithPage = FALSE);
 	int GetMinWidth();	// minimum width to display all buttons
 
+	virtual void OnDpiChanged(UINT nDpi) { UNREFERENCED_PARAMETER(nDpi); }
 
 	virtual CWnd* GetResizableWnd() const
 	{

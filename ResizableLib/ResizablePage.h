@@ -57,6 +57,7 @@ public:
 
 // callable from derived classes
 protected:
+	virtual void OnDpiChanged(UINT nDpi) { UNREFERENCED_PARAMETER(nDpi); }
 
 	virtual CWnd* GetResizableWnd() const
 	{
